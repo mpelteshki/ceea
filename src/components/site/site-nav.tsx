@@ -61,27 +61,62 @@ export function SiteNav() {
       { href: "/contacts", label: t("contacts") },
       // { href: "/about", label: t("about") }, // Maybe unnecessary if we have other pages
     ],
-    [t],
+    [], // t is stable reference from useTranslations
   );
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuId = useId();
   const firstLinkRef = useRef<HTMLAnchorElement | null>(null);
+  const lastFocusedElement = useRef<HTMLElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!menuOpen) return;
+
+    // Store previously focused element
+    lastFocusedElement.current = document.activeElement as HTMLElement;
+
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        return;
+      }
+
+      // Focus trap logic
+      if (e.key === "Tab" && menuRef.current) {
+        const focusableElements = menuRef.current.querySelectorAll(
+          'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+        if (e.shiftKey) {
+          // Shift + Tab
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement?.focus();
+          }
+        } else {
+          // Tab
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement?.focus();
+          }
+        }
+      }
     };
+
     window.addEventListener("keydown", onKeyDown);
     queueMicrotask(() => firstLinkRef.current?.focus());
 
     return () => {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", onKeyDown);
+      // Restore focus
+      lastFocusedElement.current?.focus();
     };
   }, [menuOpen]);
 
@@ -122,6 +157,7 @@ export function SiteNav() {
 
       {menuOpen ? (
         <div
+          ref={menuRef}
           id={menuId}
           role="dialog"
           aria-modal="true"

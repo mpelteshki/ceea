@@ -5,6 +5,30 @@ import { ArrowRight } from "lucide-react";
 import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
 import { useTranslations } from "next-intl";
 
+function Pillar({
+  number,
+  title,
+  desc,
+}: {
+  number: string;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <div>
+      <div className="mb-2 font-mono text-xs text-[var(--accents-4)]">
+        {number}
+      </div>
+      <div className="font-display text-lg font-semibold text-[var(--foreground)]">
+        {title}
+      </div>
+      <p className="mt-2 text-sm leading-6 text-[var(--accents-5)]">
+        {desc}
+      </p>
+    </div>
+  );
+}
+
 export function Hero() {
   const t = useTranslations("Hero");
 
@@ -101,28 +125,3 @@ export function Hero() {
     </section>
   );
 }
-
-function Pillar({
-  number,
-  title,
-  desc,
-}: {
-  number: string;
-  title: string;
-  desc: string;
-}) {
-  return (
-    <div>
-      <div className="mb-2 font-mono text-xs text-[var(--accents-4)]">
-        {number}
-      </div>
-      <div className="font-display text-lg font-semibold text-[var(--foreground)]">
-        {title}
-      </div>
-      <p className="mt-2 text-sm leading-6 text-[var(--accents-5)]">
-        {desc}
-      </p>
-    </div>
-  );
-}
-

@@ -3,8 +3,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Providers } from "../providers";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { DeferredAnalytics } from "@/components/ui/deferred-analytics";
 // Metadata and fonts have been moved to the root layout to avoid hydration issues.
 
 export default async function LocaleLayout({
@@ -28,8 +27,7 @@ export default async function LocaleLayout({
     return (
         <NextIntlClientProvider messages={messages}>
             <Providers>{children}</Providers>
-            <Analytics />
-            <SpeedInsights />
+            <DeferredAnalytics />
         </NextIntlClientProvider>
     );
 }

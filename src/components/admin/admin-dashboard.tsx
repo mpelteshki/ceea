@@ -45,6 +45,16 @@ function AdminDashboardInner() {
   const unpublish = useMutation(api.posts.unpublish);
   const removePost = useMutation(api.posts.remove);
 
+  // Loading states for mutations
+  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
+  const [isCreatingPost, setIsCreatingPost] = useState(false);
+  const [deletingEventId, setDeletingEventId] = useState<Id<"events"> | null>(null);
+  const [deletingPostId, setDeletingPostId] = useState<Id<"posts"> | null>(null);
+  const [publishingPostId, setPublishingPostId] = useState<Id<"posts"> | null>(null);
+
+  // Error state
+  const [error, setError] = useState<string | null>(null);
+
   const [title, setTitle] = useState("");
   const [title_it, setTitleIt] = useState("");
   const [title_bg, setTitleBg] = useState("");
@@ -89,6 +99,22 @@ function AdminDashboardInner() {
 
   return (
     <div className="space-y-10">
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">Error:</span>
+            {error}
+          </div>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="mt-2 text-xs underline hover:no-underline"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       <header className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
@@ -288,34 +314,43 @@ function AdminDashboardInner() {
             <div className="flex flex-wrap items-center gap-4 pt-4">
               <button
                 type="button"
-                disabled={!canSubmit}
+                disabled={!canSubmit || isCreatingEvent}
                 onClick={async () => {
-                  const ms = new Date(startsAt).getTime();
-                  await createEvent({
-                    title: title.trim(),
-                    title_it: title_it.trim() || undefined,
-                    title_bg: title_bg.trim() || undefined,
-                    summary: summary.trim(),
-                    summary_it: summary_it.trim() || undefined,
-                    summary_bg: summary_bg.trim() || undefined,
-                    location: location.trim(),
-                    kind,
-                    startsAt: ms,
-                    rsvpUrl: rsvpUrl.trim() || undefined,
-                    moreInfoUrl: moreInfoUrl.trim() || undefined,
-                  });
-                  setTitle("");
-                  setTitleIt("");
-                  setTitleBg("");
-                  setSummary("");
-                  setSummaryIt("");
-                  setSummaryBg("");
-                  setRsvpUrl("");
-                  setMoreInfoUrl("");
+                  if (!canSubmit || isCreatingEvent) return;
+                  setIsCreatingEvent(true);
+                  setError(null);
+                  try {
+                    const ms = new Date(startsAt).getTime();
+                    await createEvent({
+                      title: title.trim(),
+                      title_it: title_it.trim() || undefined,
+                      title_bg: title_bg.trim() || undefined,
+                      summary: summary.trim(),
+                      summary_it: summary_it.trim() || undefined,
+                      summary_bg: summary_bg.trim() || undefined,
+                      location: location.trim(),
+                      kind,
+                      startsAt: ms,
+                      rsvpUrl: rsvpUrl.trim() || undefined,
+                      moreInfoUrl: moreInfoUrl.trim() || undefined,
+                    });
+                    setTitle("");
+                    setTitleIt("");
+                    setTitleBg("");
+                    setSummary("");
+                    setSummaryIt("");
+                    setSummaryBg("");
+                    setRsvpUrl("");
+                    setMoreInfoUrl("");
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : "Failed to create event");
+                  } finally {
+                    setIsCreatingEvent(false);
+                  }
                 }}
-                className={["ui-btn", !canSubmit ? "opacity-50 cursor-not-allowed" : ""].join(" ")}
+                className={["ui-btn", (!canSubmit || isCreatingEvent) ? "opacity-50 cursor-not-allowed" : ""].join(" ")}
               >
-                Create <span className="text-[10px]">→</span>
+                {isCreatingEvent ? "Creating..." : "Create"} <span className="text-[10px]">{isCreatingEvent ? "" : "→"}</span>
               </button>
               <div className="text-xs text-[var(--accents-5)]">
                 If this fails: check Clerk JWT + Convex auth config, and `ADMIN_EMAILS`.
@@ -376,13 +411,22 @@ function AdminDashboardInner() {
                       <div className="flex items-center justify-start gap-4 md:justify-end opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           type="button"
-                          onClick={() => {
+                          disabled={deletingEventId === e._id}
+                          onClick={async () => {
                             if (!confirm("Delete this event?")) return;
-                            removeEvent({ id: e._id });
+                            setDeletingEventId(e._id);
+                            setError(null);
+                            try {
+                              await removeEvent({ id: e._id });
+                            } catch (err) {
+                              setError(err instanceof Error ? err.message : "Failed to delete event");
+                            } finally {
+                              setDeletingEventId(null);
+                            }
                           }}
-                          className="ui-btn py-2 px-4 bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-all font-bold"
+                          className="ui-btn py-2 px-4 bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-all font-bold disabled:opacity-50"
                         >
-                          Delete
+                          {deletingEventId === e._id ? "Deleting..." : "Delete"}
                         </button>
                       </div>
                     </motion.div>
@@ -516,56 +560,86 @@ function AdminDashboardInner() {
             <div className="flex flex-wrap items-center gap-3 pt-4">
               <button
                 type="button"
-                disabled={!canSubmitPost}
+                disabled={!canSubmitPost || isCreatingPost}
                 onClick={async () => {
-                  if (!canSubmitPost) return;
-                  if (editingPostId) {
-                    await updateDraft({
-                      id: editingPostId,
-                      title: postTitle.trim(),
-                      title_it: postTitle_it.trim() || undefined,
-                      title_bg: postTitle_bg.trim() || undefined,
-                      excerpt: postExcerpt.trim(),
-                      excerpt_it: postExcerpt_it.trim() || undefined,
-                      excerpt_bg: postExcerpt_bg.trim() || undefined,
-                      body: postBody,
-                    });
-                    return;
+                  if (!canSubmitPost || isCreatingPost) return;
+                  setIsCreatingPost(true);
+                  setError(null);
+                  try {
+                    if (editingPostId) {
+                      await updateDraft({
+                        id: editingPostId,
+                        title: postTitle.trim(),
+                        title_it: postTitle_it.trim() || undefined,
+                        title_bg: postTitle_bg.trim() || undefined,
+                        excerpt: postExcerpt.trim(),
+                        excerpt_it: postExcerpt_it.trim() || undefined,
+                        excerpt_bg: postExcerpt_bg.trim() || undefined,
+                        body: postBody,
+                      });
+                    } else {
+                      const id = await createDraft({
+                        title: postTitle.trim(),
+                        title_it: postTitle_it.trim() || undefined,
+                        title_bg: postTitle_bg.trim() || undefined,
+                        excerpt: postExcerpt.trim(),
+                        excerpt_it: postExcerpt_it.trim() || undefined,
+                        excerpt_bg: postExcerpt_bg.trim() || undefined,
+                        body: postBody,
+                        slug: postSlug.trim() || undefined,
+                      });
+                      setEditingPostId(id);
+                    }
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : "Failed to save post");
+                  } finally {
+                    setIsCreatingPost(false);
                   }
-                  const id = await createDraft({
-                    title: postTitle.trim(),
-                    title_it: postTitle_it.trim() || undefined,
-                    title_bg: postTitle_bg.trim() || undefined,
-                    excerpt: postExcerpt.trim(),
-                    excerpt_it: postExcerpt_it.trim() || undefined,
-                    excerpt_bg: postExcerpt_bg.trim() || undefined,
-                    body: postBody,
-                    slug: postSlug.trim() || undefined,
-                  });
-                  setEditingPostId(id);
                 }}
-                className={["ui-btn", !canSubmitPost ? "opacity-50 cursor-not-allowed" : ""].join(" ")}
+                className={["ui-btn", (!canSubmitPost || isCreatingPost) ? "opacity-50 cursor-not-allowed" : ""].join(" ")}
               >
-                {editingPostId ? "Save changes" : "Create draft"}
+                {isCreatingPost ? (editingPostId ? "Saving..." : "Creating...") : (editingPostId ? "Save changes" : "Create draft")}
               </button>
 
               {editingPostId ? (
                 <>
                   <button
                     type="button"
-                    onClick={() => publish({ id: editingPostId })}
-                    className="ui-btn"
+                    disabled={publishingPostId === editingPostId}
+                    onClick={async () => {
+                      setPublishingPostId(editingPostId);
+                      setError(null);
+                      try {
+                        await publish({ id: editingPostId });
+                      } catch (err) {
+                        setError(err instanceof Error ? err.message : "Failed to publish");
+                      } finally {
+                        setPublishingPostId(null);
+                      }
+                    }}
+                    className="ui-btn disabled:opacity-50"
                     data-variant="secondary"
                   >
-                    Publish
+                    {publishingPostId === editingPostId ? "Publishing..." : "Publish"}
                   </button>
                   <button
                     type="button"
-                    onClick={() => unpublish({ id: editingPostId })}
-                    className="ui-btn"
+                    disabled={publishingPostId === editingPostId}
+                    onClick={async () => {
+                      setPublishingPostId(editingPostId);
+                      setError(null);
+                      try {
+                        await unpublish({ id: editingPostId });
+                      } catch (err) {
+                        setError(err instanceof Error ? err.message : "Failed to unpublish");
+                      } finally {
+                        setPublishingPostId(null);
+                      }
+                    }}
+                    className="ui-btn disabled:opacity-50"
                     data-variant="secondary"
                   >
-                    Unpublish
+                    {publishingPostId === editingPostId ? "Unpublishing..." : "Unpublish"}
                   </button>
                 </>
               ) : null}
@@ -658,29 +732,60 @@ function AdminDashboardInner() {
                           {isPublished ? (
                             <button
                               type="button"
-                              onClick={() => unpublish({ id: p._id })}
-                              className="ui-link text-sm"
+                              disabled={publishingPostId === p._id}
+                              onClick={async () => {
+                                setPublishingPostId(p._id);
+                                setError(null);
+                                try {
+                                  await unpublish({ id: p._id });
+                                } catch (err) {
+                                  setError(err instanceof Error ? err.message : "Failed to unpublish");
+                                } finally {
+                                  setPublishingPostId(null);
+                                }
+                              }}
+                              className="ui-link text-sm disabled:opacity-50"
                             >
-                              Unpublish
+                              {publishingPostId === p._id ? "Unpublishing..." : "Unpublish"}
                             </button>
                           ) : (
                             <button
                               type="button"
-                              onClick={() => publish({ id: p._id })}
-                              className="ui-link text-sm"
+                              disabled={publishingPostId === p._id}
+                              onClick={async () => {
+                                setPublishingPostId(p._id);
+                                setError(null);
+                                try {
+                                  await publish({ id: p._id });
+                                } catch (err) {
+                                  setError(err instanceof Error ? err.message : "Failed to publish");
+                                } finally {
+                                  setPublishingPostId(null);
+                                }
+                              }}
+                              className="ui-link text-sm disabled:opacity-50"
                             >
-                              Publish
+                              {publishingPostId === p._id ? "Publishing..." : "Publish"}
                             </button>
                           )}
                           <button
                             type="button"
-                            onClick={() => {
+                            disabled={deletingPostId === p._id}
+                            onClick={async () => {
                               if (!confirm("Delete this post?")) return;
-                              removePost({ id: p._id });
+                              setDeletingPostId(p._id);
+                              setError(null);
+                              try {
+                                await removePost({ id: p._id });
+                              } catch (err) {
+                                setError(err instanceof Error ? err.message : "Failed to delete post");
+                              } finally {
+                                setDeletingPostId(null);
+                              }
                             }}
-                            className="ui-link text-sm text-red-600 hover:text-red-700 decoration-red-200 hover:decoration-red-600"
+                            className="ui-link text-sm text-red-600 hover:text-red-700 decoration-red-200 hover:decoration-red-600 disabled:opacity-50"
                           >
-                            Delete
+                            {deletingPostId === p._id ? "Deleting..." : "Delete"}
                           </button>
                         </div>
                       </div>
