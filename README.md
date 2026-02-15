@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CEEA Bocconi Website
 
-## Getting Started
+Next.js (App Router) + Bun + Convex backend + Clerk auth (admin-only).
 
-First, run the development server:
+## Local Dev
+
+1. Install deps
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Start Convex (creates/uses your dev deployment)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+bun run convex:dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Start Next.js
 
-## Learn More
+```bash
+bun run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Clerk Setup (Admin Auth)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create a Clerk application and set:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
 
-## Deploy on Vercel
+Admin access is controlled by:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `ADMIN_EMAILS` (comma-separated emails, e.g. `a@b.com,b@c.com`)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This is checked in:
+
+- Next.js: `src/lib/admin.ts`
+- Convex: `convex/lib/admin.ts`
+
+## Convex + Clerk (JWT) Setup
+
+This repo includes `convex/auth.config.ts` configured for Clerk JWT auth.
+
+You need to set in Convex environment variables:
+
+- `CLERK_JWT_ISSUER_DOMAIN` (the `iss` domain for your Clerk JWT template)
+- `ADMIN_EMAILS`
+
+And in Next.js environment variables:
+
+- `ADMIN_EMAILS`
+
+Convex URL(s) are written automatically into `.env.local` when you run Convex.
+
+## Deployment (Vercel)
+
+1. Import the repo in Vercel.
+2. Add the same env vars as above (Clerk keys, `ADMIN_EMAILS`).
+3. Add Convex env vars in the Convex dashboard.
+
+This project sets `"packageManager": "bun@1.3.4"` in `package.json` so Vercel can use Bun.
+
+## Routes
+
+- Public site: `/`
+- Events: `/events`
+- Newsletter: `/newsletter` and `/newsletter/[slug]`
+- Admin dashboard: `/admin` (Clerk auth + `ADMIN_EMAILS` allowlist)
+- Sign in: `/sign-in`

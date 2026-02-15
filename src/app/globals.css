@@ -1,26 +1,260 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Palette: warm paper, sharp ink, Danube blue + carmine accents */
+  --paper: #fbf6ea;
+  --paper-2: #f2ead6;
+  --ink: #0b0f14;
+  --ink-2: #111a27;
+  --danube: #1d4ed8;
+  --carmine: #b91c1c;
+  --gold: #b9892f;
+
+  --rule: color-mix(in oklab, var(--ink), transparent 88%);
+  --rule-strong: color-mix(in oklab, var(--ink), transparent 78%);
+
+  --background: var(--paper);
+  --foreground: var(--ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-body-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #070a0f;
+    --paper-2: #0b111c;
+    --ink: #eef2ff;
+    --ink-2: #dbeafe;
+    --danube: #60a5fa;
+    --carmine: #fb7185;
+    --gold: #f5c96f;
+
+    --rule: color-mix(in oklab, var(--ink), transparent 88%);
+    --rule-strong: color-mix(in oklab, var(--ink), transparent 78%);
+
+    --background: var(--paper);
+    --foreground: var(--ink);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--danube), transparent 70%);
+}
+
+:where(a, button, summary):focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--danube), var(--ink) 15%);
+  outline-offset: 4px;
+}
+
+:where(a, button) {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+.site-shell {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(
+      900px 600px at 15% 0%,
+      color-mix(in oklab, var(--danube), transparent 86%),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px 500px at 92% 12%,
+      color-mix(in oklab, var(--carmine), transparent 88%),
+      transparent 60%
+    ),
+    linear-gradient(180deg, var(--paper), var(--paper-2));
+}
+
+.site-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.7;
+  background-image:
+    /* column rhythm */
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--ink), transparent 95%) 0,
+      color-mix(in oklab, var(--ink), transparent 95%) 1px,
+      transparent 1px,
+      transparent 48px
+    ),
+    /* baseline rhythm */
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in oklab, var(--ink), transparent 96%) 0,
+      color-mix(in oklab, var(--ink), transparent 96%) 1px,
+      transparent 1px,
+      transparent 62px
+    ),
+    /* halftone-ish speckle */
+    radial-gradient(
+      1px 1px at 18% 26%,
+      color-mix(in oklab, var(--ink), transparent 82%),
+      transparent 60%
+    ),
+    radial-gradient(
+      1px 1px at 72% 44%,
+      color-mix(in oklab, var(--ink), transparent 86%),
+      transparent 60%
+    );
+  mask-image: radial-gradient(
+    900px 700px at 50% 30%,
+    rgba(0, 0, 0, 1),
+    rgba(0, 0, 0, 0.2) 68%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.font-display {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+@layer components {
+  .ui-kicker {
+    @apply font-mono text-[11px] uppercase tracking-[0.28em] text-black/55 dark:text-white/55;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .ui-kicker::before {
+    content: "";
+    height: 1px;
+    width: 1.75rem;
+    background: var(--rule-strong);
+  }
+
+  .ui-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid var(--rule-strong);
+    background: color-mix(in oklab, var(--ink), transparent 96%);
+    padding: 0.35rem 0.6rem;
+    font-family: var(--font-body-mono), ui-monospace, SFMono-Regular, Menlo,
+      monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--ink), transparent 22%);
+    clip-path: polygon(
+      0 0,
+      calc(100% - 10px) 0,
+      100% 50%,
+      calc(100% - 10px) 100%,
+      0 100%,
+      10px 50%
+    );
+  }
+
+  .ui-rule {
+    border-top: 1px solid var(--rule);
+  }
+
+  .ui-rule-strong {
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .ui-link {
+    @apply font-semibold text-black/80 hover:text-black dark:text-white/80 dark:hover:text-white;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+    text-decoration-color: color-mix(in oklab, var(--danube), transparent 25%);
+  }
+
+  .ui-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.15rem;
+    border: 1px solid var(--rule-strong);
+    background: transparent;
+    font-family: var(--font-body-mono), ui-monospace, SFMono-Regular, Menlo,
+      monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--ink), transparent 8%);
+    transition: transform 160ms ease, border-color 160ms ease,
+      color 160ms ease;
+  }
+
+  .ui-btn::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    transform: translate(6px, 6px);
+    background: color-mix(in oklab, var(--danube), transparent 88%);
+    transition: transform 160ms ease, background 160ms ease;
+  }
+
+  .ui-btn:hover {
+    transform: translate(-1px, -1px);
+    border-color: color-mix(in oklab, var(--danube), var(--rule-strong) 65%);
+  }
+
+  .ui-btn:hover::after {
+    transform: translate(3px, 3px);
+    background: color-mix(in oklab, var(--danube), transparent 84%);
+  }
+
+  .ui-btn[data-tone="carmine"]::after {
+    background: color-mix(in oklab, var(--carmine), transparent 88%);
+  }
+
+  .ui-btn[data-tone="carmine"]:hover {
+    border-color: color-mix(in oklab, var(--carmine), var(--rule-strong) 65%);
+  }
+
+  .ui-btn[data-tone="carmine"]:hover::after {
+    background: color-mix(in oklab, var(--carmine), transparent 84%);
+  }
+
+  .ui-rowlink {
+    @apply transition-colors;
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.1rem 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .ui-rowlink:hover {
+    background: color-mix(in oklab, var(--ink), transparent 97%);
+  }
 }
