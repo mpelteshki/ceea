@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Syne, Spline_Sans, Spline_Sans_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const display = Syne({
@@ -34,6 +35,7 @@ export default function RootLayout({
         className={`${display.variable} ${body.variable} ${mono.variable} antialiased`}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   );
