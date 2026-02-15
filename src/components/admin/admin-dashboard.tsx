@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, Suspense } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -25,7 +25,11 @@ export function AdminDashboard() {
     );
   }
 
-  return <AdminDashboardInner />;
+  return (
+    <Suspense fallback={<div className="p-4 text-sm text-[var(--accents-5)]">Loading...</div>}>
+      <AdminDashboardInner />
+    </Suspense>
+  );
 }
 
 function AdminDashboardInner() {

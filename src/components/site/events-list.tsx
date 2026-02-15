@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { useMemo } from "react";
+import { useMemo, Suspense } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
@@ -60,7 +60,11 @@ export function EventsList() {
     );
   }
 
-  return <EventsListInner />;
+  return (
+    <Suspense fallback={<div className="p-4 text-sm text-[var(--accents-5)]">Loading...</div>}>
+      <EventsListInner />
+    </Suspense>
+  );
 }
 
 function EventsListInner() {
