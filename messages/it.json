@@ -1,0 +1,143 @@
+{
+    "HomePage": {
+        "title": "Benvenuti in CEEA"
+    },
+    "Hero": {
+        "titleLine1": "Costruisci il ponte.",
+        "titleLine2": "Cultura, carriere, comunità.",
+        "description": "Un hub centrale per studenti collegati all'Europa centrale e orientale in Bocconi. Eventi di punta, accelerazione della carriera e una rete che abbraccia la regione.",
+        "eventsBtn": "Prossimi eventi",
+        "sponsorBtn": "Sponsorizzaci",
+        "pillarsTitle": "Pilastri fondamentali",
+        "pillar1Title": "Eventi di Punta",
+        "pillar1Desc": "Serate e panel esclusivi che definiscono il semestre. Alta produzione, alto coinvolgimento.",
+        "pillar2Title": "Ponte per la Carriera",
+        "pillar2Desc": "Linea diretta con aziende ed ex studenti in tutta la regione CEE. Opportunità reali.",
+        "pillar3Title": "Cultura e Appartenenza",
+        "pillar3Desc": "Una casa lontano da casa. Cene, viaggi e una comunità che sembra una famiglia."
+    },
+    "Highlights": {
+        "eyebrow": "Forma",
+        "title": "Format che funzionano in Bocconi",
+        "p1": "Le associazioni che sembrano inevitabili nel campus sono quelle che realizzano. Format ripetibili. Un'identità visibile. Proprietà chiara. Stiamo costruendo quel livello di coerenza intorno all'Europa centrale e orientale.",
+        "p2": "Se vale la pena fare qualcosa, dovrebbe sembrare progettata. Questo è lo standard che manteniamo per la programmazione, le partnership e le comunicazioni.",
+        "feature1Title": "Vita associativa, fatta bene",
+        "feature1Desc": "Gestita dagli studenti, ma strutturata: un ritmo che si accumula, ruoli reali e un sistema che fa fidare le persone di te.",
+        "feature1Cta": "Cosa rappresentiamo",
+        "feature2Title": "Pronti per i partner di default",
+        "feature2Desc": "Un'offerta chiara, un pubblico curato e format che scalano dai workshop alle serate di punta. La sponsorizzazione dovrebbe essere semplice.",
+        "feature2Cta": "Diventa partner",
+        "format1Title": "Serata di punta",
+        "format1Desc": "Un evento distintivo per semestre: relatori + cultura, eseguito come il lancio di un prodotto.",
+        "format2Title": "Ponte per la carriera",
+        "format2Desc": "Workshop, preparazione ai colloqui e punti di contatto aziendali per i team rivolti alla CEE.",
+        "format3Title": "Piccoli format",
+        "format3Desc": "Cene, tandem, passeggiate in città. L'appartenenza si costruisce nelle stanze, non nei feed."
+    },
+    "UpcomingEvents": {
+        "eyebrow": "Calendario",
+        "title": "Momenti per cui vale la pena esserci.",
+        "viewFull": "Vedi calendario completo"
+    },
+    "LatestDispatch": {
+        "eyebrow": "Dispaccio",
+        "title": "Ultimi post della newsletter",
+        "viewAll": "Vedi tutti i post",
+        "readPost": "Leggi post"
+    },
+    "EventsList": {
+        "details": "Dettagli",
+        "filterAll": "Tutti",
+        "filterFlagship": "Flagship",
+        "filterCareer": "Carriera",
+        "filterCulture": "Cultura",
+        "filterCommunity": "Comunità"
+    },
+    "NewsletterList": {
+        "read": "Leggi"
+    },
+    "Footer": {
+        "tagline": "Associazione dell'Europa Centrale e Orientale",
+        "legal": "Tutti i diritti riservati.",
+        "sitemap": "Mappa del sito",
+        "connect": "Connettiti"
+    },
+    "Navigation": {
+        "home": "Home",
+        "team": "Team",
+        "gallery": "Galleria",
+        "projects": "Progetti",
+        "joinUs": "Unisciti a noi",
+        "contacts": "Contatti",
+        "events": "Eventi",
+        "newsletter": "Newsletter",
+        "about": "Chi siamo"
+    },
+    "TeamPage": {
+        "title": "Il Nostro Team",
+        "members": "Membri Attuali",
+        "alumni": "Alumni",
+        "connect": "Collegati"
+    },
+    "GalleryPage": {
+        "title": "Galleria"
+    },
+    "ProjectsPage": {
+        "title": "I Nostri Progetti",
+        "learnMore": "Scopri di più",
+        "readMore": "Leggi di più",
+        "readLess": "Leggi meno"
+    },
+    "JoinUsPage": {
+        "title": "Unisciti a noi",
+        "content": "Siamo sempre alla ricerca di nuovi membri. Contattaci per saperne di più sul reclutamento."
+    },
+    "ContactPage": {
+        "title": "Contattaci",
+        "email": "Email",
+        "followUs": "Seguici"
+    },
+    "AboutPage": {
+        "kicker": "Missione",
+        "title": "Cosa è CEEA.",
+        "mission": "Un'associazione studentesca in Bocconi è un'organizzazione strutturata e gestita dagli studenti che costruisce comunità e crea programmazione nel campus: eventi, partnership e una presenza visibile nell'ecosistema studentesco. CEEA concentra quell'energia sull'Europa centrale e orientale.",
+        "pillarsEyebrow": "Pilastri",
+        "pillarsTitle": "Tre cose in cui rifiutiamo di essere mediocri",
+        "pillar1Title": "Programmazione",
+        "pillar1Body": "Una cadenza costante: eventi di punta, formati più piccoli e collaborazioni con altre associazioni Bocconi.",
+        "pillar2Title": "Comunità",
+        "pillar2Body": "Appartenenza per gli studenti legati alla CEE e una porta curiosa per tutti gli altri.",
+        "pillar3Title": "Ponte per la carriera",
+        "pillar3Body": "Punti di contatto aziendali e connessioni con ex studenti, specialmente dove il contesto CEE è un vantaggio.",
+        "realityEyebrow": "Come funziona",
+        "realityTitle": "La realtà delle associazioni Bocconi",
+        "reality1Title": "Cicli di reclutamento",
+        "reality1Body": "Le associazioni tipicamente reclutano all'inizio dei semestri e durante le fiere delle associazioni nel campus. La coerenza e i ruoli chiari contano più di un numero enorme di persone.",
+        "reality2Title": "Cultura dell'esecuzione",
+        "reality2Body": "Le associazioni più forti operano come un piccolo studio: proprietari definiti, formati ripetibili e uno standard elevato per comunicazioni, logistica ed esperienza dei partner.",
+        "reality3Title": "La collaborazione è normale",
+        "reality3Body": "Gli eventi congiunti con altre associazioni sono comuni e ad alto rendimento: estendono la portata, condividono le migliori pratiche e creano formati più interessanti.",
+        "reality4Title": "Il marchio è un differenziatore",
+        "reality4Body": "In un campus pieno di manifesti, il tuo sistema visivo fa parte della tua credibilità. Un'estetica coerente segnala serietà, anche per eventi sociali.",
+        "peopleEyebrow": "Squadra",
+        "peopleTitle": "Persone",
+        "peopleBody": "Questa pagina è intenzionalmente semplice per ora. Nella dashboard di amministrazione possiamo aggiungere una tabella Team dopo, e rendere i membri del comitato qui con foto, ruoli e link LinkedIn.",
+        "peopleNote": "Sezioni suggerite: Presidente, Vicepresidente, Eventi, Partnership, Marketing, Finanza, Operazioni e Relazioni con gli Alumni.",
+        "partnersEyebrow": "Collabora",
+        "partnersTitle": "Partner",
+        "partnersBody": "Collaboriamo con aziende, ex studenti e altre associazioni Bocconi. Se vuoi un pubblico curato e un'esecuzione pulita, dovremmo parlare.",
+        "partner1Title": "Workshop",
+        "partner1Body": "Una sessione focalizzata (60-90 min) con valore reale: casi, assunzioni o approfondimenti specifici per regione.",
+        "partner2Title": "Sponsorizzazione di punta",
+        "partner2Body": "Posizionamento del marchio + momento di parola + angolo di reclutamento, allineato con un evento distintivo.",
+        "partner3Title": "Supporto alla comunità",
+        "partner3Body": "Abilita piccoli formati: cene, momenti del calendario culturale ed esperienze di viaggio degli studenti.",
+        "contactEyebrow": "Raggiungici",
+        "contactTitle": "Contatto",
+        "contactBody": "Per sponsorizzazioni, relatori e collaborazioni: invia una richiesta chiara e una tempistica. Rispondiamo più velocemente quando il brief è concreto.",
+        "contact1Title": "Partnership",
+        "contact1BodyPre": "Includi: formato (workshop/relatore/evento di punta), finestra temporale e pubblico.",
+        "contact2Title": "Generale",
+        "contact2Body": "I segnaposto Instagram/LinkedIn possono andare qui una volta pronti."
+    }
+}

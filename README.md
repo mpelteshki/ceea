@@ -56,8 +56,15 @@ Convex URL(s) are written automatically into `.env.local` when you run Convex.
 ## Deployment (Vercel)
 
 1. Import the repo in Vercel.
-2. Add the same env vars as above (Clerk keys, `ADMIN_EMAILS`).
-3. Add Convex env vars in the Convex dashboard.
+2. Deploy Convex (creates a production deployment):
+
+```bash
+bun run convex:deploy
+```
+
+3. In Vercel, set `NEXT_PUBLIC_CONVEX_URL` (copy it from your local `.env.local` after deploying Convex, or from the Convex dashboard for the deployment you want to use).
+4. Add the same env vars as above (Clerk keys, `ADMIN_EMAILS`). If using Clerk JWT auth with Convex, also set the Convex-side env vars in the Convex dashboard.
+5. Redeploy the Vercel project after adding/updating env vars (Vercel only inlines `NEXT_PUBLIC_*` at build time).
 
 This project sets `"packageManager": "bun@1.3.4"` in `package.json` so Vercel can use Bun.
 

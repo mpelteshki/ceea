@@ -4,7 +4,11 @@ import { v } from "convex/values";
 export default defineSchema({
   events: defineTable({
     title: v.string(),
+    title_it: v.optional(v.string()), // Localized title
+    title_bg: v.optional(v.string()), // Localized title
     summary: v.string(),
+    summary_it: v.optional(v.string()),
+    summary_bg: v.optional(v.string()),
     location: v.string(),
     kind: v.union(
       v.literal("flagship"),
@@ -23,8 +27,12 @@ export default defineSchema({
 
   posts: defineTable({
     title: v.string(),
+    title_it: v.optional(v.string()),
+    title_bg: v.optional(v.string()),
     slug: v.string(),
     excerpt: v.string(),
+    excerpt_it: v.optional(v.string()),
+    excerpt_bg: v.optional(v.string()),
     body: v.string(),
     publishedAt: v.optional(v.number()),
     createdAt: v.number(),
@@ -45,4 +53,45 @@ export default defineSchema({
     createdAt: v.number(),
     createdBy: v.optional(v.string()),
   }).index("by_tier_name", ["tier", "name"]),
+
+  team: defineTable({
+    firstName: v.string(),
+    lastName: v.string(),
+    role: v.object({
+      en: v.string(),
+      it: v.string(),
+      bg: v.string(),
+    }),
+    type: v.union(v.literal("member"), v.literal("alumni")),
+    linkedinUrl: v.optional(v.string()),
+    photoId: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_type", ["type"]),
+
+  projects: defineTable({
+    title: v.object({
+      en: v.string(),
+      it: v.string(),
+      bg: v.string(),
+    }),
+    description: v.object({
+      en: v.string(),
+      it: v.string(),
+      bg: v.string(),
+    }),
+    imageUrl: v.optional(v.string()),
+    link: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_createdAt", ["createdAt"]),
+
+  gallery: defineTable({
+    imageUrl: v.string(),
+    caption: v.object({
+      en: v.string(),
+      it: v.string(),
+      bg: v.string(),
+    }),
+    category: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_createdAt", ["createdAt"]),
 });

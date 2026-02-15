@@ -44,7 +44,11 @@ export const getBySlug = query({
 export const createDraft = mutation({
   args: {
     title: v.string(),
+    title_it: v.optional(v.string()),
+    title_bg: v.optional(v.string()),
     excerpt: v.string(),
+    excerpt_it: v.optional(v.string()),
+    excerpt_bg: v.optional(v.string()),
     body: v.string(), // markdown
     slug: v.optional(v.string()),
   },
@@ -62,8 +66,12 @@ export const createDraft = mutation({
 
     return await ctx.db.insert("posts", {
       title: args.title.trim(),
+      title_it: args.title_it?.trim(),
+      title_bg: args.title_bg?.trim(),
       slug,
       excerpt: args.excerpt.trim(),
+      excerpt_it: args.excerpt_it?.trim(),
+      excerpt_bg: args.excerpt_bg?.trim(),
       body: args.body,
       createdAt: now,
       createdBy: identity.tokenIdentifier,
@@ -76,14 +84,22 @@ export const updateDraft = mutation({
   args: {
     id: v.id("posts"),
     title: v.string(),
+    title_it: v.optional(v.string()),
+    title_bg: v.optional(v.string()),
     excerpt: v.string(),
+    excerpt_it: v.optional(v.string()),
+    excerpt_bg: v.optional(v.string()),
     body: v.string(),
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
     await ctx.db.patch(args.id, {
       title: args.title.trim(),
+      title_it: args.title_it?.trim(),
+      title_bg: args.title_bg?.trim(),
       excerpt: args.excerpt.trim(),
+      excerpt_it: args.excerpt_it?.trim(),
+      excerpt_bg: args.excerpt_bg?.trim(),
       body: args.body,
     });
   },

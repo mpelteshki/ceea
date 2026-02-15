@@ -1,109 +1,103 @@
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Section } from "./section";
+import { useTranslations } from "next-intl";
 
 export function HomeHighlights() {
+  const t = useTranslations("Highlights");
+
   return (
-    <Section eyebrow="Shape" title="Formats that work at Bocconi">
-      <div className="grid gap-4 md:grid-cols-2">
-        <HighlightCard
-          title="Association life, done right"
-          desc="Bocconi associations are student-run organizations that build community through events, partnerships, and visible campus presence. The best ones feel like a small institution: consistent programming, clear roles, and a recognizable aesthetic."
-          cta="What we stand for"
-          href="/about"
-          tone="danube"
-        />
-        <HighlightCard
-          title="Partner-ready by default"
-          desc="Companies and alumni engage when the offer is clear: curated audiences, on-brand communication, and formats that scale from workshops to flagship speaker nights. We keep sponsorship simple, structured, and measurable."
-          cta="Become a partner"
-          href="/contact"
-          tone="carmine"
-        />
+    <Section eyebrow={t("eyebrow")} title={t("title")}>
+      <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
+        <div className="space-y-6">
+          <p className="max-w-prose text-base leading-7 text-[var(--accents-5)]">
+            {t("p1")}
+          </p>
+          <div className="h-px bg-[var(--accents-2)]" />
+          <p className="max-w-prose text-base leading-7 text-[var(--accents-5)]">
+            {t("p2")}
+          </p>
+        </div>
+
+        <div className="divide-y divide-[var(--accents-2)]">
+          <FeatureRow
+            number="01"
+            title={t("feature1Title")}
+            desc={t("feature1Desc")}
+            cta={t("feature1Cta")}
+            href="/about"
+          />
+          <FeatureRow
+            number="02"
+            title={t("feature2Title")}
+            desc={t("feature2Desc")}
+            cta={t("feature2Cta")}
+            href="/contact" // Assuming /contact is the page
+          />
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Mini
-          title="Flagship night"
-          desc="One signature event per semester: speakers + culture, executed like a product launch."
-        />
-        <Mini
-          title="Career bridge"
-          desc="Workshops, interview prep, and company touchpoints for CEE-facing teams."
-        />
-        <Mini
-          title="Small formats"
-          desc="Dinners, language tandems, city walks. Belonging is built in rooms, not feeds."
-        />
+      <div className="mt-16 border-y border-[var(--accents-2)]">
+        <div className="grid divide-y divide-[var(--accents-2)] md:grid-cols-3 md:divide-x md:divide-y-0">
+          <Format
+            title={t("format1Title")}
+            desc={t("format1Desc")}
+          />
+          <Format
+            title={t("format2Title")}
+            desc={t("format2Desc")}
+          />
+          <Format
+            title={t("format3Title")}
+            desc={t("format3Desc")}
+          />
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Pill text="Newsletter drops" />
-        <Pill text="Cross-association collabs" />
-        <Pill text="Alumni moments" />
-        <Pill text="Cultural calendar" />
-        <Pill text="Recruitment week" />
-      </div>
     </Section>
   );
 }
 
-function HighlightCard({
+function FeatureRow({
+  number,
   title,
   desc,
   cta,
   href,
-  tone,
 }: {
+  number: string;
   title: string;
   desc: string;
   cta: string;
   href: string;
-  tone: "danube" | "carmine";
 }) {
-  const accent =
-    tone === "danube" ? "bg-[color:var(--danube)]/12" : "bg-[color:var(--carmine)]/12";
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-black/10 bg-white/55 p-7 dark:border-white/10 dark:bg-white/5">
-      <div
-        className={[
-          "pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full blur-3xl",
-          accent,
-        ].join(" ")}
-      />
-      <div className="relative space-y-4">
-        <div className="font-display text-2xl leading-[1.05] tracking-tight">
-          {title}
-        </div>
-        <p className="text-sm leading-6 text-black/70 dark:text-white/70">
-          {desc}
-        </p>
-        <Link
-          href={href}
-          className="inline-flex items-center gap-2 text-sm font-semibold tracking-wide text-black/80 hover:text-black dark:text-white/80 dark:hover:text-white"
-        >
-          {cta} <span className="font-mono text-[12px]">→</span>
+    <div
+      className="py-8 first:pt-0 last:pb-0"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="ui-tag">{number}</span>
+        <Link href={href} className="ui-link text-sm">
+          {cta} &rarr;
         </Link>
       </div>
-    </div>
-  );
-}
-
-function Mini({ title, desc }: { title: string; desc: string }) {
-  return (
-    <div className="rounded-2xl border border-black/10 bg-white/50 p-6 dark:border-white/10 dark:bg-white/5">
-      <div className="font-display text-xl leading-none">{title}</div>
-      <p className="mt-2 text-sm leading-6 text-black/65 dark:text-white/65">
+      <div className="mt-4 font-display text-2xl font-semibold text-[var(--foreground)]">
+        {title}
+      </div>
+      <p className="mt-3 max-w-prose text-sm leading-6 text-[var(--accents-5)]">
         {desc}
       </p>
     </div>
   );
 }
 
-function Pill({ text }: { text: string }) {
+function Format({ title, desc }: { title: string; desc: string }) {
   return (
-    <span className="rounded-full border border-black/10 bg-black/5 px-3 py-1 text-xs tracking-wide text-black/70 dark:border-white/10 dark:bg-white/10 dark:text-white/70">
-      {text}
-    </span>
+    <div className="p-6 md:p-8">
+      <div className="font-display text-xl font-semibold text-[var(--foreground)]">{title}</div>
+      <p className="mt-3 text-sm leading-6 text-[var(--accents-5)]">
+        {desc}
+      </p>
+    </div>
   );
 }
 

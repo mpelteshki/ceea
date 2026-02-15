@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
@@ -23,16 +24,16 @@ export function NewsletterArticle({ slug }: { slug: string }) {
   if (!hasConvex) {
     return (
       <div className="space-y-6">
-        <div className="rounded-3xl border border-black/10 bg-white/55 p-8 text-sm text-black/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
+        <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-4 text-sm text-[var(--accents-5)] rounded-md">
           Backend not configured. Set{" "}
-          <span className="font-mono">NEXT_PUBLIC_CONVEX_URL</span> in Vercel to
+          <span className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</span> in Vercel to
           show articles.
         </div>
         <Link
           href="/newsletter"
-          className="inline-flex items-center gap-2 rounded-full border border-black/15 bg-white/60 px-5 py-2.5 text-sm font-semibold tracking-wide text-black transition-colors hover:bg-white/90 dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+          className="ui-btn"
         >
-          Back to newsletter <span className="font-mono text-[12px]">→</span>
+          Back to newsletter <span className="text-[13px]">→</span>
         </Link>
       </div>
     );
@@ -46,10 +47,15 @@ function NewsletterArticleInner({ slug }: { slug: string }) {
 
   if (post === undefined) {
     return (
-      <div className="space-y-4">
-        <div className="h-10 w-2/3 animate-pulse rounded-xl border border-black/10 bg-white/40 dark:border-white/10 dark:bg-white/5" />
-        <div className="h-6 w-1/3 animate-pulse rounded-xl border border-black/10 bg-white/40 dark:border-white/10 dark:bg-white/5" />
-        <div className="h-[360px] animate-pulse rounded-2xl border border-black/10 bg-white/40 p-6 dark:border-white/10 dark:bg-white/5" />
+      <div className="space-y-8">
+        <div className="h-6 w-24 animate-pulse bg-[var(--accents-2)] rounded" />
+        <div className="space-y-4">
+          <div className="h-4 w-32 animate-pulse bg-[var(--accents-2)] rounded" />
+          <div className="h-12 w-3/4 animate-pulse bg-[var(--accents-2)] rounded" />
+        </div>
+        <div className="ui-rule-strong pt-8">
+          <div className="h-[360px] animate-pulse bg-[var(--accents-1)] rounded" />
+        </div>
       </div>
     );
   }
@@ -57,44 +63,48 @@ function NewsletterArticleInner({ slug }: { slug: string }) {
   if (post === null || post.publishedAt == null) {
     return (
       <div className="space-y-6">
-        <div className="rounded-3xl border border-black/10 bg-white/55 p-8 text-sm text-black/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
+        <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-4 text-sm text-[var(--accents-5)] rounded-md">
           Not found.
         </div>
         <Link
           href="/newsletter"
-          className="inline-flex items-center gap-2 rounded-full border border-black/15 bg-white/60 px-5 py-2.5 text-sm font-semibold tracking-wide text-black transition-colors hover:bg-white/90 dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+          className="ui-btn"
         >
-          Back to newsletter <span className="font-mono text-[12px]">→</span>
+          Back to newsletter <span className="text-[13px]">→</span>
         </Link>
       </div>
     );
   }
 
   return (
-    <article className="space-y-8">
-      <header className="space-y-4">
+    <article className="space-y-12">
+      <header className="space-y-8">
         <Link
           href="/newsletter"
-          className="inline-flex items-center gap-2 text-sm font-semibold tracking-wide text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white"
+          className="group inline-flex items-center gap-2 text-sm font-medium text-[var(--accents-5)] transition-colors hover:text-[var(--foreground)]"
         >
-          <span className="font-mono">←</span> Newsletter
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+          <span>Back</span>
         </Link>
-        <h1 className="font-display text-5xl leading-[0.95] tracking-tight sm:text-6xl">
-          {post.title}
-        </h1>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-black/60 dark:text-white/60">
-          <span className="rounded-full border border-black/10 bg-black/5 px-2 py-1 font-mono text-[11px] tracking-wide text-black/70 dark:border-white/10 dark:bg-white/10 dark:text-white/70">
+
+        <div className="space-y-4">
+          <div className="ui-kicker">
             {fmtDate(post.publishedAt)}
-          </span>
-          <span className="font-mono">/{post.slug}</span>
+          </div>
+          <h1 className="text-balance font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
+            {post.title}
+          </h1>
+          <div className="font-mono text-xs uppercase tracking-widest text-[var(--accents-4)]">
+            /{post.slug}
+          </div>
         </div>
-        <p className="max-w-2xl text-balance text-sm leading-6 text-black/70 dark:text-white/70">
+        <p className="max-w-2xl text-balance text-lg leading-8 text-[var(--accents-5)]">
           {post.excerpt}
         </p>
       </header>
 
-      <div className="rounded-3xl border border-black/10 bg-white/55 p-7 dark:border-white/10 dark:bg-white/5 sm:p-10">
-        <div className="prose prose-zinc max-w-none dark:prose-invert prose-headings:font-display prose-headings:tracking-tight prose-p:leading-7 prose-a:font-semibold prose-a:underline prose-a:decoration-2 prose-a:underline-offset-4 prose-a:decoration-[color:var(--danube)] prose-code:rounded prose-code:bg-black/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.9em] dark:prose-code:bg-white/10">
+      <div className="border-t border-[var(--accents-2)] pt-10">
+        <div className="prose prose-zinc max-w-none dark:prose-invert prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-p:leading-7 prose-a:font-medium prose-a:text-[var(--foreground)] prose-a:underline prose-a:decoration-[var(--accents-3)] prose-a:underline-offset-2 hover:prose-a:decoration-[var(--foreground)] prose-code:bg-[var(--accents-1)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[0.9em] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeSanitize]}

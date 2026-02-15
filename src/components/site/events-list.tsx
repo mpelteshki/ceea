@@ -1,12 +1,15 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { usePathname, useSearchParams } from "next/navigation";
 import { hasConvex } from "@/lib/public-env";
+import { ArrowRight, Calendar, MapPin } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { getLocalized } from "@/lib/localization";
 
 type Kind = "flagship" | "career" | "culture" | "community";
 type EventDoc = Doc<"events">;
@@ -35,13 +38,13 @@ function KindChip({
     <Link
       href={href}
       className={[
-        "rounded-full border px-4 py-2 text-sm font-semibold tracking-wide transition-colors",
+        "inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md transition-colors",
         active
-          ? "border-black/20 bg-black text-white dark:border-white/20 dark:bg-white dark:text-black"
-          : "border-black/15 bg-white/55 text-black hover:bg-white/85 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10",
+          ? "bg-[var(--foreground)] text-[var(--background)]"
+          : "bg-[var(--accents-1)] text-[var(--accents-5)] hover:bg-[var(--accents-2)] hover:text-[var(--foreground)]",
       ].join(" ")}
     >
-      {kind === "all" ? "All" : kind}
+      {kind === "all" ? "All" : kind.charAt(0).toUpperCase() + kind.slice(1)}
     </Link>
   );
 }
@@ -49,9 +52,9 @@ function KindChip({
 export function EventsList() {
   if (!hasConvex) {
     return (
-      <div className="rounded-3xl border border-black/10 bg-white/55 p-8 text-sm text-black/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
+      <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-4 text-sm text-[var(--accents-5)] rounded-md">
         Backend not configured. Set{" "}
-        <span className="font-mono">NEXT_PUBLIC_CONVEX_URL</span> in Vercel to
+        <span className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</span> in Vercel to
         show events.
       </div>
     );
@@ -65,11 +68,14 @@ function EventsListInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const kindParam = searchParams.get("kind");
+  const locale = useLocale();
+  const t = useTranslations("EventsList");
+
   const filter: Kind | "all" =
     kindParam === "flagship" ||
-    kindParam === "career" ||
-    kindParam === "culture" ||
-    kindParam === "community"
+      kindParam === "career" ||
+      kindParam === "culture" ||
+      kindParam === "community"
       ? kindParam
       : "all";
 
@@ -81,20 +87,21 @@ function EventsListInner() {
 
   if (!events) {
     return (
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-[150px] animate-pulse rounded-2xl border border-black/10 bg-white/40 p-5 dark:border-white/10 dark:bg-white/5"
-          />
+          <div key={i} className="py-6">
+            <div className="h-5 w-1/2 animate-pulse bg-[var(--accents-2)] rounded" />
+            <div className="mt-3 h-4 w-2/3 animate-pulse bg-[var(--accents-2)] rounded" />
+            <div className="mt-6 h-4 w-1/3 animate-pulse bg-[var(--accents-2)] rounded" />
+          </div>
         ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-8">
+      <div className="flex flex-wrap gap-2 border-b border-[var(--accents-2)] pb-6">
         <KindChip
           kind="all"
           active={filter === "all"}
@@ -123,60 +130,69 @@ function EventsListInner() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-3xl border border-black/10 bg-white/55 p-8 text-sm text-black/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
-          No events yet. Admins can add events from{" "}
-          <span className="font-mono">/admin</span>.
+        <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-6 text-sm text-[var(--accents-5)] rounded-sm">
+          No events found. Admins can add events from{" "}
+          <span className="font-mono text-[var(--foreground)]">/admin</span>.
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {filtered.map((e) => (
-            <div
-              key={e._id}
-              className="group rounded-2xl border border-black/10 bg-white/55 p-6 transition-transform hover:-translate-y-1 dark:border-white/10 dark:bg-white/5"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="font-display text-2xl leading-none">
-                    {e.title}
+        <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
+          {filtered.map((e) => {
+            const { title, summary } = getLocalized(e, locale, ["title", "summary"]);
+
+            return (
+              <article key={e._id} className="group py-8">
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-display text-2xl font-semibold text-[var(--foreground)]">
+                        {title}
+                      </h3>
+                      <span className="ui-tag">{e.kind}</span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--accents-5)]">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="h-4 w-4" />
+                        <span>{fmtDate(e.startsAt)}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <MapPin className="h-4 w-4" />
+                        <span>{e.location}</span>
+                      </div>
+                    </div>
+
+                    <p className="max-w-3xl text-sm leading-6 text-[var(--accents-5)]">
+                      {summary}
+                    </p>
                   </div>
-                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-black/65 dark:text-white/65">
-                    {e.summary}
-                  </p>
+
+                  <div className="flex items-center gap-3 mt-2 md:mt-0 pt-1">
+                    {e.rsvpUrl ? (
+                      <a
+                        href={e.rsvpUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="ui-btn"
+                      >
+                        RSVP
+                      </a>
+                    ) : null}
+                    {e.moreInfoUrl ? (
+                      <a
+                        href={e.moreInfoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="ui-btn"
+                        data-variant="secondary"
+                      >
+                        {t("details")}
+                      </a>
+                    ) : null}
+                  </div>
                 </div>
-                <span className="shrink-0 rounded-full border border-black/10 bg-black/5 px-2 py-1 font-mono text-[11px] tracking-wide text-black/70 dark:border-white/10 dark:bg-white/10 dark:text-white/70">
-                  {e.kind}
-                </span>
-              </div>
-
-              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-black/60 dark:text-white/60">
-                <div className="font-mono">{fmtDate(e.startsAt)}</div>
-                <div className="truncate">{e.location}</div>
-              </div>
-
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                {e.rsvpUrl ? (
-                  <a
-                    href={e.rsvpUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-black px-4 py-2 text-sm font-semibold tracking-wide text-white transition-colors hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90"
-                  >
-                    RSVP <span className="font-mono text-[12px]">→</span>
-                  </a>
-                ) : null}
-                {e.moreInfoUrl ? (
-                  <a
-                    href={e.moreInfoUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-black/15 bg-white/60 px-4 py-2 text-sm font-semibold tracking-wide text-black transition-colors hover:bg-white/90 dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
-                  >
-                    Details <span className="font-mono text-[12px]">↗</span>
-                  </a>
-                ) : null}
-              </div>
-            </div>
-          ))}
+              </article>
+            );
+          })}
         </div>
       )}
     </div>

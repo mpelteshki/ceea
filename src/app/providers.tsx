@@ -19,7 +19,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     return hasClerk ? <ClerkProvider>{children}</ClerkProvider> : children;
   }
 
-  if (!hasClerk) return <ConvexProvider client={convex}>{children}</ConvexProvider>;
+  if (!hasClerk) {
+    return <ConvexProvider client={convex}>{children}</ConvexProvider>;
+  }
 
   return (
     <ClerkProvider>

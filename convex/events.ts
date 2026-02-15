@@ -29,7 +29,11 @@ export const listAll = query({
 export const create = mutation({
   args: {
     title: v.string(),
+    title_it: v.optional(v.string()),
+    title_bg: v.optional(v.string()),
     summary: v.string(),
+    summary_it: v.optional(v.string()),
+    summary_bg: v.optional(v.string()),
     location: v.string(),
     kind: v.union(
       v.literal("flagship"),

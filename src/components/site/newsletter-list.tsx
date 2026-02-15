@@ -1,10 +1,12 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { hasConvex } from "@/lib/public-env";
+import { useLocale, useTranslations } from "next-intl";
+import { getLocalized } from "@/lib/localization";
 
 type PostDoc = Doc<"posts">;
 
@@ -19,9 +21,9 @@ function fmtDate(ms: number) {
 export function NewsletterList() {
   if (!hasConvex) {
     return (
-      <div className="rounded-3xl border border-black/10 bg-white/55 p-8 text-sm text-black/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
+      <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-4 text-sm text-[var(--accents-5)] rounded-md">
         Backend not configured. Set{" "}
-        <span className="font-mono">NEXT_PUBLIC_CONVEX_URL</span> in Vercel to
+        <span className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</span> in Vercel to
         show newsletter posts.
       </div>
     );
@@ -34,53 +36,67 @@ function NewsletterListInner() {
   const posts = useQuery(api.posts.listPublished, { limit: 30 }) as
     | PostDoc[]
     | undefined;
+  const locale = useLocale();
+  const t = useTranslations("NewsletterList");
 
   if (!posts) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-[150px] animate-pulse rounded-2xl border border-black/10 bg-white/40 p-6 dark:border-white/10 dark:bg-white/5"
-          />
-        ))}
-      </div>
-    );
+    return <div className="text-[var(--accents-5)]">Loading posts...</div>;
   }
 
   if (posts.length === 0) {
     return (
-      <div className="rounded-3xl border border-black/10 bg-white/55 p-8 text-sm text-black/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
-        No posts yet. Admins can publish from <span className="font-mono">/admin</span>.
+      <div className="py-12 text-center text-[var(--accents-5)]">
+        No newsletter posts yet.
       </div>
     );
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {posts.map((p) => (
-        <Link
-          key={p._id}
-          href={`/newsletter/${p.slug}`}
-          className="group rounded-2xl border border-black/10 bg-white/55 p-6 transition-transform hover:-translate-y-1 dark:border-white/10 dark:bg-white/5"
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="font-display text-2xl leading-none">{p.title}</div>
-              <p className="mt-2 line-clamp-3 text-sm leading-6 text-black/65 dark:text-white/65">
-                {p.excerpt}
-              </p>
-            </div>
-            <span className="shrink-0 rounded-full border border-black/10 bg-black/5 px-2 py-1 font-mono text-[11px] tracking-wide text-black/70 dark:border-white/10 dark:bg-white/10 dark:text-white/70">
-              {p.publishedAt ? fmtDate(p.publishedAt) : "draft"}
-            </span>
-          </div>
+    <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {posts.map((p) => {
+        const { title, excerpt } = getLocalized(p, locale, ["title", "excerpt"]);
 
-          <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold tracking-wide text-black/80 group-hover:text-black dark:text-white/80 dark:group-hover:text-white">
-            Read <span className="font-mono text-[12px]">→</span>
-          </div>
-        </Link>
-      ))}
+        return (
+          <Link
+            key={p._id}
+            href={`/newsletter/${p.slug}`}
+            className="group block rounded-sm border border-[var(--accents-2)] bg-[var(--background)] p-6 transition-all hover:border-[var(--accents-4)] hover:shadow-sm"
+          >
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="rounded-full bg-[var(--accents-1)] px-2.5 py-0.5 text-xs font-medium text-[var(--foreground)]">
+                  Newsletter
+                </span>
+                <span className="text-xs text-[var(--accents-4)]">
+                  {p.publishedAt
+                    ? fmtDate(p.publishedAt)
+                    : "Draft"}
+                </span>
+              </div>
+
+              <h3 className="font-display text-lg font-bold leading-snug text-[var(--foreground)] group-hover:underline decoration-[var(--accents-3)] underline-offset-4">
+                {title}
+              </h3>
+
+              <div className="h-px w-10 bg-[var(--accents-2)] group-hover:bg-[var(--foreground)] transition-colors" />
+
+              {/* Author field removed as it's not in schema yet
+              <div className="hidden">
+                <span className="text-xs text-[var(--accents-4)]">
+                  By {p.authorName || "Team"}
+                </span>
+              </div>
+              */}
+              <p className="max-w-2xl line-clamp-3 text-sm leading-6 text-[var(--accents-5)]">
+                {excerpt}
+              </p>
+              <div className="inline-flex items-center gap-2 text-xs font-medium text-[var(--accents-6)] group-hover:text-[var(--foreground)]">
+                {t("read")} <span className="text-[10px]">→</span>
+              </div>
+            </div>
+          </Link>
+        );
+      })}
     </div>
   );
 }

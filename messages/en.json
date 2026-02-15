@@ -1,0 +1,143 @@
+{
+    "HomePage": {
+        "title": "Welcome to CEEA"
+    },
+    "Hero": {
+        "titleLine1": "Build the bridge.",
+        "titleLine2": "Culture, careers, community.",
+        "description": "A central hub for students connected to Central & Eastern Europe at Bocconi. Flagship events, career acceleration, and a network that spans the region.",
+        "eventsBtn": "Upcoming events",
+        "sponsorBtn": "Sponsor us",
+        "pillarsTitle": "Core pillars",
+        "pillar1Title": "Flagship Events",
+        "pillar1Desc": "Signature nights and panels that define the semester. High production value, high engagement.",
+        "pillar2Title": "Career Bridge",
+        "pillar2Desc": "Direct line to companies and alumni across the CEE region. Real opportunities.",
+        "pillar3Title": "Culture & Belonging",
+        "pillar3Desc": "A home away from home. Dinners, trips, and community that feels like family."
+    },
+    "Highlights": {
+        "eyebrow": "Shape",
+        "title": "Formats that work at Bocconi",
+        "p1": "The associations that feel inevitable on campus are the ones that ship. Repeatable formats. A visible identity. Clear ownership. We’re building that level of consistency around Central & Eastern Europe.",
+        "p2": "If something is worth doing, it should look like it was designed. That is the bar we hold for programming, partnerships, and comms.",
+        "feature1Title": "Association life, done right",
+        "feature1Desc": "Student-run, but structured: a cadence that compounds, roles that are real, and a system that makes people trust you.",
+        "feature1Cta": "What we stand for",
+        "feature2Title": "Partner-ready by default",
+        "feature2Desc": "A clean offer, a curated audience, and formats that scale from workshops to flagship nights. Sponsorship should be simple.",
+        "feature2Cta": "Become a partner",
+        "format1Title": "Flagship night",
+        "format1Desc": "One signature event per semester: speakers + culture, executed like a product launch.",
+        "format2Title": "Career bridge",
+        "format2Desc": "Workshops, interview prep, and company touchpoints for CEE-facing teams.",
+        "format3Title": "Small formats",
+        "format3Desc": "Dinners, tandems, city walks. Belonging is built in rooms, not feeds."
+    },
+    "UpcomingEvents": {
+        "eyebrow": "Calendar",
+        "title": "Moments worth showing up for.",
+        "viewFull": "View full calendar"
+    },
+    "LatestDispatch": {
+        "eyebrow": "Dispatch",
+        "title": "Latest newsletter posts",
+        "viewAll": "View all posts",
+        "readPost": "Read post"
+    },
+    "EventsList": {
+        "details": "Details",
+        "filterAll": "All",
+        "filterFlagship": "Flagship",
+        "filterCareer": "Career",
+        "filterCulture": "Culture",
+        "filterCommunity": "Community"
+    },
+    "NewsletterList": {
+        "read": "Read"
+    },
+    "Footer": {
+        "tagline": "Central & Eastern European Association",
+        "legal": "All rights reserved.",
+        "sitemap": "Sitemap",
+        "connect": "Connect"
+    },
+    "Navigation": {
+        "home": "Home",
+        "team": "Team",
+        "gallery": "Gallery",
+        "projects": "Projects",
+        "joinUs": "Join Us",
+        "contacts": "Contacts",
+        "events": "Events",
+        "newsletter": "Newsletter",
+        "about": "About"
+    },
+    "TeamPage": {
+        "title": "Our Team",
+        "members": "Current Members",
+        "alumni": "Alumni",
+        "connect": "Connect"
+    },
+    "GalleryPage": {
+        "title": "Gallery"
+    },
+    "ProjectsPage": {
+        "title": "Our Projects",
+        "learnMore": "Learn More",
+        "readMore": "Read more",
+        "readLess": "Read less"
+    },
+    "JoinUsPage": {
+        "title": "Join Us",
+        "content": "We are always looking for new members to join our team. Connect with us to learn more about recruitment."
+    },
+    "ContactPage": {
+        "title": "Contact Us",
+        "email": "Email",
+        "followUs": "Follow Us"
+    },
+    "AboutPage": {
+        "kicker": "Mission",
+        "title": "What CEEA is.",
+        "mission": "A student association at Bocconi is a structured, student-run organization that builds community and creates programming on campus: events, partnerships, and a visible presence in the student ecosystem. CEEA focuses that energy around Central & Eastern Europe.",
+        "pillarsEyebrow": "Pillars",
+        "pillarsTitle": "Three things we refuse to be mediocre at",
+        "pillar1Title": "Programming",
+        "pillar1Body": "A consistent cadence: flagship events, smaller formats, and collaborations with other Bocconi associations.",
+        "pillar2Title": "Community",
+        "pillar2Body": "Belonging for students connected to CEE, and a curious doorway for everyone else.",
+        "pillar3Title": "Career bridge",
+        "pillar3Body": "Company touchpoints and alumni connections, especially where CEE context is an advantage.",
+        "realityEyebrow": "How it works",
+        "realityTitle": "The Bocconi association reality",
+        "reality1Title": "Recruitment cycles",
+        "reality1Body": "Associations typically recruit at the start of semesters and during on-campus association fairs. Consistency and clear roles matter more than huge headcount.",
+        "reality2Title": "Execution culture",
+        "reality2Body": "The strongest associations operate like a small studio: defined owners, repeatable formats, and a high bar for comms, logistics, and partner experience.",
+        "reality3Title": "Collaboration is normal",
+        "reality3Body": "Joint events with other associations are common and high-leverage: they extend reach, share best practices, and create more interesting formats.",
+        "reality4Title": "Brand is a differentiator",
+        "reality4Body": "In a campus full of posters, your visual system is part of your credibility. A consistent aesthetic signals seriousness, even for social events.",
+        "peopleEyebrow": "Team",
+        "peopleTitle": "People",
+        "peopleBody": "This page is intentionally simple for now. In the admin dashboard we can add a Team table next, and render committee members here with photos, roles, and LinkedIn links.",
+        "peopleNote": "Suggested sections: President, Vice President, Events, Partnerships, Marketing, Finance, Operations, and Alumni Relations.",
+        "partnersEyebrow": "Collaborate",
+        "partnersTitle": "Partners",
+        "partnersBody": "We collaborate with companies, alumni, and other Bocconi associations. If you want a curated audience and a clean execution, we should talk.",
+        "partner1Title": "Workshop",
+        "partner1Body": "A focused session (60-90 min) with real value: case, hiring, or region-specific insights.",
+        "partner2Title": "Flagship sponsorship",
+        "partner2Body": "Brand placement + speaking moment + recruiting angle, aligned with a signature event.",
+        "partner3Title": "Community support",
+        "partner3Body": "Enable small formats: dinners, cultural calendar moments, and student travel experiences.",
+        "contactEyebrow": "Reach us",
+        "contactTitle": "Contact",
+        "contactBody": "For sponsorships, speakers, and collaborations: send a clear ask and a timeline. We reply faster when the brief is concrete.",
+        "contact1Title": "Partnerships",
+        "contact1BodyPre": "Include: format (workshop/speaker/flagship), date window, and audience.",
+        "contact2Title": "General",
+        "contact2Body": "Instagram/LinkedIn placeholders can go here once ready."
+    }
+}

@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -15,9 +17,9 @@ type PostDoc = Doc<"posts">;
 export function AdminDashboard() {
   if (!hasConvex) {
     return (
-      <div className="rounded-3xl border border-black/10 bg-white/55 p-8 text-sm text-black/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
+      <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-4 text-sm text-[var(--accents-5)] rounded-md">
         Convex backend not configured. Set{" "}
-        <span className="font-mono">NEXT_PUBLIC_CONVEX_URL</span> and Convex
+        <span className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</span> and Convex
         deployment env vars in Vercel.
       </div>
     );
@@ -44,7 +46,11 @@ function AdminDashboardInner() {
   const removePost = useMutation(api.posts.remove);
 
   const [title, setTitle] = useState("");
+  const [title_it, setTitleIt] = useState("");
+  const [title_bg, setTitleBg] = useState("");
   const [summary, setSummary] = useState("");
+  const [summary_it, setSummaryIt] = useState("");
+  const [summary_bg, setSummaryBg] = useState("");
   const [location, setLocation] = useState("Bocconi University");
   const [kind, setKind] = useState<Kind>("flagship");
   const [startsAt, setStartsAt] = useState(() =>
@@ -54,8 +60,12 @@ function AdminDashboardInner() {
   const [moreInfoUrl, setMoreInfoUrl] = useState("");
 
   const [postTitle, setPostTitle] = useState("");
+  const [postTitle_it, setPostTitleIt] = useState("");
+  const [postTitle_bg, setPostTitleBg] = useState("");
   const [postSlug, setPostSlug] = useState("");
   const [postExcerpt, setPostExcerpt] = useState("");
+  const [postExcerpt_it, setPostExcerptIt] = useState("");
+  const [postExcerpt_bg, setPostExcerptBg] = useState("");
   const [postBody, setPostBody] = useState(
     `# Title\n\nWrite in **Markdown**.\n\n- Keep it concrete\n- Add links\n`,
   );
@@ -79,28 +89,44 @@ function AdminDashboardInner() {
 
   return (
     <div className="space-y-10">
-      <header className="space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/5 px-3 py-1 text-xs uppercase tracking-[0.22em] text-black/70 dark:border-white/10 dark:bg-white/10 dark:text-white/70">
-          <span className="font-mono text-[11px]">Admin</span>
+      <header className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <div className="ui-kicker">Admin</div>
+            <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
+              Dashboard
+            </h1>
+          </div>
         </div>
-        <h1 className="font-display text-5xl leading-[0.95] tracking-tight sm:text-6xl">
-          Dashboard
-        </h1>
-        <p className="max-w-2xl text-sm leading-6 text-black/70 dark:text-white/70">
-          Minimal admin for now: create and remove events. Mutations are
-          protected server-side in Convex via `ADMIN_EMAILS`.
+        <p className="max-w-2xl text-sm leading-6 text-[var(--accents-5)]">
+          Manage your site's content. All changes are synced in real-time.
         </p>
+
+        <div className="grid grid-cols-2 gap-4 pt-4 sm:grid-cols-4">
+          {[
+            { label: "Events", value: events?.length ?? "..." },
+            { label: "Posts", value: posts?.length ?? "..." },
+            { label: "Published", value: posts?.filter(p => p.publishedAt).length ?? "..." },
+            { label: "Drafts", value: posts?.filter(p => !p.publishedAt).length ?? "..." },
+          ].map((stat) => (
+            <div key={stat.label} className="rounded-lg border border-[var(--accents-2)] bg-[var(--accents-1)] p-4">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--accents-4)]">{stat.label}</div>
+              <div className="mt-1 text-2xl font-bold font-display">{stat.value}</div>
+            </div>
+          ))}
+        </div>
       </header>
 
-      <div className="flex flex-wrap gap-2">
+
+      <div className="flex gap-6 border-b border-[var(--accents-2)]">
         <button
           type="button"
           onClick={() => router.replace("/admin?tab=events", { scroll: false })}
           className={[
-            "rounded-full border px-4 py-2 text-sm font-semibold tracking-wide transition-colors",
+            "border-b-2 pb-3 text-sm font-medium transition-colors",
             tab === "events"
-              ? "border-black/20 bg-black text-white dark:border-white/20 dark:bg-white dark:text-black"
-              : "border-black/15 bg-white/55 text-black hover:bg-white/85 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10",
+              ? "border-[var(--foreground)] text-[var(--foreground)]"
+              : "border-transparent text-[var(--accents-5)] hover:text-[var(--foreground)]",
           ].join(" ")}
         >
           Events
@@ -111,10 +137,10 @@ function AdminDashboardInner() {
             router.replace("/admin?tab=newsletter", { scroll: false })
           }
           className={[
-            "rounded-full border px-4 py-2 text-sm font-semibold tracking-wide transition-colors",
+            "border-b-2 pb-3 text-sm font-medium transition-colors",
             tab === "posts"
-              ? "border-black/20 bg-black text-white dark:border-white/20 dark:bg-white dark:text-black"
-              : "border-black/15 bg-white/55 text-black hover:bg-white/85 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10",
+              ? "border-[var(--foreground)] text-[var(--foreground)]"
+              : "border-transparent text-[var(--accents-5)] hover:text-[var(--foreground)]",
           ].join(" ")}
         >
           Newsletter
@@ -123,205 +149,260 @@ function AdminDashboardInner() {
 
       {tab === "events" ? (
         <>
-          <section className="rounded-3xl border border-black/10 bg-white/55 p-7 dark:border-white/10 dark:bg-white/5">
-        <div className="font-display text-2xl leading-none">Create event</div>
-        <div className="mt-5 grid gap-4 md:grid-cols-2">
-          <Field label="Title">
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Danube Dialogues: Growth & Identity"
-              name="event_title"
-              autoComplete="off"
-              className="w-full rounded-xl border border-black/15 bg-white/70 px-4 py-3 text-sm focus:border-black/30 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus:border-white/30 dark:focus-visible:ring-blue-400/40 dark:focus-visible:ring-offset-[color:var(--paper)]"
-            />
-          </Field>
-          <Field label="Kind">
-            <select
-              value={kind}
-              onChange={(e) => setKind(e.target.value as Kind)}
-              name="event_kind"
-              autoComplete="off"
-              className="w-full rounded-xl border border-black/15 bg-white/70 px-4 py-3 text-sm focus:border-black/30 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus:border-white/30 dark:focus-visible:ring-blue-400/40 dark:focus-visible:ring-offset-[color:var(--paper)]"
-            >
-              <option value="flagship">flagship</option>
-              <option value="career">career</option>
-              <option value="culture">culture</option>
-              <option value="community">community</option>
-            </select>
-          </Field>
-          <Field label="Starts at">
-            <input
-              type="datetime-local"
-              value={startsAt}
-              onChange={(e) => setStartsAt(e.target.value)}
-              name="event_starts_at"
-              autoComplete="off"
-              className="w-full rounded-xl border border-black/15 bg-white/70 px-4 py-3 text-sm focus:border-black/30 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus:border-white/30 dark:focus-visible:ring-blue-400/40 dark:focus-visible:ring-offset-[color:var(--paper)]"
-            />
-          </Field>
-          <Field label="Location">
-            <input
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Velodromo Building, Room N01"
-              name="event_location"
-              autoComplete="off"
-              className="w-full rounded-xl border border-black/15 bg-white/70 px-4 py-3 text-sm focus:border-black/30 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus:border-white/30 dark:focus-visible:ring-blue-400/40 dark:focus-visible:ring-offset-[color:var(--paper)]"
-            />
-          </Field>
-          <Field label="Summary" full>
-            <textarea
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              rows={4}
-              placeholder="A speaker night about building cross-border careers between Milan and the region…"
-              name="event_summary"
-              autoComplete="off"
-              className="w-full resize-none rounded-xl border border-black/15 bg-white/70 px-4 py-3 text-sm focus:border-black/30 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus:border-white/30 dark:focus-visible:ring-blue-400/40 dark:focus-visible:ring-offset-[color:var(--paper)]"
-            />
-          </Field>
-          <Field label="RSVP URL">
-            <input
-              value={rsvpUrl}
-              onChange={(e) => setRsvpUrl(e.target.value)}
-              type="url"
-              inputMode="url"
-              placeholder="https://…"
-              name="event_rsvp_url"
-              autoComplete="off"
-              spellCheck={false}
-              className="w-full rounded-xl border border-black/15 bg-white/70 px-4 py-3 text-sm focus:border-black/30 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus:border-white/30 dark:focus-visible:ring-blue-400/40 dark:focus-visible:ring-offset-[color:var(--paper)]"
-            />
-          </Field>
-          <Field label="More info URL">
-            <input
-              value={moreInfoUrl}
-              onChange={(e) => setMoreInfoUrl(e.target.value)}
-              type="url"
-              inputMode="url"
-              placeholder="https://…"
-              name="event_more_info_url"
-              autoComplete="off"
-              spellCheck={false}
-              className="w-full rounded-xl border border-black/15 bg-white/70 px-4 py-3 text-sm focus:border-black/30 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus:border-white/30 dark:focus-visible:ring-blue-400/40 dark:focus-visible:ring-offset-[color:var(--paper)]"
-            />
-          </Field>
-        </div>
-
-        <div className="mt-6 flex items-center gap-3">
-          <button
-            type="button"
-            disabled={!canSubmit}
-            onClick={async () => {
-              const ms = new Date(startsAt).getTime();
-              await createEvent({
-                title: title.trim(),
-                summary: summary.trim(),
-                location: location.trim(),
-                kind,
-                startsAt: ms,
-                rsvpUrl: rsvpUrl.trim() || undefined,
-                moreInfoUrl: moreInfoUrl.trim() || undefined,
-              });
-              setTitle("");
-              setSummary("");
-              setRsvpUrl("");
-              setMoreInfoUrl("");
-            }}
-            className={[
-              "rounded-full px-6 py-3 text-sm font-semibold tracking-wide transition-colors",
-              canSubmit
-                ? "bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90"
-                : "cursor-not-allowed bg-black/20 text-white/70 dark:bg-white/15 dark:text-white/60",
-            ].join(" ")}
-          >
-            Create
-          </button>
-          <div className="text-xs text-black/60 dark:text-white/60">
-            If this fails: check Clerk JWT + Convex auth config, and `ADMIN_EMAILS`.
-          </div>
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <div className="font-display text-2xl leading-none">Events</div>
-            <div className="mt-2 text-sm text-black/65 dark:text-white/65">
-              {events ? `${events.length} total` : "Loading…"}
+          <section className="space-y-6">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-semibold text-[var(--foreground)]">Create event</h2>
+                <p className="mt-1 text-sm text-[var(--accents-5)]">
+                  Keep it short. The public pages are deliberately minimal.
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {!events ? (
-          <div className="grid gap-3 md:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-[110px] animate-pulse rounded-2xl border border-black/10 bg-white/40 p-6 dark:border-white/10 dark:bg-white/5"
-              />
-            ))}
-          </div>
-        ) : events.length === 0 ? (
-          <div className="rounded-3xl border border-black/10 bg-white/55 p-8 text-sm text-black/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
-            No events yet.
-          </div>
-        ) : (
-          <div className="grid gap-3 md:grid-cols-2">
-            {events.map((e) => (
-              <div
-                key={e._id}
-                className="rounded-2xl border border-black/10 bg-white/55 p-6 dark:border-white/10 dark:bg-white/5"
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Title (English)">
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Danube Dialogues: Growth & Identity"
+                  name="event_title"
+                  autoComplete="off"
+                  className="ui-input"
+                />
+              </Field>
+              <Field label="Title (Italian)">
+                <input
+                  value={title_it}
+                  onChange={(e) => setTitleIt(e.target.value)}
+                  placeholder="Dialoghi sul Danubio"
+                  name="event_title_it"
+                  autoComplete="off"
+                  className="ui-input"
+                />
+              </Field>
+              <Field label="Title (Bulgarian)">
+                <input
+                  value={title_bg}
+                  onChange={(e) => setTitleBg(e.target.value)}
+                  placeholder="Дунавски диалози"
+                  name="event_title_bg"
+                  autoComplete="off"
+                  className="ui-input"
+                />
+              </Field>
+              <Field label="Kind">
+                <select
+                  value={kind}
+                  onChange={(e) => setKind(e.target.value as Kind)}
+                  name="event_kind"
+                  autoComplete="off"
+                  className="ui-input"
+                >
+                  <option value="flagship">flagship</option>
+                  <option value="career">career</option>
+                  <option value="culture">culture</option>
+                  <option value="community">community</option>
+                </select>
+              </Field>
+              <Field label="Starts at">
+                <input
+                  type="datetime-local"
+                  value={startsAt}
+                  onChange={(e) => setStartsAt(e.target.value)}
+                  name="event_starts_at"
+                  autoComplete="off"
+                  className="ui-input"
+                />
+              </Field>
+              <Field label="Location">
+                <input
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Velodromo Building, Room N01"
+                  name="event_location"
+                  autoComplete="off"
+                  className="ui-input"
+                />
+              </Field>
+              <Field label="Summary (English)" full>
+                <textarea
+                  value={summary}
+                  onChange={(e) => setSummary(e.target.value)}
+                  rows={3}
+                  placeholder="A speaker night about building cross-border careers..."
+                  name="event_summary"
+                  autoComplete="off"
+                  className="ui-input resize-none"
+                />
+              </Field>
+              <Field label="Summary (Italian)" full>
+                <textarea
+                  value={summary_it}
+                  onChange={(e) => setSummaryIt(e.target.value)}
+                  rows={3}
+                  placeholder="Una serata di discussione..."
+                  name="event_summary_it"
+                  autoComplete="off"
+                  className="ui-input resize-none"
+                />
+              </Field>
+              <Field label="Summary (Bulgarian)" full>
+                <textarea
+                  value={summary_bg}
+                  onChange={(e) => setSummaryBg(e.target.value)}
+                  rows={3}
+                  placeholder="Вечер на дискусии..."
+                  name="event_summary_bg"
+                  autoComplete="off"
+                  className="ui-input resize-none"
+                />
+              </Field>
+              <Field label="RSVP URL">
+                <input
+                  value={rsvpUrl}
+                  onChange={(e) => setRsvpUrl(e.target.value)}
+                  type="url"
+                  inputMode="url"
+                  placeholder="https://..."
+                  name="event_rsvp_url"
+                  autoComplete="off"
+                  spellCheck={false}
+                  className="ui-input"
+                />
+              </Field>
+              <Field label="More info URL">
+                <input
+                  value={moreInfoUrl}
+                  onChange={(e) => setMoreInfoUrl(e.target.value)}
+                  type="url"
+                  inputMode="url"
+                  placeholder="https://..."
+                  name="event_more_info_url"
+                  autoComplete="off"
+                  spellCheck={false}
+                  className="ui-input"
+                />
+              </Field>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 pt-4">
+              <button
+                type="button"
+                disabled={!canSubmit}
+                onClick={async () => {
+                  const ms = new Date(startsAt).getTime();
+                  await createEvent({
+                    title: title.trim(),
+                    title_it: title_it.trim() || undefined,
+                    title_bg: title_bg.trim() || undefined,
+                    summary: summary.trim(),
+                    summary_it: summary_it.trim() || undefined,
+                    summary_bg: summary_bg.trim() || undefined,
+                    location: location.trim(),
+                    kind,
+                    startsAt: ms,
+                    rsvpUrl: rsvpUrl.trim() || undefined,
+                    moreInfoUrl: moreInfoUrl.trim() || undefined,
+                  });
+                  setTitle("");
+                  setTitleIt("");
+                  setTitleBg("");
+                  setSummary("");
+                  setSummaryIt("");
+                  setSummaryBg("");
+                  setRsvpUrl("");
+                  setMoreInfoUrl("");
+                }}
+                className={["ui-btn", !canSubmit ? "opacity-50 cursor-not-allowed" : ""].join(" ")}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="font-display text-2xl leading-none">
-                      {e.title}
-                    </div>
-                    <div className="mt-2 line-clamp-2 text-sm leading-6 text-black/65 dark:text-white/65">
-                      {e.summary}
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-black/60 dark:text-white/60">
-                      <span className="font-mono">
-                        {new Date(e.startsAt).toISOString()}
-                      </span>
-                      <span>{e.location}</span>
-                    </div>
-                  </div>
-                  <span className="shrink-0 rounded-full border border-black/10 bg-black/5 px-2 py-1 font-mono text-[11px] tracking-wide text-black/70 dark:border-white/10 dark:bg-white/10 dark:text-white/70">
-                    {e.kind}
-                  </span>
-                </div>
+                Create <span className="text-[10px]">→</span>
+              </button>
+              <div className="text-xs text-[var(--accents-5)]">
+                If this fails: check Clerk JWT + Convex auth config, and `ADMIN_EMAILS`.
+              </div>
+            </div>
+          </section>
 
-                <div className="mt-5 flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!confirm("Delete this event?")) return;
-                      removeEvent({ id: e._id });
-                    }}
-                    className="rounded-full border border-black/15 bg-white/70 px-4 py-2 text-sm font-semibold tracking-wide text-black transition-colors hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
-                  >
-                    Delete
-                  </button>
+          <section className="space-y-4 pt-8 border-t border-[var(--accents-2)]">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <h2 className="text-xl font-semibold text-[var(--foreground)]">Events</h2>
+                <div className="mt-1 text-sm text-[var(--accents-5)]">
+                  {events ? `${events.length} total` : "Loading…"}
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </section>
+            </div>
+
+            {!events ? (
+              <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="py-6">
+                    <div className="h-5 w-2/3 animate-pulse bg-[var(--accents-2)] rounded" />
+                    <div className="mt-3 h-4 w-1/2 animate-pulse bg-[var(--accents-2)] rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : events.length === 0 ? (
+              <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-8 text-center text-sm text-[var(--accents-5)] rounded-md">
+                No events found. Create one to get started.
+              </div>
+            ) : (
+              <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
+                <AnimatePresence initial={false}>
+                  {events.map((e) => (
+                    <motion.div
+                      key={e._id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="group grid gap-4 py-6 md:grid-cols-[1fr_auto] md:items-start transition-colors hover:bg-[var(--accents-1)]/50 -mx-4 px-4 rounded-lg"
+                    >
+                      <div className="min-w-0 space-y-2">
+                        <div className="flex items-baseline justify-between gap-4 md:block">
+                          <h3 className="font-display text-xl font-semibold text-[var(--foreground)]">
+                            {e.title}
+                          </h3>
+                          <span className="ui-tag md:mt-2">{e.kind}</span>
+                        </div>
+                        <p className="line-clamp-2 text-sm leading-6 text-[var(--accents-5)]">
+                          {e.summary}
+                        </p>
+                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-mono uppercase tracking-wider text-[var(--accents-4)]">
+                          <span>{new Date(e.startsAt).toLocaleDateString()} at {new Date(e.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          <span>{e.location}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-start gap-4 md:justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!confirm("Delete this event?")) return;
+                            removeEvent({ id: e._id });
+                          }}
+                          className="ui-btn py-2 px-4 bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-all font-bold"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
+
+          </section>
         </>
       ) : (
         <>
-          <section className="rounded-3xl border border-black/10 bg-white/55 p-7 dark:border-white/10 dark:bg-white/5">
+          <section className="space-y-6">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
-                <div className="font-display text-2xl leading-none">
+                <h2 className="text-xl font-semibold text-[var(--foreground)]">
                   {editingPostId ? "Edit post" : "Create post"}
-                </div>
-                <div className="mt-2 text-sm text-black/65 dark:text-white/65">
-                  Renders publicly at <span className="font-mono">/newsletter</span>.
+                </h2>
+                <div className="mt-1 text-sm text-[var(--accents-5)]">
+                  Renders publicly at <span className="font-mono text-[var(--foreground)]">/newsletter</span>.
                 </div>
               </div>
               {editingPostId ? (
@@ -336,22 +417,43 @@ function AdminDashboardInner() {
                       `# Title\n\nWrite in **Markdown**.\n\n- Keep it concrete\n- Add links\n`,
                     );
                   }}
-                  className="rounded-full border border-black/15 bg-white/70 px-4 py-2 text-sm font-semibold tracking-wide text-black transition-colors hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                  className="ui-btn"
+                  data-variant="secondary"
                 >
                   New draft
                 </button>
               ) : null}
             </div>
 
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <Field label="Title">
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Title (English)">
                 <input
                   value={postTitle}
                   onChange={(e) => setPostTitle(e.target.value)}
                   placeholder="A new semester, a tighter cadence"
                   name="post_title"
                   autoComplete="off"
-                  className="w-full rounded-xl border border-black/15 bg-white/70 px-4 py-3 text-sm focus:border-black/30 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus:border-white/30 dark:focus-visible:ring-blue-400/40 dark:focus-visible:ring-offset-[color:var(--paper)]"
+                  className="ui-input"
+                />
+              </Field>
+              <Field label="Title (Italian)">
+                <input
+                  value={postTitle_it}
+                  onChange={(e) => setPostTitleIt(e.target.value)}
+                  placeholder="Un nuovo semestre..."
+                  name="post_title_it"
+                  autoComplete="off"
+                  className="ui-input"
+                />
+              </Field>
+              <Field label="Title (Bulgarian)">
+                <input
+                  value={postTitle_bg}
+                  onChange={(e) => setPostTitleBg(e.target.value)}
+                  placeholder="Нов семестър..."
+                  name="post_title_bg"
+                  autoComplete="off"
+                  className="ui-input"
                 />
               </Field>
               <Field label="Slug (optional override)">
@@ -362,18 +464,40 @@ function AdminDashboardInner() {
                   name="post_slug_override"
                   autoComplete="off"
                   spellCheck={false}
-                  className="w-full rounded-xl border border-black/15 bg-white/70 px-4 py-3 text-sm focus:border-black/30 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus:border-white/30 dark:focus-visible:ring-blue-400/40 dark:focus-visible:ring-offset-[color:var(--paper)]"
+                  className="ui-input"
                 />
               </Field>
-              <Field label="Excerpt" full>
+              <Field label="Excerpt (English)" full>
                 <textarea
                   value={postExcerpt}
                   onChange={(e) => setPostExcerpt(e.target.value)}
-                  rows={3}
-                  placeholder="One paragraph summary for the newsletter index…"
+                  rows={2}
+                  placeholder="One paragraph summary..."
                   name="post_excerpt"
                   autoComplete="off"
-                  className="w-full resize-none rounded-xl border border-black/15 bg-white/70 px-4 py-3 text-sm focus:border-black/30 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus:border-white/30 dark:focus-visible:ring-blue-400/40 dark:focus-visible:ring-offset-[color:var(--paper)]"
+                  className="ui-input resize-none"
+                />
+              </Field>
+              <Field label="Excerpt (Italian)" full>
+                <textarea
+                  value={postExcerpt_it}
+                  onChange={(e) => setPostExcerptIt(e.target.value)}
+                  rows={2}
+                  placeholder="Riassunto in un paragrafo..."
+                  name="post_excerpt_it"
+                  autoComplete="off"
+                  className="ui-input resize-none"
+                />
+              </Field>
+              <Field label="Excerpt (Bulgarian)" full>
+                <textarea
+                  value={postExcerpt_bg}
+                  onChange={(e) => setPostExcerptBg(e.target.value)}
+                  rows={2}
+                  placeholder="Резюме..."
+                  name="post_excerpt_bg"
+                  autoComplete="off"
+                  className="ui-input resize-none"
                 />
               </Field>
               <Field label="Body (Markdown)" full>
@@ -384,12 +508,12 @@ function AdminDashboardInner() {
                   name="post_body_markdown"
                   autoComplete="off"
                   spellCheck={false}
-                  className="w-full resize-none rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-mono text-[12px] leading-5 focus:border-black/30 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:focus:border-white/30 dark:focus-visible:ring-blue-400/40 dark:focus-visible:ring-offset-[color:var(--paper)]"
+                  className="ui-input resize-none font-mono text-[12px] leading-5"
                 />
               </Field>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 pt-4">
               <button
                 type="button"
                 disabled={!canSubmitPost}
@@ -399,25 +523,28 @@ function AdminDashboardInner() {
                     await updateDraft({
                       id: editingPostId,
                       title: postTitle.trim(),
+                      title_it: postTitle_it.trim() || undefined,
+                      title_bg: postTitle_bg.trim() || undefined,
                       excerpt: postExcerpt.trim(),
+                      excerpt_it: postExcerpt_it.trim() || undefined,
+                      excerpt_bg: postExcerpt_bg.trim() || undefined,
                       body: postBody,
                     });
                     return;
                   }
                   const id = await createDraft({
                     title: postTitle.trim(),
+                    title_it: postTitle_it.trim() || undefined,
+                    title_bg: postTitle_bg.trim() || undefined,
                     excerpt: postExcerpt.trim(),
+                    excerpt_it: postExcerpt_it.trim() || undefined,
+                    excerpt_bg: postExcerpt_bg.trim() || undefined,
                     body: postBody,
                     slug: postSlug.trim() || undefined,
                   });
                   setEditingPostId(id);
                 }}
-                className={[
-                  "rounded-full px-6 py-3 text-sm font-semibold tracking-wide transition-colors",
-                  canSubmitPost
-                    ? "bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90"
-                    : "cursor-not-allowed bg-black/20 text-white/70 dark:bg-white/15 dark:text-white/60",
-                ].join(" ")}
+                className={["ui-btn", !canSubmitPost ? "opacity-50 cursor-not-allowed" : ""].join(" ")}
               >
                 {editingPostId ? "Save changes" : "Create draft"}
               </button>
@@ -427,126 +554,135 @@ function AdminDashboardInner() {
                   <button
                     type="button"
                     onClick={() => publish({ id: editingPostId })}
-                    className="rounded-full border border-black/15 bg-white/70 px-5 py-3 text-sm font-semibold tracking-wide text-black transition-colors hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                    className="ui-btn"
+                    data-variant="secondary"
                   >
                     Publish
                   </button>
                   <button
                     type="button"
                     onClick={() => unpublish({ id: editingPostId })}
-                    className="rounded-full border border-black/15 bg-white/70 px-5 py-3 text-sm font-semibold tracking-wide text-black transition-colors hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                    className="ui-btn"
+                    data-variant="secondary"
                   >
                     Unpublish
                   </button>
                 </>
               ) : null}
 
-              <div className="text-xs text-black/60 dark:text-white/60">
+              <div className="text-xs text-[var(--accents-5)]">
                 Tip: keep the excerpt short; the body can be longer.
               </div>
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="space-y-4 pt-8 border-t border-[var(--accents-2)]">
             <div>
-              <div className="font-display text-2xl leading-none">Posts</div>
-              <div className="mt-2 text-sm text-black/65 dark:text-white/65">
+              <h2 className="text-xl font-semibold text-[var(--foreground)]">Posts</h2>
+              <div className="mt-1 text-sm text-[var(--accents-5)]">
                 {posts ? `${posts.length} total` : "Loading…"}
               </div>
             </div>
 
             {!posts ? (
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-[110px] animate-pulse rounded-2xl border border-black/10 bg-white/40 p-6 dark:border-white/10 dark:bg-white/5"
-                  />
+                  <div key={i} className="py-6">
+                    <div className="h-5 w-2/3 animate-pulse bg-[var(--accents-2)] rounded" />
+                    <div className="mt-3 h-4 w-1/2 animate-pulse bg-[var(--accents-2)] rounded" />
+                    <div className="mt-6 h-4 w-1/3 animate-pulse bg-[var(--accents-2)] rounded" />
+                  </div>
                 ))}
               </div>
             ) : posts.length === 0 ? (
-              <div className="rounded-3xl border border-black/10 bg-white/55 p-8 text-sm text-black/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
+              <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-4 text-sm text-[var(--accents-5)] rounded-md">
                 No posts yet.
               </div>
             ) : (
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
                 {posts.map((p) => {
                   const isPublished = p.publishedAt != null;
                   return (
                     <div
                       key={p._id}
-                      className="rounded-2xl border border-black/10 bg-white/55 p-6 dark:border-white/10 dark:bg-white/5"
+                      className="grid gap-4 py-6 md:grid-cols-[1fr_auto] md:items-start"
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <div className="font-display text-2xl leading-none">
+                      <div className="min-w-0 space-y-2">
+                        <div className="flex items-baseline justify-between gap-4 md:block">
+                          <h3 className="font-display text-xl font-semibold text-[var(--foreground)]">
                             {p.title}
-                          </div>
-                          <div className="mt-2 line-clamp-2 text-sm leading-6 text-black/65 dark:text-white/65">
-                            {p.excerpt}
-                          </div>
-                          <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-black/60 dark:text-white/60">
-                            <span className="font-mono">/{p.slug}</span>
-                            <span className="font-mono">
-                              {isPublished
-                                ? `published ${new Date(p.publishedAt!).toISOString()}`
-                                : "draft"}
-                            </span>
-                          </div>
+                          </h3>
+                          <span
+                            className={[
+                              "ui-tag md:mt-2",
+                              isPublished
+                                ? "border-green-200 bg-green-50 text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-300"
+                                : "text-[var(--accents-5)]",
+                            ].join(" ")}
+                          >
+                            {isPublished ? "published" : "draft"}
+                          </span>
                         </div>
-                        <span
-                          className={[
-                            "shrink-0 rounded-full border px-2 py-1 font-mono text-[11px] tracking-wide",
-                            isPublished
-                              ? "border-[color:var(--danube)]/30 bg-[color:var(--danube)]/12 text-black/80 dark:text-white/80"
-                              : "border-black/10 bg-black/5 text-black/70 dark:border-white/10 dark:bg-white/10 dark:text-white/70",
-                          ].join(" ")}
-                        >
-                          {isPublished ? "published" : "draft"}
-                        </span>
-                      </div>
 
-                      <div className="mt-5 flex flex-wrap items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingPostId(p._id);
-                            setPostTitle(p.title);
-                            setPostSlug("");
-                            setPostExcerpt(p.excerpt);
-                            setPostBody(p.body);
-                          }}
-                          className="rounded-full border border-black/15 bg-white/70 px-4 py-2 text-sm font-semibold tracking-wide text-black transition-colors hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
-                        >
-                          Edit
-                        </button>
-                        {isPublished ? (
+                        <p className="line-clamp-2 text-sm leading-6 text-[var(--accents-5)]">
+                          {p.excerpt}
+                        </p>
+
+                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-mono uppercase tracking-wider text-[var(--accents-4)]">
+                          <span>/{p.slug}</span>
+                          <span>
+                            {isPublished
+                              ? `published ${new Date(p.publishedAt!).toISOString()}`
+                              : "draft"}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2">
                           <button
                             type="button"
-                            onClick={() => unpublish({ id: p._id })}
-                            className="rounded-full border border-black/15 bg-white/70 px-4 py-2 text-sm font-semibold tracking-wide text-black transition-colors hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                            onClick={() => {
+                              setEditingPostId(p._id);
+                              setPostTitle(p.title);
+                              setPostTitleIt(p.title_it ?? "");
+                              setPostTitleBg(p.title_bg ?? "");
+                              setPostSlug("");
+                              setPostExcerpt(p.excerpt);
+                              setPostExcerptIt(p.excerpt_it ?? "");
+                              setPostExcerptBg(p.excerpt_bg ?? "");
+                              setPostBody(p.body);
+                            }}
+                            className="ui-link text-sm"
                           >
-                            Unpublish
+                            Edit
                           </button>
-                        ) : (
+                          {isPublished ? (
+                            <button
+                              type="button"
+                              onClick={() => unpublish({ id: p._id })}
+                              className="ui-link text-sm"
+                            >
+                              Unpublish
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => publish({ id: p._id })}
+                              className="ui-link text-sm"
+                            >
+                              Publish
+                            </button>
+                          )}
                           <button
                             type="button"
-                            onClick={() => publish({ id: p._id })}
-                            className="rounded-full border border-black/15 bg-white/70 px-4 py-2 text-sm font-semibold tracking-wide text-black transition-colors hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                            onClick={() => {
+                              if (!confirm("Delete this post?")) return;
+                              removePost({ id: p._id });
+                            }}
+                            className="ui-link text-sm text-red-600 hover:text-red-700 decoration-red-200 hover:decoration-red-600"
                           >
-                            Publish
+                            Delete
                           </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (!confirm("Delete this post?")) return;
-                            removePost({ id: p._id });
-                          }}
-                          className="rounded-full border border-black/15 bg-white/70 px-4 py-2 text-sm font-semibold tracking-wide text-black transition-colors hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
-                        >
-                          Delete
-                        </button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -571,7 +707,7 @@ function Field({
 }) {
   return (
     <label className={full ? "md:col-span-2" : ""}>
-      <div className="mb-2 text-xs uppercase tracking-[0.22em] text-black/60 dark:text-white/60">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--accents-5)]">
         {label}
       </div>
       {children}
