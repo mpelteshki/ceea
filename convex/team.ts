@@ -26,10 +26,7 @@ export const create = mutation({
   args: {
     firstName: v.string(),
     lastName: v.string(),
-    role: v.object({
-      en: v.string(),
-      it: v.string(),
-    }),
+    role: v.string(),
     type: v.union(v.literal("member"), v.literal("alumni")),
     linkedinUrl: v.optional(v.string()),
     photoId: v.optional(v.string()),
@@ -49,12 +46,7 @@ export const update = mutation({
     id: v.id("team"),
     firstName: v.optional(v.string()),
     lastName: v.optional(v.string()),
-    role: v.optional(
-      v.object({
-        en: v.string(),
-        it: v.string(),
-      }),
-    ),
+    role: v.optional(v.string()),
     type: v.optional(v.union(v.literal("member"), v.literal("alumni"))),
     linkedinUrl: v.optional(v.string()),
     photoId: v.optional(v.string()),
@@ -64,7 +56,7 @@ export const update = mutation({
     const patch: {
       firstName?: string;
       lastName?: string;
-      role?: { en: string; it: string };
+      role?: string;
       type?: "member" | "alumni";
       linkedinUrl?: string | undefined;
       photoId?: string | undefined;

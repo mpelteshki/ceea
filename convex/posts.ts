@@ -46,9 +46,7 @@ export const getBySlug = query({
 export const createDraft = mutation({
   args: {
     title: v.string(),
-    title_it: v.optional(v.string()),
     excerpt: v.string(),
-    excerpt_it: v.optional(v.string()),
     body: v.string(),
     slug: v.optional(v.string()),
   },
@@ -66,10 +64,8 @@ export const createDraft = mutation({
 
     return await ctx.db.insert("posts", {
       title: args.title.trim(),
-      title_it: args.title_it?.trim(),
       slug,
       excerpt: args.excerpt.trim(),
-      excerpt_it: args.excerpt_it?.trim(),
       body: args.body,
       createdAt: now,
       createdBy: identity.tokenIdentifier,
@@ -82,18 +78,14 @@ export const updateDraft = mutation({
   args: {
     id: v.id("posts"),
     title: v.string(),
-    title_it: v.optional(v.string()),
     excerpt: v.string(),
-    excerpt_it: v.optional(v.string()),
     body: v.string(),
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
     await ctx.db.patch(args.id, {
       title: args.title.trim(),
-      title_it: args.title_it?.trim(),
       excerpt: args.excerpt.trim(),
-      excerpt_it: args.excerpt_it?.trim(),
       body: args.body,
     });
   },

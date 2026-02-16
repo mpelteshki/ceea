@@ -11,8 +11,7 @@ const ITEMS = [
 ] as const;
 
 function normalizeAdminPath(pathname: string) {
-  const withoutLocale = pathname.replace(/^\/(en|it)(?=\/|$)/, "");
-  return withoutLocale.length === 0 ? "/" : withoutLocale;
+  return pathname.length === 0 ? "/" : pathname;
 }
 
 export function AdminNav() {

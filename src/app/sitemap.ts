@@ -1,10 +1,9 @@
 import { MetadataRoute } from "next";
 import { api } from "../../convex/_generated/api";
 import type { Doc } from "../../convex/_generated/dataModel";
-import { routing } from "@/i18n/routing";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { hasConvex } from "@/lib/public-env";
-import { localizedAlternates, localizedPath, PUBLIC_SITE_PATHS, SITE_URL } from "@/lib/seo";
+import { absoluteUrl, PUBLIC_SITE_PATHS } from "@/lib/seo";
 
 type PostDoc = Doc<"posts">;
 
@@ -30,25 +29,13 @@ const PAGE_PRIORITY: Record<string, number> = {
   "/contacts": 0.7,
 };
 
-function absoluteAlternates(pathname: string): Record<string, string> {
-  const languages = localizedAlternates(pathname);
-  return Object.fromEntries(
-    Object.entries(languages).map(([locale, localized]) => [locale, new URL(localized, SITE_URL).toString()]),
-  );
-}
-
 function staticPageEntries(lastModified: Date): MetadataRoute.Sitemap {
-  return PUBLIC_SITE_PATHS.flatMap((pathname) =>
-    routing.locales.map((locale) => ({
-      url: new URL(localizedPath(locale, pathname), SITE_URL).toString(),
-      lastModified,
-      changeFrequency: PAGE_FREQUENCY[pathname] ?? "monthly",
-      priority: PAGE_PRIORITY[pathname] ?? 0.7,
-      alternates: {
-        languages: absoluteAlternates(pathname),
-      },
-    })),
-  );
+  return PUBLIC_SITE_PATHS.map((pathname) => ({
+    url: absoluteUrl(pathname),
+    lastModified,
+    changeFrequency: PAGE_FREQUENCY[pathname] ?? "monthly",
+    priority: PAGE_PRIORITY[pathname] ?? 0.7,
+  }));
 }
 
 async function newsletterEntries(): Promise<MetadataRoute.Sitemap> {
@@ -59,17 +46,12 @@ async function newsletterEntries(): Promise<MetadataRoute.Sitemap> {
   const posts = (await convex.query(api.posts.listAll, {})) as PostDoc[];
   const published = posts.filter((post) => post.publishedAt != null);
 
-  return published.flatMap((post) =>
-    routing.locales.map((locale) => ({
-      url: new URL(localizedPath(locale, `/newsletter/${post.slug}`), SITE_URL).toString(),
-      lastModified: new Date(post.publishedAt ?? post.createdAt),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-      alternates: {
-        languages: absoluteAlternates(`/newsletter/${post.slug}`),
-      },
-    })),
-  );
+  return published.map((post) => ({
+    url: absoluteUrl(`/newsletter/${post.slug}`),
+    lastModified: new Date(post.publishedAt ?? post.createdAt),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

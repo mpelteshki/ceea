@@ -1,18 +1,16 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Link } from "@/i18n/routing";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
-import { getLocalized } from "@/lib/localization";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FadeIn } from "@/components/ui/fade-in";
 
 type PostDoc = Doc<"posts">;
 
-function fmtDate(ms: number, locale: string) {
-  return new Intl.DateTimeFormat(locale, {
+function fmtDate(ms: number) {
+  return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "short",
     day: "2-digit",
@@ -20,11 +18,9 @@ function fmtDate(ms: number, locale: string) {
 }
 
 export async function NewsletterList() {
-  const t = await getTranslations("NewsletterList");
-
   if (!hasConvex) {
     return (
-      <div className="ui-card p-6 text-sm text-muted-foreground bg-card border-border">
+      <div className="ui-card border-border bg-card p-6 text-sm text-muted-foreground">
         Backend not configured. Set <span className="font-mono text-foreground">NEXT_PUBLIC_CONVEX_URL</span> in Vercel to show newsletter posts.
       </div>
     );
@@ -32,22 +28,20 @@ export async function NewsletterList() {
 
   const convex = getConvexServerClient();
   if (!convex) {
-    return <EmptyState title={t("noPostsYet")} className="bg-card border-border" />;
+    return <EmptyState title="No newsletter posts yet." className="border-border bg-card" />;
   }
 
-  const locale = await getLocale();
   const posts = (await convex.query(api.posts.listPublished, { limit: 30 })) as PostDoc[];
 
   if (posts.length === 0) {
-    return <EmptyState title={t("noPostsYet")} className="bg-card border-border" />;
+    return <EmptyState title="No newsletter posts yet." className="border-border bg-card" />;
   }
 
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {posts.map((post, idx) => {
-        const localized = getLocalized(post, locale, ["title", "excerpt"] as const);
-        const title = String(localized.title ?? "");
-        const excerpt = String(localized.excerpt ?? "");
+        const title = String(post.title || "");
+        const excerpt = String(post.excerpt || "");
         const isFeatured = idx === 0;
 
         return (
@@ -60,24 +54,24 @@ export async function NewsletterList() {
 
               <div className={`p-6 ${isFeatured ? "sm:p-8" : ""}`}>
                 <div className="mb-4 flex items-center justify-center gap-3 sm:justify-between">
-                  <span className="ui-tag text-muted-foreground border-border">
-                    {post.publishedAt ? fmtDate(post.publishedAt, locale) : t("draft")}
+                  <span className="ui-tag border-border text-muted-foreground">
+                    {post.publishedAt ? fmtDate(post.publishedAt) : "Draft"}
                   </span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">{t("dispatch")}</span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Dispatch</span>
                 </div>
 
                 <h3
-                  className={`font-display leading-snug text-foreground group-hover:text-primary transition-colors duration-200 ${isFeatured ? "text-2xl sm:text-3xl" : "text-lg"}`}
+                  className={`font-display leading-snug text-foreground transition-colors duration-200 group-hover:text-primary ${isFeatured ? "text-2xl sm:text-3xl" : "text-lg"}`}
                 >
                   {title}
                 </h3>
 
-                <div className="my-4 ui-divider max-w-[60px]" />
+                <div className="ui-divider my-4 max-w-[60px]" />
 
                 <p className={`line-clamp-3 text-sm leading-7 text-muted-foreground ${isFeatured ? "max-w-2xl" : ""}`}>{excerpt}</p>
 
                 <div className="mt-6 inline-flex items-center gap-2 text-xs font-medium text-primary">
-                  <span className="group-hover:underline">{t("read")}</span>
+                  <span className="group-hover:underline">Read</span>
                   <ArrowRight className="ui-icon-shift h-3 w-3" />
                 </div>
               </div>

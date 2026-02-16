@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Spline_Sans_Mono } from "next/font/google";
 import { Providers } from "./providers";
+import { DeferredAnalytics } from "@/components/ui/deferred-analytics";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 import { SITE_EMAIL_HREF, SITE_SOCIAL_URLS } from "@/lib/site-contact";
@@ -41,7 +42,6 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
     url: SITE_URL.origin,
-    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
@@ -76,7 +76,7 @@ const structuredData = [
     "@type": "WebSite",
     name: SITE_NAME,
     url: SITE_URL.origin,
-    inLanguage: ["en", "it"],
+    inLanguage: "en",
   },
 ];
 
@@ -89,7 +89,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${sans.variable} ${mono.variable} antialiased`}>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <DeferredAnalytics />
+        </Providers>
       </body>
     </html>
   );

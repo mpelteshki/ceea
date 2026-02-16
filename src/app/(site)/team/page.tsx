@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { Linkedin } from "lucide-react";
-import { getLocale, getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 
 import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
@@ -8,40 +7,22 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { renderGradientTitle } from "@/lib/gradient-title";
-import { AppLocale, buildPageMetadata, resolveLocale, toMetaDescription } from "@/lib/seo";
-import { api } from "../../../../../convex/_generated/api";
-import type { Doc } from "../../../../../convex/_generated/dataModel";
+import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
+import { toPlainText } from "@/lib/plain-text";
+import { api } from "../../../../convex/_generated/api";
+import type { Doc } from "../../../../convex/_generated/dataModel";
 
 type TeamDoc = Doc<"team">;
 
-function teamDescriptionByLocale(locale: AppLocale): string {
-  if (locale === "it") {
-    return "Incontra il team CEEA Bocconi: membri e alumni che guidano eventi, partnership e iniziative nel campus.";
-  }
-  return "Meet the CEEA Bocconi team: members and alumni leading events, partnerships, and initiatives across campus.";
-}
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await params;
-  const typedLocale = resolveLocale(locale);
-  const t = await getTranslations({ locale: typedLocale, namespace: "TeamPage" });
-
-  return buildPageMetadata({
-    locale: typedLocale,
-    pathname: "/team",
-    title: t("title"),
-    description: toMetaDescription(teamDescriptionByLocale(typedLocale)),
-  });
-}
+export const metadata: Metadata = buildPageMetadata({
+  pathname: "/team",
+  title: "Our Team",
+  description: toMetaDescription(
+    "Meet the CEEA Bocconi team: members and alumni leading events, partnerships, and initiatives across campus.",
+  ),
+});
 
 export default async function TeamPage() {
-  const locale = await getLocale();
-  const t = await getTranslations("TeamPage");
-
   if (!hasConvex) {
     return (
       <div className="ui-site-container py-16">
@@ -55,37 +36,37 @@ export default async function TeamPage() {
   const convex = getConvexServerClient();
   const team = convex ? ((await convex.query(api.team.get, {})) as TeamDoc[]) : [];
 
-  const members = team.filter((m) => m.type === "member");
-  const alumni = team.filter((m) => m.type === "alumni");
+  const members = team.filter((member) => member.type === "member");
+  const alumni = team.filter((member) => member.type === "alumni");
 
   return (
     <>
       <div className="relative border-b border-[var(--accents-2)]">
         <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_5%,var(--background))]" />
-        <div className="ui-site-container relative pt-12 sm:pt-20 pb-12 sm:pb-16">
+        <div className="ui-site-container relative pb-12 pt-12 sm:pb-16 sm:pt-20">
           <FadeIn>
-            <h1 className="ui-page-title">{renderGradientTitle(t("title"))}</h1>
+            <h1 className="ui-page-title">{renderGradientTitle("Our Team")}</h1>
           </FadeIn>
         </div>
       </div>
 
-      <div className="ui-site-container py-12 sm:py-20 space-y-20">
+      <div className="ui-site-container space-y-20 py-12 sm:py-20">
         <FadeInStagger>
           <FadeIn>
             <div className="mb-10 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
               <span className="hidden h-6 w-1 rounded-full bg-[var(--brand-teal)] sm:block" />
-              <h2 className="font-display text-2xl text-[var(--foreground)]">{renderGradientTitle(t("members"))}</h2>
+              <h2 className="font-display text-2xl text-[var(--foreground)]">{renderGradientTitle("Current Members")}</h2>
               <span className="hidden h-px flex-1 bg-[var(--accents-2)] sm:block" />
               <span className="hidden font-mono text-xs text-[var(--accents-4)] sm:inline">{members.length}</span>
             </div>
           </FadeIn>
           {members.length === 0 ? (
-            <EmptyState title={t("noMembers")} description={t("checkBackLater")} />
+            <EmptyState title="No members yet." description="Check back later for updates." />
           ) : (
             <div className="grid grid-cols-1 gap-5 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {members.map((member) => (
                 <FadeIn key={member._id}>
-                  <MemberCard member={member} locale={locale} connectLabel={t("connect")} />
+                  <MemberCard member={member} />
                 </FadeIn>
               ))}
             </div>
@@ -97,7 +78,7 @@ export default async function TeamPage() {
             <FadeIn>
               <div className="mb-10 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
                 <span className="hidden h-6 w-1 rounded-full bg-[var(--brand-caramel)] sm:block" />
-                <h2 className="font-display text-2xl text-[var(--foreground)]">{renderGradientTitle(t("alumni"))}</h2>
+                <h2 className="font-display text-2xl text-[var(--foreground)]">{renderGradientTitle("Alumni")}</h2>
                 <span className="hidden h-px flex-1 bg-[var(--accents-2)] sm:block" />
                 <span className="hidden font-mono text-xs text-[var(--accents-4)] sm:inline">{alumni.length}</span>
               </div>
@@ -105,7 +86,7 @@ export default async function TeamPage() {
             <div className="grid grid-cols-1 gap-5 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {alumni.map((member) => (
                 <FadeIn key={member._id}>
-                  <MemberCard member={member} locale={locale} connectLabel={t("connect")} />
+                  <MemberCard member={member} />
                 </FadeIn>
               ))}
             </div>
@@ -116,20 +97,12 @@ export default async function TeamPage() {
   );
 }
 
-function MemberCard({
-  member,
-  locale,
-  connectLabel,
-}: {
-  member: TeamDoc;
-  locale: string;
-  connectLabel: string;
-}) {
-  const role = member.role[locale as "en" | "it"] ?? member.role.en;
+function MemberCard({ member }: { member: TeamDoc }) {
+  const role = toPlainText(member.role);
 
   return (
     <div className="ui-hover-lift-sm group rounded-2xl p-1">
-      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[color-mix(in_oklch,var(--brand-cream)_30%,var(--accents-1))] to-[var(--accents-2)] mb-4">
+      <div className="relative mb-4 aspect-[3/4] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[color-mix(in_oklch,var(--brand-cream)_30%,var(--accents-1))] to-[var(--accents-2)]">
         {member.photoId ? (
           <Image
             src={member.photoId}
@@ -147,7 +120,7 @@ function MemberCard({
           </div>
         )}
       </div>
-      <h3 className="font-display text-base text-[var(--foreground)] leading-snug">
+      <h3 className="font-display text-base leading-snug text-[var(--foreground)]">
         {member.firstName} {member.lastName}
       </h3>
       <p className="mt-0.5 text-xs text-[var(--accents-5)]">{role}</p>
@@ -156,10 +129,10 @@ function MemberCard({
           href={member.linkedinUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex items-center gap-1.5 mt-2 text-xs text-[var(--accents-4)] hover:text-[var(--brand-teal)] transition-colors"
+          className="group mt-2 inline-flex items-center gap-1.5 text-xs text-[var(--accents-4)] transition-colors hover:text-[var(--brand-teal)]"
         >
           <Linkedin className="ui-icon-shift h-3 w-3" />
-          {connectLabel}
+          Connect
         </a>
       ) : null}
     </div>

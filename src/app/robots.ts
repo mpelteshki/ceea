@@ -6,14 +6,6 @@ const PRIVATE_PATH_PREFIXES = [
   "/sign-in",
   "/sign-up",
   "/sso-callback",
-  "/en/admin",
-  "/en/sign-in",
-  "/en/sign-up",
-  "/en/sso-callback",
-  "/it/admin",
-  "/it/sign-in",
-  "/it/sign-up",
-  "/it/sso-callback",
   "/api",
 ];
 

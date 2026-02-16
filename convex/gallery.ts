@@ -19,10 +19,7 @@ export const get = query({
 export const create = mutation({
   args: {
     imageUrl: v.string(),
-    caption: v.object({
-      en: v.string(),
-      it: v.string(),
-    }),
+    caption: v.string(),
     category: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -42,19 +39,14 @@ export const update = mutation({
   args: {
     id: v.id("gallery"),
     imageUrl: v.optional(v.string()),
-    caption: v.optional(
-      v.object({
-        en: v.string(),
-        it: v.string(),
-      }),
-    ),
+    caption: v.optional(v.string()),
     category: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
     const patch: {
       imageUrl?: string;
-      caption?: { en: string; it: string };
+      caption?: string;
       category?: string;
     } = {};
 

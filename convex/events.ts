@@ -32,9 +32,7 @@ export const listAll = query({
 export const create = mutation({
   args: {
     title: v.string(),
-    title_it: v.optional(v.string()),
     summary: v.string(),
-    summary_it: v.optional(v.string()),
     location: v.string(),
     kind: v.union(
       v.literal("flagship"),
@@ -63,9 +61,7 @@ export const update = mutation({
   args: {
     id: v.id("events"),
     title: v.optional(v.string()),
-    title_it: v.optional(v.string()),
     summary: v.optional(v.string()),
-    summary_it: v.optional(v.string()),
     location: v.optional(v.string()),
     kind: v.optional(
       v.union(
@@ -83,9 +79,7 @@ export const update = mutation({
     await requireAdmin(ctx);
     const patch: {
       title?: string;
-      title_it?: string | undefined;
       summary?: string;
-      summary_it?: string | undefined;
       location?: string;
       kind?: "flagship" | "career" | "culture" | "community";
       startsAt?: number;
@@ -94,9 +88,7 @@ export const update = mutation({
     } = {};
 
     if (args.title !== undefined) patch.title = args.title;
-    if (args.title_it !== undefined) patch.title_it = args.title_it;
     if (args.summary !== undefined) patch.summary = args.summary;
-    if (args.summary_it !== undefined) patch.summary_it = args.summary_it;
     if (args.location !== undefined) patch.location = args.location;
     if (args.kind !== undefined) patch.kind = args.kind;
     if (args.startsAt !== undefined) patch.startsAt = args.startsAt;

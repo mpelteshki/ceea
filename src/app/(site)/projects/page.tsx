@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -9,40 +8,22 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { renderGradientTitle } from "@/lib/gradient-title";
-import { AppLocale, buildPageMetadata, resolveLocale, toMetaDescription } from "@/lib/seo";
-import { api } from "../../../../../convex/_generated/api";
-import type { Doc } from "../../../../../convex/_generated/dataModel";
+import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
+import { toPlainText } from "@/lib/plain-text";
+import { api } from "../../../../convex/_generated/api";
+import type { Doc } from "../../../../convex/_generated/dataModel";
 
 type ProjectDoc = Doc<"projects">;
 
-function projectsDescriptionByLocale(locale: AppLocale): string {
-  if (locale === "it") {
-    return "Scopri i progetti CEEA Bocconi: iniziative guidate dagli studenti su cultura, diplomazia, fintech e community.";
-  }
-  return "Explore CEEA Bocconi projects: student-led initiatives across culture, diplomacy, fintech, and community.";
-}
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await params;
-  const typedLocale = resolveLocale(locale);
-  const t = await getTranslations({ locale: typedLocale, namespace: "ProjectsPage" });
-
-  return buildPageMetadata({
-    locale: typedLocale,
-    pathname: "/projects",
-    title: t("title"),
-    description: toMetaDescription(projectsDescriptionByLocale(typedLocale)),
-  });
-}
+export const metadata: Metadata = buildPageMetadata({
+  pathname: "/projects",
+  title: "Our Projects",
+  description: toMetaDescription(
+    "Explore CEEA Bocconi projects: student-led initiatives across culture, diplomacy, fintech, and community.",
+  ),
+});
 
 export default async function ProjectsPage() {
-  const locale = await getLocale();
-  const t = await getTranslations("ProjectsPage");
-
   if (!hasConvex) {
     return (
       <div className="ui-site-container py-16">
@@ -60,26 +41,26 @@ export default async function ProjectsPage() {
     <>
       <div className="relative border-b border-[var(--accents-2)]">
         <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_5%,var(--background))]" />
-        <div className="ui-site-container relative pt-12 sm:pt-20 pb-12 sm:pb-16">
+        <div className="ui-site-container relative pb-12 pt-12 sm:pb-16 sm:pt-20">
           <FadeIn>
-            <h1 className="ui-page-title">{renderGradientTitle(t("title"))}</h1>
+            <h1 className="ui-page-title">{renderGradientTitle("Our Projects")}</h1>
           </FadeIn>
         </div>
       </div>
 
       <div className="ui-site-container py-12 sm:py-20">
         {projects.length === 0 ? (
-          <EmptyState title={t("noProjects")} description={t("checkBackLater")} />
+          <EmptyState title="No projects yet." description="Check back later for updates." />
         ) : (
           <FadeInStagger className="space-y-20">
             {projects.map((project, idx) => {
               const isReversed = idx % 2 === 1;
-              const title = project.title[locale as "en" | "it"] ?? project.title.en;
-              const description = project.description[locale as "en" | "it"] ?? project.description.en;
+              const title = toPlainText(project.title);
+              const description = toPlainText(project.description);
 
               return (
                 <FadeIn key={project._id}>
-                  <article className={`ui-hover-lift-sm group rounded-2xl p-2 grid gap-8 lg:gap-16 lg:grid-cols-2 items-center ${isReversed ? "lg:[direction:rtl]" : ""}`}>
+                  <article className={`ui-hover-lift-sm group grid items-center gap-8 rounded-2xl p-2 lg:grid-cols-2 lg:gap-16 ${isReversed ? "lg:[direction:rtl]" : ""}`}>
                     <div
                       className={`relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--accents-1)] to-[var(--accents-2)] ${isReversed ? "lg:[direction:ltr]" : ""}`}
                     >
@@ -96,14 +77,14 @@ export default async function ProjectsPage() {
 
                     <div className={`space-y-6 ${isReversed ? "lg:[direction:ltr]" : ""}`}>
                       <div className="flex items-center justify-center gap-3 lg:justify-start">
-                        <span className="font-mono text-xs text-[var(--accents-4)] tabular-nums">{String(idx + 1).padStart(2, "0")}</span>
+                        <span className="font-mono text-xs tabular-nums text-[var(--accents-4)]">{String(idx + 1).padStart(2, "0")}</span>
                         <span className="h-px flex-1 bg-[var(--accents-2)]" />
                       </div>
-                      <h2 className="font-display text-3xl sm:text-4xl text-[var(--foreground)] leading-[1.1]">{title}</h2>
+                      <h2 className="font-display text-3xl leading-[1.1] text-[var(--foreground)] sm:text-4xl">{title}</h2>
                       <ExpandableText
                         text={description}
-                        readMoreLabel={t("readMore")}
-                        readLessLabel={t("readLess")}
+                        readMoreLabel="Read more"
+                        readLessLabel="Read less"
                         maxLines={4}
                       />
                       {project.link ? (
@@ -113,7 +94,7 @@ export default async function ProjectsPage() {
                           rel="noopener noreferrer"
                           className="group inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-teal)] hover:underline"
                         >
-                          {t("learnMore")}
+                          Learn More
                           <ArrowUpRight className="ui-icon-shift h-4 w-4" />
                         </a>
                       ) : null}

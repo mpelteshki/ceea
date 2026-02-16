@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { toPlainText } from "@/lib/plain-text";
 
 type ProjectSort = "newest" | "oldest" | "title";
 
@@ -29,10 +30,8 @@ export default function ProjectsAdminPage() {
   const deleteProject = useMutation(api.projects.remove);
 
   const [form, setForm] = useState({
-    titleEn: "",
-    titleIt: "",
-    descEn: "",
-    descIt: "",
+    title: "",
+    description: "",
     imageUrl: "",
     link: "",
   });
@@ -46,10 +45,8 @@ export default function ProjectsAdminPage() {
 
   const resetForm = () => {
     setForm({
-      titleEn: "",
-      titleIt: "",
-      descEn: "",
-      descIt: "",
+      title: "",
+      description: "",
       imageUrl: "",
       link: "",
     });
@@ -65,15 +62,15 @@ export default function ProjectsAdminPage() {
       if (editingProjectId) {
         await updateProject({
           id: editingProjectId,
-          title: { en: form.titleEn, it: form.titleIt },
-          description: { en: form.descEn, it: form.descIt },
+          title: form.title.trim(),
+          description: form.description.trim(),
           imageUrl: form.imageUrl.trim(),
           link: form.link.trim(),
         });
       } else {
         await createProject({
-          title: { en: form.titleEn, it: form.titleIt },
-          description: { en: form.descEn, it: form.descIt },
+          title: form.title.trim(),
+          description: form.description.trim(),
           imageUrl: form.imageUrl.trim() || undefined,
           link: form.link.trim() || undefined,
         });
@@ -93,10 +90,8 @@ export default function ProjectsAdminPage() {
     const list = listSource.filter((project) => {
       if (q.length === 0) return true;
       return [
-        project.title.en,
-        project.title.it,
-        project.description.en,
-        project.description.it,
+        toPlainText(project.title),
+        toPlainText(project.description),
         project.link,
       ]
         .filter(Boolean)
@@ -104,7 +99,7 @@ export default function ProjectsAdminPage() {
     });
 
     if (sortBy === "title") {
-      list.sort((a, b) => a.title.en.localeCompare(b.title.en));
+      list.sort((a, b) => toPlainText(a.title).localeCompare(toPlainText(b.title)));
     } else {
       list.sort((a, b) => (sortBy === "newest" ? b.createdAt - a.createdAt : a.createdAt - b.createdAt));
     }
@@ -164,55 +159,29 @@ export default function ProjectsAdminPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="ui-card p-6 grid gap-6">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Title (EN)">
-              <input
-                name="project_title_en"
-                autoComplete="off"
-                placeholder="Project title..."
-                value={form.titleEn}
-                onChange={(e) => setForm({ ...form, titleEn: e.target.value })}
-                className="ui-input"
-                required
-              />
-            </Field>
-            <Field label="Title (IT)">
-              <input
-                name="project_title_it"
-                autoComplete="off"
-                placeholder="Titolo..."
-                value={form.titleIt}
-                onChange={(e) => setForm({ ...form, titleIt: e.target.value })}
-                className="ui-input"
-                required
-              />
-            </Field>
-          </div>
+          <Field label="Title">
+            <input
+              name="project_title"
+              autoComplete="off"
+              placeholder="Project title..."
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              className="ui-input"
+              required
+            />
+          </Field>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Description (EN)">
-              <textarea
-                name="project_description_en"
-                autoComplete="off"
-                placeholder="English description..."
-                value={form.descEn}
-                onChange={(e) => setForm({ ...form, descEn: e.target.value })}
-                className="ui-input min-h-[160px] resize-y"
-                required
-              />
-            </Field>
-            <Field label="Description (IT)">
-              <textarea
-                name="project_description_it"
-                autoComplete="off"
-                placeholder="Descrizione..."
-                value={form.descIt}
-                onChange={(e) => setForm({ ...form, descIt: e.target.value })}
-                className="ui-input min-h-[160px] resize-y"
-                required
-              />
-            </Field>
-          </div>
+          <Field label="Description">
+            <textarea
+              name="project_description"
+              autoComplete="off"
+              placeholder="Project description..."
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              className="ui-input min-h-[160px] resize-y"
+              required
+            />
+          </Field>
 
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Image URL">
@@ -322,10 +291,18 @@ export default function ProjectsAdminPage() {
                   className="ui-card group grid gap-4 p-4 md:grid-cols-[1fr_auto] md:items-center transition-colors hover:bg-[var(--secondary)]/50"
                 >
                   <div className="text-center sm:text-left">
-                    <h4 className="font-display text-lg font-semibold text-[var(--foreground)]">
-                      {project.title.en}
-                    </h4>
-                    <p className="mx-auto mt-1 max-w-2xl line-clamp-2 text-sm text-[var(--muted-foreground)] sm:mx-0">{project.description.en}</p>
+                    {(() => {
+                      const title = toPlainText(project.title);
+                      const description = toPlainText(project.description);
+                      return (
+                        <>
+                          <h4 className="font-display text-lg font-semibold text-[var(--foreground)]">
+                            {title}
+                          </h4>
+                          <p className="mx-auto mt-1 max-w-2xl line-clamp-2 text-sm text-[var(--muted-foreground)] sm:mx-0">{description}</p>
+                        </>
+                      );
+                    })()}
                   </div>
 
                   <div className="flex items-center justify-center gap-4 opacity-100 transition-opacity md:justify-end md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
@@ -333,11 +310,11 @@ export default function ProjectsAdminPage() {
                       type="button"
                       onClick={() => {
                         setEditingProjectId(project._id);
+                        const title = toPlainText(project.title);
+                        const description = toPlainText(project.description);
                         setForm({
-                          titleEn: project.title.en,
-                          titleIt: project.title.it,
-                          descEn: project.description.en,
-                          descIt: project.description.it,
+                          title,
+                          description,
                           imageUrl: project.imageUrl ?? "",
                           link: project.link ?? "",
                         });
@@ -351,7 +328,8 @@ export default function ProjectsAdminPage() {
                       type="button"
                       disabled={deletingProjectId === project._id}
                       onClick={async () => {
-                        if (!confirm(`Delete ${project.title.en}?`)) return;
+                        const title = toPlainText(project.title) || "this project";
+                        if (!confirm(`Delete ${title}?`)) return;
                         setDeletingProjectId(project._id);
                         setError(null);
                         try {

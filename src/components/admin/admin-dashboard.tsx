@@ -81,9 +81,7 @@ function AdminDashboardInner() {
   const [error, setError] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
-  const [title_it, setTitleIt] = useState("");
   const [summary, setSummary] = useState("");
-  const [summary_it, setSummaryIt] = useState("");
   const [location, setLocation] = useState("Bocconi University");
   const [kind, setKind] = useState<Kind>("flagship");
   const [startsAt, setStartsAt] = useState(() =>
@@ -94,10 +92,8 @@ function AdminDashboardInner() {
   const [editingEventId, setEditingEventId] = useState<Id<"events"> | null>(null);
 
   const [postTitle, setPostTitle] = useState("");
-  const [postTitle_it, setPostTitleIt] = useState("");
   const [postSlug, setPostSlug] = useState("");
   const [postExcerpt, setPostExcerpt] = useState("");
-  const [postExcerpt_it, setPostExcerptIt] = useState("");
   const [postBody, setPostBody] = useState(
     `# Title\n\nWrite in **Markdown**.\n\n- Keep it concrete\n- Add links\n`,
   );
@@ -134,7 +130,7 @@ function AdminDashboardInner() {
       const matchesKind = eventsKindFilter === "all" ? true : event.kind === eventsKindFilter;
       const matchesQuery = q.length === 0
         ? true
-        : [event.title, event.title_it, event.summary, event.summary_it, event.location]
+        : [event.title, event.summary, event.location]
           .filter(Boolean)
           .some((value) => String(value).toLowerCase().includes(q));
       return matchesKind && matchesQuery;
@@ -156,7 +152,7 @@ function AdminDashboardInner() {
           : !isPublished;
       const matchesQuery = q.length === 0
         ? true
-        : [post.title, post.title_it, post.excerpt, post.excerpt_it, post.slug]
+        : [post.title, post.excerpt, post.slug]
           .filter(Boolean)
           .some((value) => String(value).toLowerCase().includes(q));
       return matchesStatus && matchesQuery;
@@ -277,9 +273,7 @@ function AdminDashboardInner() {
                   onClick={() => {
                     setEditingEventId(null);
                     setTitle("");
-                    setTitleIt("");
                     setSummary("");
-                    setSummaryIt("");
                     setLocation("Bocconi University");
                     setKind("flagship");
                     setStartsAt(new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString().slice(0, 16));
@@ -295,22 +289,12 @@ function AdminDashboardInner() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Title (English)">
+              <Field label="Title">
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Danube Dialogues: Growth & Identity"
                   name="event_title"
-                  autoComplete="off"
-                  className="ui-input"
-                />
-              </Field>
-              <Field label="Title (Italian)">
-                <input
-                  value={title_it}
-                  onChange={(e) => setTitleIt(e.target.value)}
-                  placeholder="Dialoghi sul Danubio"
-                  name="event_title_it"
                   autoComplete="off"
                   className="ui-input"
                 />
@@ -349,24 +333,13 @@ function AdminDashboardInner() {
                   className="ui-input"
                 />
               </Field>
-              <Field label="Summary (English)" full>
+              <Field label="Summary" full>
                 <textarea
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
                   rows={3}
                   placeholder="A speaker night about building cross-border careers..."
                   name="event_summary"
-                  autoComplete="off"
-                  className="ui-input resize-none"
-                />
-              </Field>
-              <Field label="Summary (Italian)" full>
-                <textarea
-                  value={summary_it}
-                  onChange={(e) => setSummaryIt(e.target.value)}
-                  rows={3}
-                  placeholder="Una serata di discussione..."
-                  name="event_summary_it"
                   autoComplete="off"
                   className="ui-input resize-none"
                 />
@@ -413,9 +386,7 @@ function AdminDashboardInner() {
                       await updateEvent({
                         id: editingEventId,
                         title: title.trim(),
-                        title_it: title_it.trim() || undefined,
                         summary: summary.trim(),
-                        summary_it: summary_it.trim() || undefined,
                         location: location.trim(),
                         kind,
                         startsAt: ms,
@@ -425,9 +396,7 @@ function AdminDashboardInner() {
                     } else {
                       await createEvent({
                         title: title.trim(),
-                        title_it: title_it.trim() || undefined,
                         summary: summary.trim(),
-                        summary_it: summary_it.trim() || undefined,
                         location: location.trim(),
                         kind,
                         startsAt: ms,
@@ -436,9 +405,7 @@ function AdminDashboardInner() {
                       });
                     }
                     setTitle("");
-                    setTitleIt("");
                     setSummary("");
-                    setSummaryIt("");
                     setLocation("Bocconi University");
                     setKind("flagship");
                     setStartsAt(new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString().slice(0, 16));
@@ -586,9 +553,7 @@ function AdminDashboardInner() {
                           onClick={() => {
                             setEditingEventId(e._id);
                             setTitle(e.title);
-                            setTitleIt(e.title_it ?? "");
                             setSummary(e.summary);
-                            setSummaryIt(e.summary_it ?? "");
                             setLocation(e.location);
                             setKind(e.kind);
                             setStartsAt(toDatetimeLocal(e.startsAt));
@@ -649,10 +614,8 @@ function AdminDashboardInner() {
                   onClick={() => {
                     setEditingPostId(null);
                     setPostTitle("");
-                    setPostTitleIt("");
                     setPostSlug("");
                     setPostExcerpt("");
-                    setPostExcerptIt("");
                     setPostBody(
                       `# Title\n\nWrite in **Markdown**.\n\n- Keep it concrete\n- Add links\n`,
                     );
@@ -666,22 +629,12 @@ function AdminDashboardInner() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Title (English)">
+              <Field label="Title">
                 <input
                   value={postTitle}
                   onChange={(e) => setPostTitle(e.target.value)}
                   placeholder="A new semester, a tighter cadence"
                   name="post_title"
-                  autoComplete="off"
-                  className="ui-input"
-                />
-              </Field>
-              <Field label="Title (Italian)">
-                <input
-                  value={postTitle_it}
-                  onChange={(e) => setPostTitleIt(e.target.value)}
-                  placeholder="Un nuovo semestre..."
-                  name="post_title_it"
                   autoComplete="off"
                   className="ui-input"
                 />
@@ -697,24 +650,13 @@ function AdminDashboardInner() {
                   className="ui-input"
                 />
               </Field>
-              <Field label="Excerpt (English)" full>
+              <Field label="Excerpt" full>
                 <textarea
                   value={postExcerpt}
                   onChange={(e) => setPostExcerpt(e.target.value)}
                   rows={2}
                   placeholder="One paragraph summary..."
                   name="post_excerpt"
-                  autoComplete="off"
-                  className="ui-input resize-none"
-                />
-              </Field>
-              <Field label="Excerpt (Italian)" full>
-                <textarea
-                  value={postExcerpt_it}
-                  onChange={(e) => setPostExcerptIt(e.target.value)}
-                  rows={2}
-                  placeholder="Riassunto in un paragrafo..."
-                  name="post_excerpt_it"
                   autoComplete="off"
                   className="ui-input resize-none"
                 />
@@ -745,17 +687,13 @@ function AdminDashboardInner() {
                       await updateDraft({
                         id: editingPostId,
                         title: postTitle.trim(),
-                        title_it: postTitle_it.trim() || undefined,
                         excerpt: postExcerpt.trim(),
-                        excerpt_it: postExcerpt_it.trim() || undefined,
                         body: postBody,
                       });
                     } else {
                       const id = await createDraft({
                         title: postTitle.trim(),
-                        title_it: postTitle_it.trim() || undefined,
                         excerpt: postExcerpt.trim(),
-                        excerpt_it: postExcerpt_it.trim() || undefined,
                         body: postBody,
                         slug: postSlug.trim() || undefined,
                       });
@@ -949,10 +887,8 @@ function AdminDashboardInner() {
                             onClick={() => {
                               setEditingPostId(p._id);
                               setPostTitle(p.title);
-                              setPostTitleIt(p.title_it ?? "");
                               setPostSlug("");
                               setPostExcerpt(p.excerpt);
-                              setPostExcerptIt(p.excerpt_it ?? "");
                               setPostBody(p.body);
                               window.scrollTo({ top: 0, behavior: "smooth" });
                             }}

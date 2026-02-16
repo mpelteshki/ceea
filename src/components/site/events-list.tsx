@@ -1,27 +1,23 @@
-import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowUpRight, Calendar, MapPin } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
-import { getLocalized } from "@/lib/localization";
 import { FadeIn } from "@/components/ui/fade-in";
 
 type EventDoc = Doc<"events">;
 
-function fmtDate(ms: number, locale: string) {
+function fmtDate(ms: number) {
   const d = new Date(ms);
   return {
-    month: new Intl.DateTimeFormat(locale, { month: "short" }).format(d).toUpperCase(),
+    month: new Intl.DateTimeFormat("en-US", { month: "short" }).format(d).toUpperCase(),
     day: d.getDate().toString().padStart(2, "0"),
-    weekday: new Intl.DateTimeFormat(locale, { weekday: "short" }).format(d),
-    time: new Intl.DateTimeFormat(locale, { hour: "numeric", minute: "2-digit", hour12: true }).format(d),
+    weekday: new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(d),
+    time: new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", hour12: true }).format(d),
   };
 }
 
 export async function EventsList() {
-  const t = await getTranslations("EventsList");
-
   if (!hasConvex) {
     return (
       <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
@@ -39,16 +35,15 @@ export async function EventsList() {
     );
   }
 
-  const locale = await getLocale();
   const list = (await convex.query(api.events.listAll, {})) as EventDoc[];
 
   if (list.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border py-16 text-center">
-        <div className="mx-auto h-14 w-14 rounded-full bg-secondary flex items-center justify-center mb-4">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
           <Calendar className="h-6 w-6 text-[var(--accents-6)]" />
         </div>
-        <p className="text-sm text-[var(--accents-6)]">{t("noEvents")}</p>
+        <p className="text-sm text-[var(--accents-6)]">No events in this category yet.</p>
       </div>
     );
   }
@@ -57,22 +52,21 @@ export async function EventsList() {
     <div className="space-y-8">
       <div className="divide-y divide-border border-y border-border">
         {list.map((event, idx) => {
-          const localized = getLocalized(event, locale, ["title", "summary"] as const);
-          const title = String(localized.title ?? "");
-          const summary = localized.summary ? String(localized.summary) : "";
-          const date = fmtDate(event.startsAt, locale);
+          const title = String(event.title || "");
+          const summary = event.summary || "";
+          const date = fmtDate(event.startsAt);
 
           return (
             <FadeIn key={event._id} delay={Math.min(idx * 0.04, 0.18)}>
               <div className="ui-hover-lift-sm group -mx-3 grid grid-cols-[auto_1fr_auto] items-center gap-6 rounded-xl px-3 py-6 text-center hover:bg-[color-mix(in_oklch,var(--brand-cream)_4%,transparent)] sm:gap-8 sm:py-8 sm:text-left">
-                <div className="flex flex-col items-center justify-center w-16 sm:w-20">
+                <div className="flex w-16 flex-col items-center justify-center sm:w-20">
                   <span className="text-[10px] font-mono tracking-widest text-muted-foreground">{date.weekday}</span>
-                  <span className="font-display text-3xl sm:text-4xl leading-none text-foreground">{date.day}</span>
+                  <span className="font-display text-3xl leading-none text-foreground sm:text-4xl">{date.day}</span>
                   <span className="text-[10px] font-mono tracking-widest text-muted-foreground">{date.month}</span>
                 </div>
 
                 <div className="min-w-0">
-                  <h3 className="font-display text-lg sm:text-xl text-foreground leading-snug truncate">{title}</h3>
+                  <h3 className="truncate font-display text-lg leading-snug text-foreground sm:text-xl">{title}</h3>
                   <div className="mt-2 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground sm:justify-start">
                     <span className="inline-flex items-center gap-1.5">
                       <Calendar className="h-3 w-3" /> {date.time}
@@ -83,12 +77,12 @@ export async function EventsList() {
                       </span>
                     ) : null}
                   </div>
-                  {summary ? <p className="mt-2 text-sm text-muted-foreground line-clamp-2 max-w-2xl hidden sm:block">{summary}</p> : null}
+                  {summary ? <p className="mt-2 hidden max-w-2xl line-clamp-2 text-sm text-muted-foreground sm:block">{summary}</p> : null}
                 </div>
 
-                <div className="flex gap-2 shrink-0">
+                <div className="flex shrink-0 gap-2">
                   {event.rsvpUrl ? (
-                    <a href={event.rsvpUrl} target="_blank" rel="noopener noreferrer" className="ui-btn text-xs py-2 px-4 min-h-0">
+                    <a href={event.rsvpUrl} target="_blank" rel="noopener noreferrer" className="ui-btn min-h-0 px-4 py-2 text-xs">
                       RSVP
                     </a>
                   ) : event.moreInfoUrl ? (
@@ -97,7 +91,7 @@ export async function EventsList() {
                       href={event.moreInfoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:border-transparent hover:text-primary-foreground transition-colors"
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-transparent hover:bg-primary hover:text-primary-foreground"
                     >
                       <ArrowUpRight className="ui-icon-shift h-4 w-4" aria-hidden="true" />
                     </a>

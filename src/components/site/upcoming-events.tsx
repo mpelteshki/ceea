@@ -1,37 +1,32 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import Link from "next/link";
 import { Calendar, MapPin, ArrowRight, ArrowUpRight } from "lucide-react";
-import { Link } from "@/i18n/routing";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
-import { getLocalized } from "@/lib/localization";
 import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
 import { EmptyState } from "@/components/ui/empty-state";
 import { renderGradientTitle } from "@/lib/gradient-title";
 
 type EventDoc = Doc<"events">;
 
-function fmtDate(ms: number, locale: string) {
+function fmtDate(ms: number) {
   const d = new Date(ms);
   return {
-    month: new Intl.DateTimeFormat(locale, { month: "short" }).format(d).toUpperCase(),
+    month: new Intl.DateTimeFormat("en-US", { month: "short" }).format(d).toUpperCase(),
     day: d.getDate().toString().padStart(2, "0"),
-    weekday: new Intl.DateTimeFormat(locale, { weekday: "short" }).format(d),
-    time: new Intl.DateTimeFormat(locale, { hour: "numeric", minute: "2-digit", hour12: true }).format(d),
+    weekday: new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(d),
+    time: new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", hour12: true }).format(d),
   };
 }
 
 export async function UpcomingEvents() {
-  const t = await getTranslations("UpcomingEvents");
-  const sectionTitle = t("title");
-
   if (!hasConvex) {
     return (
       <section className="space-y-12">
         <div className="ui-title-stack">
-          <div className="ui-kicker">{t("eyebrow")}</div>
-          <h2 className="ui-section-title mt-4">{renderGradientTitle(sectionTitle)}</h2>
+          <div className="ui-kicker">Calendar</div>
+          <h2 className="mt-4 ui-section-title">{renderGradientTitle("Moments worth showing up for")}</h2>
         </div>
         <div className="rounded-2xl border border-dashed border-[var(--accents-3)] p-8 text-center text-sm text-[var(--accents-5)]">
           Set <code className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</code> to show events.
@@ -42,10 +37,9 @@ export async function UpcomingEvents() {
 
   const convex = getConvexServerClient();
   if (!convex) {
-    return <EmptyState title={t("noEvents")} description={t("checkBackLater")} className="border-none bg-transparent" />;
+    return <EmptyState title="No upcoming events." description="Check back later for updates." className="border-none bg-transparent" />;
   }
 
-  const locale = await getLocale();
   const events = (await convex.query(api.events.listUpcoming, { limit: 4 })) as EventDoc[];
 
   return (
@@ -53,23 +47,22 @@ export async function UpcomingEvents() {
       <FadeIn>
         <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
           <div className="ui-title-stack">
-            <h2 className="ui-section-title mt-4">{renderGradientTitle(sectionTitle)}</h2>
+            <h2 className="mt-4 ui-section-title">{renderGradientTitle("Moments worth showing up for")}</h2>
           </div>
           <Link href="/events" className="ui-btn shrink-0" data-variant="secondary">
-            {t("viewFull")}
+            View full calendar
             <ArrowRight className="ui-icon-shift h-4 w-4" />
           </Link>
         </div>
       </FadeIn>
 
       {events.length === 0 ? (
-        <EmptyState title={t("noEvents")} description={t("checkBackLater")} className="border-none bg-transparent" />
+        <EmptyState title="No upcoming events." description="Check back later for updates." className="border-none bg-transparent" />
       ) : (
         <FadeInStagger className="divide-y divide-[var(--accents-2)] border-y border-[var(--accents-2)]">
           {events.map((event) => {
-            const localized = getLocalized(event, locale, ["title"] as const);
-            const title = String(localized.title ?? "");
-            const date = fmtDate(event.startsAt, locale);
+            const title = String(event.title || "");
+            const date = fmtDate(event.startsAt);
 
             return (
               <FadeIn key={event._id}>
@@ -77,14 +70,14 @@ export async function UpcomingEvents() {
                   href={event.rsvpUrl || "/events"}
                   className="ui-hover-lift-sm group -mx-4 grid grid-cols-[auto_1fr_auto] items-center gap-6 rounded-xl px-4 py-6 text-center transition-colors hover:bg-[color-mix(in_oklch,var(--brand-cream)_4%,transparent)] sm:gap-8 sm:py-8 sm:text-left"
                 >
-                  <div className="flex flex-col items-center justify-center w-16 sm:w-20">
+                  <div className="flex w-16 flex-col items-center justify-center sm:w-20">
                     <span className="text-[10px] font-mono tracking-widest text-[var(--accents-4)]">{date.weekday}</span>
-                    <span className="font-display text-3xl sm:text-4xl leading-none text-[var(--foreground)]">{date.day}</span>
+                    <span className="font-display text-3xl leading-none text-[var(--foreground)] sm:text-4xl">{date.day}</span>
                     <span className="text-[10px] font-mono tracking-widest text-[var(--accents-4)]">{date.month}</span>
                   </div>
 
                   <div className="min-w-0">
-                    <h3 className="font-display text-xl sm:text-2xl text-[var(--foreground)] leading-snug truncate group-hover:text-[var(--brand-teal)] transition-colors">
+                    <h3 className="truncate font-display text-xl leading-snug text-[var(--foreground)] transition-colors group-hover:text-[var(--brand-teal)] sm:text-2xl">
                       {title}
                     </h3>
                     <div className="mt-2 flex flex-wrap items-center justify-center gap-4 text-xs text-[var(--accents-4)] sm:justify-start">
@@ -99,7 +92,7 @@ export async function UpcomingEvents() {
                     </div>
                   </div>
 
-                  <div className="h-10 w-10 rounded-full border border-[var(--accents-2)] flex items-center justify-center text-[var(--accents-4)] group-hover:bg-[var(--brand-teal)] group-hover:border-transparent group-hover:text-white transition-colors duration-300 shrink-0">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--accents-2)] text-[var(--accents-4)] transition-colors duration-300 group-hover:border-transparent group-hover:bg-[var(--brand-teal)] group-hover:text-white">
                     <ArrowUpRight className="ui-icon-shift h-4 w-4" />
                   </div>
                 </Link>

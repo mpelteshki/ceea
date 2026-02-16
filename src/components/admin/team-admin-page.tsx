@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { toPlainText } from "@/lib/plain-text";
 
 type TeamSort = "newest" | "oldest" | "name";
 
@@ -31,8 +32,7 @@ export default function TeamAdminPage() {
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
-    roleEn: "",
-    roleIt: "",
+    role: "",
     type: "member" as "member" | "alumni",
     linkedinUrl: "",
     photoId: "",
@@ -50,8 +50,7 @@ export default function TeamAdminPage() {
     setForm({
       firstName: "",
       lastName: "",
-      roleEn: "",
-      roleIt: "",
+      role: "",
       type: "member",
       linkedinUrl: "",
       photoId: "",
@@ -70,10 +69,7 @@ export default function TeamAdminPage() {
           id: editingMemberId,
           firstName: form.firstName,
           lastName: form.lastName,
-          role: {
-            en: form.roleEn,
-            it: form.roleIt,
-          },
+          role: form.role,
           type: form.type,
           linkedinUrl: form.linkedinUrl.trim(),
           photoId: form.photoId.trim(),
@@ -82,10 +78,7 @@ export default function TeamAdminPage() {
         await createMember({
           firstName: form.firstName,
           lastName: form.lastName,
-          role: {
-            en: form.roleEn,
-            it: form.roleIt,
-          },
+          role: form.role,
           type: form.type,
           linkedinUrl: form.linkedinUrl.trim() || undefined,
           photoId: form.photoId.trim() || undefined,
@@ -110,8 +103,7 @@ export default function TeamAdminPage() {
         : [
           member.firstName,
           member.lastName,
-          member.role.en,
-          member.role.it,
+          toPlainText(member.role),
           member.linkedinUrl,
         ]
           .filter(Boolean)
@@ -203,24 +195,13 @@ export default function TeamAdminPage() {
                 required
               />
             </Field>
-            <Field label="Role (EN)">
+            <Field label="Role">
               <input
-                name="team_role_en"
+                name="team_role"
                 autoComplete="off"
                 placeholder="President..."
-                value={form.roleEn}
-                onChange={(e) => setForm({ ...form, roleEn: e.target.value })}
-                className="ui-input"
-                required
-              />
-            </Field>
-            <Field label="Role (IT)">
-              <input
-                name="team_role_it"
-                autoComplete="off"
-                placeholder="Presidente..."
-                value={form.roleIt}
-                onChange={(e) => setForm({ ...form, roleIt: e.target.value })}
+                value={form.role}
+                onChange={(e) => setForm({ ...form, role: e.target.value })}
                 className="ui-input"
                 required
               />
@@ -358,7 +339,7 @@ export default function TeamAdminPage() {
                     </h4>
                     <div className="mt-1 flex items-center justify-center gap-2 sm:justify-start">
                       <span className="ui-tag">{member.type}</span>
-                      <span className="text-sm text-[var(--muted-foreground)]">{member.role.en}</span>
+                      <span className="text-sm text-[var(--muted-foreground)]">{toPlainText(member.role)}</span>
                     </div>
                   </div>
 
@@ -370,8 +351,7 @@ export default function TeamAdminPage() {
                         setForm({
                           firstName: member.firstName,
                           lastName: member.lastName,
-                          roleEn: member.role.en,
-                          roleIt: member.role.it,
+                          role: toPlainText(member.role),
                           type: member.type,
                           linkedinUrl: member.linkedinUrl ?? "",
                           photoId: member.photoId ?? "",

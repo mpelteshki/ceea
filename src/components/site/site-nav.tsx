@@ -1,11 +1,10 @@
 "use client";
 
-import { Link, usePathname } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LanguagePicker } from "./language-picker";
 import SiteNavClerkControls from "./site-nav-clerk-controls";
 
 function NavLink({
@@ -43,17 +42,15 @@ function NavLink({
 }
 
 export function SiteNav() {
-  const t = useTranslations("Navigation");
   const pathname = usePathname();
-
   const links = [
-    { href: "/", label: t("home") },
-    { href: "/events", label: t("events") },
-    { href: "/newsletter", label: t("newsletter") },
-    { href: "/team", label: t("team") },
-    { href: "/projects", label: t("projects") },
-    { href: "/join-us", label: t("joinUs") },
-    { href: "/contacts", label: t("contacts") },
+    { href: "/", label: "Home" },
+    { href: "/events", label: "Events" },
+    { href: "/newsletter", label: "Newsletter" },
+    { href: "/team", label: "Team" },
+    { href: "/projects", label: "Projects" },
+    { href: "/join-us", label: "Join Us" },
+    { href: "/contacts", label: "Contacts" },
   ];
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -156,9 +153,7 @@ export function SiteNav() {
 
   return (
     <header className="sticky top-0 z-40 w-full">
-      <div className="h-[2px] bg-gradient-to-r from-[var(--brand-teal)] via-[var(--brand-caramel)] to-[var(--brand-teal)]" />
-
-      <div className="border-b border-[var(--accents-2)] bg-[var(--background)]/80 backdrop-blur-xl backdrop-saturate-150">
+      <div className="bg-[var(--background)]">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-6">
           <Link href="/" className="group inline-flex items-center gap-3 transition-transform duration-300 hover:scale-[1.02]">
             <div className="relative h-9 w-9 rounded-lg bg-gradient-to-br from-[var(--brand-teal)] to-[color-mix(in_oklch,var(--brand-teal)_70%,#0a3a3d)] text-white flex items-center justify-center font-bold text-lg shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
@@ -179,7 +174,6 @@ export function SiteNav() {
 
           <div className="flex items-center gap-3">
             <SiteNavClerkControls />
-            <LanguagePicker />
 
             <button
               type="button"
@@ -205,8 +199,6 @@ export function SiteNav() {
             className="absolute left-0 right-0 top-0 bg-[var(--background)] max-h-[100dvh] overflow-y-auto shadow-2xl animate-in slide-in-from-top-2 fade-in duration-300"
             style={{ overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}
           >
-            <div className="h-[2px] bg-gradient-to-r from-[var(--brand-teal)] via-[var(--brand-caramel)] to-[var(--brand-teal)]" />
-
             <div className="p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
               <div className="mx-auto max-w-6xl">
                 <div className="flex items-center justify-between">
@@ -249,9 +241,9 @@ export function SiteNav() {
                   })}
                 </div>
 
-                <div className="mt-8 flex items-center justify-between pt-6 border-t border-[var(--accents-2)]">
+                <div className="mt-8 flex items-center justify-between border-t border-[var(--accents-2)] pt-6">
                   <div className="text-xs text-[var(--accents-4)]">
-                    <kbd className="font-mono px-1.5 py-0.5 bg-[var(--accents-1)] rounded text-[10px]">ESC</kbd> to close
+                    <kbd className="rounded bg-[var(--accents-1)] px-1.5 py-0.5 font-mono text-[10px]">ESC</kbd> to close
                   </div>
                 </div>
               </div>
