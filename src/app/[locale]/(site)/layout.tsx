@@ -11,7 +11,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         Skip to content
       </a>
       <SiteNav />
-      <main id="main" tabIndex={-1} className="flex-1 min-h-[100dvh]">
+      <main
+        id="main"
+        tabIndex={-1}
+        className="flex-1 min-h-[100dvh] text-center sm:text-left"
+      >
         {children}
       </main>
       <SiteFooter />

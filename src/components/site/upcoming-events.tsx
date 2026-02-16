@@ -51,7 +51,7 @@ export async function UpcomingEvents() {
   return (
     <section className="space-y-12">
       <FadeIn>
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
           <div className="ui-title-stack">
             <h2 className="ui-section-title mt-4">{renderGradientTitle(sectionTitle)}</h2>
           </div>
@@ -75,7 +75,7 @@ export async function UpcomingEvents() {
               <FadeIn key={event._id}>
                 <Link
                   href={event.rsvpUrl || "/events"}
-                  className="ui-hover-lift-sm group grid grid-cols-[auto_1fr_auto] gap-6 sm:gap-8 items-center py-6 sm:py-8 transition-colors hover:bg-[color-mix(in_oklch,var(--brand-cream)_4%,transparent)] -mx-4 px-4 rounded-xl"
+                  className="ui-hover-lift-sm group -mx-4 grid grid-cols-[auto_1fr_auto] items-center gap-6 rounded-xl px-4 py-6 text-center transition-colors hover:bg-[color-mix(in_oklch,var(--brand-cream)_4%,transparent)] sm:gap-8 sm:py-8 sm:text-left"
                 >
                   <div className="flex flex-col items-center justify-center w-16 sm:w-20">
                     <span className="text-[10px] font-mono tracking-widest text-[var(--accents-4)]">{date.weekday}</span>
@@ -87,7 +87,7 @@ export async function UpcomingEvents() {
                     <h3 className="font-display text-xl sm:text-2xl text-[var(--foreground)] leading-snug truncate group-hover:text-[var(--brand-teal)] transition-colors">
                       {title}
                     </h3>
-                    <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-[var(--accents-4)]">
+                    <div className="mt-2 flex flex-wrap items-center justify-center gap-4 text-xs text-[var(--accents-4)] sm:justify-start">
                       <span className="inline-flex items-center gap-1.5">
                         <Calendar className="h-3 w-3" /> {date.time}
                       </span>

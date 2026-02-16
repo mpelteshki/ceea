@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
-import { Instagram, Linkedin, Mail } from "lucide-react";
+import { SITE_CONTACT, SITE_EMAIL_HREF } from "@/lib/site-contact";
 
 export async function SiteFooter() {
   const t = await getTranslations("Footer");
@@ -14,48 +14,20 @@ export async function SiteFooter() {
       <div className="bg-gradient-to-br from-[#0f3d40] via-[var(--brand-teal)] to-[#154d52] text-white relative">
         <div className="absolute top-0 right-0 w-[40%] h-[60%] bg-[radial-gradient(ellipse_at_top_right,rgba(196,154,108,0.15),transparent_70%)] pointer-events-none" />
 
-        <div className="ui-site-container relative z-10 py-16 sm:py-20">
+        <div className="ui-site-container relative z-10 py-16 text-center sm:py-20 lg:text-left">
           <div className="grid gap-12 lg:grid-cols-[1.5fr_1fr_1fr]">
             <div className="space-y-6">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center gap-3 lg:justify-start">
                 <div className="h-10 w-10 bg-white/10 backdrop-blur-sm text-white flex items-center justify-center font-bold text-xl rounded-lg border border-white/10">
                   C
                 </div>
                 <div className="font-brand text-2xl text-white">CEEA</div>
               </div>
-              <p className="max-w-md text-sm leading-7 text-white/60">{t("tagline")}</p>
-
-              <div className="flex items-center gap-3 pt-2">
-                <a
-                  href="https://www.instagram.com/ceea.bocconi/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ui-pressable h-9 w-9 rounded-full bg-white/8 border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/15 transition-[color,background-color,transform] duration-200 hover:-translate-y-0.5"
-                  aria-label="Instagram"
-                >
-                  <Instagram className="h-4 w-4" />
-                </a>
-                <a
-                  href="https://www.linkedin.com/company/ceea-bocconi/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ui-pressable h-9 w-9 rounded-full bg-white/8 border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/15 transition-[color,background-color,transform] duration-200 hover:-translate-y-0.5"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="h-4 w-4" />
-                </a>
-                <a
-                  href="mailto:ceea.bocconi@gmail.com"
-                  className="ui-pressable h-9 w-9 rounded-full bg-white/8 border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/15 transition-[color,background-color,transform] duration-200 hover:-translate-y-0.5"
-                  aria-label="Email"
-                >
-                  <Mail className="h-4 w-4" />
-                </a>
-              </div>
+              <p className="mx-auto max-w-md text-sm leading-7 text-white/60 lg:mx-0">{t("tagline")}</p>
             </div>
 
-            <div className="flex flex-col gap-4">
-              <h4 className="text-xs font-mono uppercase tracking-[0.2em] text-white/40">{t("sitemap")}</h4>
+            <div className="flex flex-col items-center gap-4 lg:items-start">
+              <p className="text-xs font-mono uppercase tracking-[0.2em] text-white/60">{t("sitemap")}</p>
               <Link href="/events" className="ui-footer-link text-sm py-1 text-white/60 hover:text-white">{tNav("events")}</Link>
               <Link href="/newsletter" className="ui-footer-link text-sm py-1 text-white/60 hover:text-white">{tNav("newsletter")}</Link>
               <Link href="/team" className="ui-footer-link text-sm py-1 text-white/60 hover:text-white">{tNav("team")}</Link>
@@ -63,11 +35,10 @@ export async function SiteFooter() {
               <Link href="/about" className="ui-footer-link text-sm py-1 text-white/60 hover:text-white">{tNav("about")}</Link>
             </div>
 
-            <div className="flex flex-col gap-4">
-              <h4 className="text-xs font-mono uppercase tracking-[0.2em] text-white/40">{t("connect")}</h4>
-              <a href="https://www.instagram.com/ceea.bocconi/" target="_blank" rel="noopener noreferrer" className="ui-footer-link text-sm py-1 text-white/60 hover:text-white">Instagram</a>
-              <a href="https://www.linkedin.com/company/ceea-bocconi/" target="_blank" rel="noopener noreferrer" className="ui-footer-link text-sm py-1 text-white/60 hover:text-white">LinkedIn</a>
-              <a href="mailto:ceea.bocconi@gmail.com" className="ui-footer-link text-sm py-1 text-white/60 hover:text-white">ceea.bocconi@gmail.com</a>
+            <div className="flex flex-col items-center gap-4 lg:items-start">
+              <p className="text-xs font-mono uppercase tracking-[0.2em] text-white/60">{t("connect")}</p>
+              <a href={SITE_CONTACT.instagram.url} target="_blank" rel="noopener noreferrer" className="ui-footer-link text-sm py-1 text-white/60 hover:text-white">Instagram</a>
+              <a href={SITE_EMAIL_HREF} className="ui-footer-link text-sm py-1 text-white/60 hover:text-white">{SITE_CONTACT.email}</a>
               <Link href="/join-us" className="ui-footer-link text-sm py-1 text-white/60 hover:text-white">{tNav("joinUs")}</Link>
             </div>
           </div>

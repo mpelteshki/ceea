@@ -54,7 +54,7 @@ export async function LatestDispatch() {
   return (
     <section className="space-y-12">
       <FadeIn>
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
           <div className="ui-title-stack">
             <h2 className="ui-section-title mt-4">{renderGradientTitle(sectionTitle)}</h2>
           </div>
@@ -108,10 +108,10 @@ function FeaturedPost({
   return (
     <Link
       href={`/newsletter/${post.slug}`}
-      className="ui-hover-lift group flex flex-col justify-between rounded-2xl border border-[var(--accents-2)] p-8 transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]"
+      className="ui-hover-lift group flex flex-col justify-between rounded-2xl border border-[var(--accents-2)] p-8 text-center transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] sm:text-left"
     >
       <div>
-        <div className="flex items-center gap-4 mb-6">
+        <div className="mb-6 flex items-center justify-center gap-4 sm:justify-start">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--accents-4)]">
             {post.publishedAt ? fmtDate(post.publishedAt, locale) : labels.draft}
           </span>
@@ -147,7 +147,7 @@ function CompactPost({
   return (
     <Link
       href={`/newsletter/${post.slug}`}
-      className="ui-hover-lift-sm group flex items-start gap-6 rounded-2xl border border-[var(--accents-2)] p-6 transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
+      className="ui-hover-lift-sm group flex items-start gap-6 rounded-2xl border border-[var(--accents-2)] p-6 text-center transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.04)] sm:text-left"
     >
       <div className="min-w-0 flex-1">
         <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--accents-4)]">

@@ -8,6 +8,11 @@ export function DeferredAnalytics() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    if (process.env.NODE_ENV !== "production") return;
+    if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+      return;
+    }
+
     const run = () => setReady(true);
     const win = globalThis as unknown as Window & {
       requestIdleCallback?: (

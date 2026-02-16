@@ -13,6 +13,30 @@ import { hasConvex } from "@/lib/public-env";
 type Kind = "flagship" | "career" | "culture" | "community";
 type EventDoc = Doc<"events">;
 type PostDoc = Doc<"posts">;
+type EventSort = "soonest" | "latest";
+type PostSort = "newest" | "oldest" | "title";
+type PostStatusFilter = "all" | "published" | "draft";
+
+const EVENTS_PAGE_SIZE = 8;
+const POSTS_PAGE_SIZE = 8;
+
+function paginate<T>(items: T[], page: number, pageSize: number) {
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const safePage = Math.min(Math.max(1, page), totalPages);
+  const start = (safePage - 1) * pageSize;
+  return {
+    items: items.slice(start, start + pageSize),
+    safePage,
+    totalPages,
+    totalItems: items.length,
+  };
+}
+
+function toDatetimeLocal(ms: number) {
+  const date = new Date(ms);
+  const offset = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+}
 
 export function AdminDashboard() {
   if (!hasConvex) {
@@ -36,6 +60,7 @@ function AdminDashboardInner() {
 
   const events = useQuery(api.events.listAll, {}) as EventDoc[] | undefined;
   const createEvent = useMutation(api.events.create);
+  const updateEvent = useMutation(api.events.update);
   const removeEvent = useMutation(api.events.remove);
 
   const posts = useQuery(api.posts.listAll, {}) as PostDoc[] | undefined;
@@ -66,6 +91,7 @@ function AdminDashboardInner() {
   );
   const [rsvpUrl, setRsvpUrl] = useState("");
   const [moreInfoUrl, setMoreInfoUrl] = useState("");
+  const [editingEventId, setEditingEventId] = useState<Id<"events"> | null>(null);
 
   const [postTitle, setPostTitle] = useState("");
   const [postTitle_it, setPostTitleIt] = useState("");
@@ -76,6 +102,14 @@ function AdminDashboardInner() {
     `# Title\n\nWrite in **Markdown**.\n\n- Keep it concrete\n- Add links\n`,
   );
   const [editingPostId, setEditingPostId] = useState<Id<"posts"> | null>(null);
+  const [eventsQuery, setEventsQuery] = useState("");
+  const [eventsKindFilter, setEventsKindFilter] = useState<"all" | Kind>("all");
+  const [eventsSort, setEventsSort] = useState<EventSort>("soonest");
+  const [eventsPage, setEventsPage] = useState(1);
+  const [postsQuery, setPostsQuery] = useState("");
+  const [postsStatusFilter, setPostsStatusFilter] = useState<PostStatusFilter>("all");
+  const [postsSort, setPostsSort] = useState<PostSort>("newest");
+  const [postsPage, setPostsPage] = useState(1);
 
   const canSubmit = useMemo(() => {
     return (
@@ -93,8 +127,64 @@ function AdminDashboardInner() {
     );
   }, [postTitle, postExcerpt, postBody]);
 
+  const filteredEvents = useMemo(() => {
+    if (!events) return [] as EventDoc[];
+    const q = eventsQuery.trim().toLowerCase();
+    const list = events.filter((event) => {
+      const matchesKind = eventsKindFilter === "all" ? true : event.kind === eventsKindFilter;
+      const matchesQuery = q.length === 0
+        ? true
+        : [event.title, event.title_it, event.summary, event.summary_it, event.location]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(q));
+      return matchesKind && matchesQuery;
+    });
+
+    list.sort((a, b) => (eventsSort === "soonest" ? a.startsAt - b.startsAt : b.startsAt - a.startsAt));
+    return list;
+  }, [events, eventsKindFilter, eventsQuery, eventsSort]);
+
+  const filteredPosts = useMemo(() => {
+    if (!posts) return [] as PostDoc[];
+    const q = postsQuery.trim().toLowerCase();
+    const list = posts.filter((post) => {
+      const isPublished = post.publishedAt != null;
+      const matchesStatus = postsStatusFilter === "all"
+        ? true
+        : postsStatusFilter === "published"
+          ? isPublished
+          : !isPublished;
+      const matchesQuery = q.length === 0
+        ? true
+        : [post.title, post.title_it, post.excerpt, post.excerpt_it, post.slug]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(q));
+      return matchesStatus && matchesQuery;
+    });
+
+    if (postsSort === "title") {
+      list.sort((a, b) => a.title.localeCompare(b.title));
+    } else {
+      list.sort((a, b) => {
+        const aDate = a.createdAt;
+        const bDate = b.createdAt;
+        return postsSort === "newest" ? bDate - aDate : aDate - bDate;
+      });
+    }
+    return list;
+  }, [posts, postsQuery, postsSort, postsStatusFilter]);
+
+  const eventsPagination = useMemo(
+    () => paginate(filteredEvents, eventsPage, EVENTS_PAGE_SIZE),
+    [filteredEvents, eventsPage],
+  );
+  const postsPagination = useMemo(
+    () => paginate(filteredPosts, postsPage, POSTS_PAGE_SIZE),
+    [filteredPosts, postsPage],
+  );
+
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 text-center sm:text-left">
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
           <div className="flex items-center gap-2">
@@ -112,7 +202,7 @@ function AdminDashboardInner() {
       )}
 
       <header className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center sm:justify-between">
           <div className="space-y-1">
 
             <h1 className="font-display text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
@@ -120,7 +210,7 @@ function AdminDashboardInner() {
             </h1>
           </div>
         </div>
-        <p className="max-w-2xl text-sm leading-6 text-[var(--muted-foreground)]">
+        <p className="mx-auto max-w-2xl text-sm leading-6 text-[var(--muted-foreground)] sm:mx-0">
           Manage your site&rsquo;s content. All changes are synced in real-time.
         </p>
 
@@ -140,7 +230,7 @@ function AdminDashboardInner() {
       </header>
 
 
-      <div className="flex gap-1 bg-[var(--secondary)] p-1 rounded-lg w-fit">
+      <div className="mx-auto flex w-fit gap-1 rounded-lg bg-[var(--secondary)] p-1 sm:mx-0">
         <button
           type="button"
           onClick={() => router.replace("/admin?tab=events", { scroll: false })}
@@ -172,13 +262,36 @@ function AdminDashboardInner() {
       {tab === "events" ? (
         <>
           <section className="space-y-6">
-            <div className="flex items-end justify-between gap-4">
+            <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
               <div>
-                <h2 className="font-display text-xl font-semibold text-[var(--foreground)]">Create event</h2>
+                <h2 className="font-display text-xl font-semibold text-[var(--foreground)]">
+                  {editingEventId ? "Edit event" : "Create event"}
+                </h2>
                 <p className="mt-1 text-sm text-[var(--accents-5)]">
                   Keep it short. The public pages are deliberately minimal.
                 </p>
               </div>
+              {editingEventId ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingEventId(null);
+                    setTitle("");
+                    setTitleIt("");
+                    setSummary("");
+                    setSummaryIt("");
+                    setLocation("Bocconi University");
+                    setKind("flagship");
+                    setStartsAt(new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString().slice(0, 16));
+                    setRsvpUrl("");
+                    setMoreInfoUrl("");
+                  }}
+                  className="ui-btn"
+                  data-variant="secondary"
+                >
+                  New event
+                </button>
+              ) : null}
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -286,7 +399,7 @@ function AdminDashboardInner() {
               </Field>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 pt-4">
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-4 sm:justify-start">
               <button
                 type="button"
                 disabled={!canSubmit || isCreatingEvent}
@@ -296,48 +409,136 @@ function AdminDashboardInner() {
                   setError(null);
                   try {
                     const ms = new Date(startsAt).getTime();
-                    await createEvent({
-                      title: title.trim(),
-                      title_it: title_it.trim() || undefined,
-                      summary: summary.trim(),
-                      summary_it: summary_it.trim() || undefined,
-                      location: location.trim(),
-                      kind,
-                      startsAt: ms,
-                      rsvpUrl: rsvpUrl.trim() || undefined,
-                      moreInfoUrl: moreInfoUrl.trim() || undefined,
-                    });
+                    if (editingEventId) {
+                      await updateEvent({
+                        id: editingEventId,
+                        title: title.trim(),
+                        title_it: title_it.trim() || undefined,
+                        summary: summary.trim(),
+                        summary_it: summary_it.trim() || undefined,
+                        location: location.trim(),
+                        kind,
+                        startsAt: ms,
+                        rsvpUrl: rsvpUrl.trim(),
+                        moreInfoUrl: moreInfoUrl.trim(),
+                      });
+                    } else {
+                      await createEvent({
+                        title: title.trim(),
+                        title_it: title_it.trim() || undefined,
+                        summary: summary.trim(),
+                        summary_it: summary_it.trim() || undefined,
+                        location: location.trim(),
+                        kind,
+                        startsAt: ms,
+                        rsvpUrl: rsvpUrl.trim() || undefined,
+                        moreInfoUrl: moreInfoUrl.trim() || undefined,
+                      });
+                    }
                     setTitle("");
                     setTitleIt("");
                     setSummary("");
                     setSummaryIt("");
+                    setLocation("Bocconi University");
+                    setKind("flagship");
+                    setStartsAt(new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString().slice(0, 16));
                     setRsvpUrl("");
                     setMoreInfoUrl("");
+                    setEditingEventId(null);
                   } catch (err) {
-                    setError(err instanceof Error ? err.message : "Failed to create event");
+                    setError(err instanceof Error ? err.message : "Failed to save event");
                   } finally {
                     setIsCreatingEvent(false);
                   }
                 }}
                 className={["ui-btn", (!canSubmit || isCreatingEvent) ? "opacity-50 cursor-not-allowed" : ""].join(" ")}
               >
-                {isCreatingEvent ? "Creating..." : "Create"} <span className="text-[10px]">{isCreatingEvent ? "" : "→"}</span>
+                {isCreatingEvent
+                  ? editingEventId
+                    ? "Saving..."
+                    : "Creating..."
+                  : editingEventId
+                    ? "Save changes"
+                    : "Create"}{" "}
+                <span className="text-[10px]">{isCreatingEvent ? "" : "→"}</span>
               </button>
               <div className="text-xs text-[var(--muted-foreground)]">
-                If this fails: check Clerk JWT + Convex auth config, and `ADMIN_EMAILS`.
+                If this fails: check Clerk JWT + Convex auth config.
               </div>
             </div>
           </section>
 
           <section className="space-y-4 pt-8 border-t border-[var(--accents-2)]">
-            <div className="flex items-end justify-between gap-3">
+            <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
               <div>
                 <h2 className="font-display text-xl font-semibold text-[var(--foreground)]">Events</h2>
                 <div className="mt-1 text-sm text-[var(--accents-5)]">
-                  {events ? `${events.length} total` : "Loading…"}
+                  {events ? `${filteredEvents.length} of ${events.length} shown` : "Loading..."}
                 </div>
               </div>
             </div>
+
+            {events ? (
+              <div className="grid gap-3 md:grid-cols-[1fr_180px_180px_auto]">
+                <input
+                  value={eventsQuery}
+                  onChange={(e) => {
+                    setEventsQuery(e.target.value);
+                    setEventsPage(1);
+                  }}
+                  placeholder="Search title, summary, location..."
+                  className="ui-input"
+                />
+                <select
+                  value={eventsKindFilter}
+                  onChange={(e) => {
+                    setEventsKindFilter(e.target.value as "all" | Kind);
+                    setEventsPage(1);
+                  }}
+                  className="ui-input"
+                >
+                  <option value="all">All kinds</option>
+                  <option value="flagship">Flagship</option>
+                  <option value="career">Career</option>
+                  <option value="culture">Culture</option>
+                  <option value="community">Community</option>
+                </select>
+                <select
+                  value={eventsSort}
+                  onChange={(e) => {
+                    setEventsSort(e.target.value as EventSort);
+                    setEventsPage(1);
+                  }}
+                  className="ui-input"
+                >
+                  <option value="soonest">Soonest first</option>
+                  <option value="latest">Latest first</option>
+                </select>
+                <div className="flex items-center justify-end gap-2 text-xs text-[var(--muted-foreground)]">
+                  <button
+                    type="button"
+                    className="ui-btn px-3 py-1.5 min-h-0 text-xs"
+                    data-variant="secondary"
+                    disabled={eventsPagination.safePage <= 1}
+                    onClick={() => setEventsPage((p) => Math.max(1, p - 1))}
+                  >
+                    Prev
+                  </button>
+                  <span>
+                    Page {eventsPagination.safePage}/{eventsPagination.totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    className="ui-btn px-3 py-1.5 min-h-0 text-xs"
+                    data-variant="secondary"
+                    disabled={eventsPagination.safePage >= eventsPagination.totalPages}
+                    onClick={() => setEventsPage((p) => Math.min(eventsPagination.totalPages, p + 1))}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            ) : null}
 
             {!events ? (
               <div className="divide-y divide-[var(--border)] border-t border-[var(--border)]">
@@ -348,14 +549,14 @@ function AdminDashboardInner() {
                   </div>
                 ))}
               </div>
-            ) : events.length === 0 ? (
+            ) : filteredEvents.length === 0 ? (
               <div className="ui-card p-8 text-center text-sm text-[var(--muted-foreground)]">
-                No events found. Create one to get started.
+                {events.length === 0 ? "No events found. Create one to get started." : "No events match the current filters."}
               </div>
             ) : (
               <div className="grid gap-4">
                 <AnimatePresence initial={false}>
-                  {events.map((e) => (
+                  {eventsPagination.items.map((e) => (
                     <motion.div
                       key={e._id}
                       initial={{ opacity: 0, y: 10 }}
@@ -364,7 +565,7 @@ function AdminDashboardInner() {
                       className="ui-card group grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-start transition-colors hover:bg-[var(--secondary)]/50"
                     >
                       <div className="min-w-0 space-y-3">
-                        <div className="flex items-baseline justify-between gap-4 md:block">
+                        <div className="flex flex-wrap items-center justify-center gap-2 md:block">
                           <h3 className="font-display text-lg font-semibold text-[var(--foreground)]">
                             {e.title}
                           </h3>
@@ -373,13 +574,32 @@ function AdminDashboardInner() {
                         <p className="line-clamp-2 text-sm leading-6 text-[var(--muted-foreground)]">
                           {e.summary}
                         </p>
-                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-mono uppercase tracking-wider text-[var(--muted-foreground)]">
+                        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[10px] font-mono uppercase tracking-wider text-[var(--muted-foreground)] md:justify-start">
                           <span>{new Date(e.startsAt).toLocaleDateString()} at {new Date(e.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                           <span>{e.location}</span>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-start gap-4 md:justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-center gap-4 opacity-100 transition-opacity md:justify-end md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingEventId(e._id);
+                            setTitle(e.title);
+                            setTitleIt(e.title_it ?? "");
+                            setSummary(e.summary);
+                            setSummaryIt(e.summary_it ?? "");
+                            setLocation(e.location);
+                            setKind(e.kind);
+                            setStartsAt(toDatetimeLocal(e.startsAt));
+                            setRsvpUrl(e.rsvpUrl ?? "");
+                            setMoreInfoUrl(e.moreInfoUrl ?? "");
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className="ui-link text-sm"
+                        >
+                          Edit
+                        </button>
                         <button
                           type="button"
                           disabled={deletingEventId === e._id}
@@ -389,6 +609,9 @@ function AdminDashboardInner() {
                             setError(null);
                             try {
                               await removeEvent({ id: e._id });
+                              if (editingEventId === e._id) {
+                                setEditingEventId(null);
+                              }
                             } catch (err) {
                               setError(err instanceof Error ? err.message : "Failed to delete event");
                             } finally {
@@ -411,7 +634,7 @@ function AdminDashboardInner() {
       ) : (
         <>
           <section className="space-y-6">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:items-end sm:text-left">
               <div>
                 <h2 className="font-display text-xl font-semibold text-[var(--foreground)]">
                   {editingPostId ? "Edit post" : "Create post"}
@@ -426,8 +649,10 @@ function AdminDashboardInner() {
                   onClick={() => {
                     setEditingPostId(null);
                     setPostTitle("");
+                    setPostTitleIt("");
                     setPostSlug("");
                     setPostExcerpt("");
+                    setPostExcerptIt("");
                     setPostBody(
                       `# Title\n\nWrite in **Markdown**.\n\n- Keep it concrete\n- Add links\n`,
                     );
@@ -507,7 +732,7 @@ function AdminDashboardInner() {
               </Field>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 pt-4">
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-4 sm:justify-start">
               <button
                 type="button"
                 disabled={!canSubmitPost || isCreatingPost}
@@ -600,9 +825,70 @@ function AdminDashboardInner() {
             <div>
               <h2 className="font-display text-xl font-semibold text-[var(--foreground)]">Posts</h2>
               <div className="mt-1 text-sm text-[var(--accents-5)]">
-                {posts ? `${posts.length} total` : "Loading…"}
+                {posts ? `${filteredPosts.length} of ${posts.length} shown` : "Loading..."}
               </div>
             </div>
+
+            {posts ? (
+              <div className="grid gap-3 md:grid-cols-[1fr_180px_180px_auto]">
+                <input
+                  value={postsQuery}
+                  onChange={(e) => {
+                    setPostsQuery(e.target.value);
+                    setPostsPage(1);
+                  }}
+                  placeholder="Search title, excerpt, slug..."
+                  className="ui-input"
+                />
+                <select
+                  value={postsStatusFilter}
+                  onChange={(e) => {
+                    setPostsStatusFilter(e.target.value as PostStatusFilter);
+                    setPostsPage(1);
+                  }}
+                  className="ui-input"
+                >
+                  <option value="all">All statuses</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                </select>
+                <select
+                  value={postsSort}
+                  onChange={(e) => {
+                    setPostsSort(e.target.value as PostSort);
+                    setPostsPage(1);
+                  }}
+                  className="ui-input"
+                >
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                  <option value="title">Title A-Z</option>
+                </select>
+                <div className="flex items-center justify-end gap-2 text-xs text-[var(--muted-foreground)]">
+                  <button
+                    type="button"
+                    className="ui-btn px-3 py-1.5 min-h-0 text-xs"
+                    data-variant="secondary"
+                    disabled={postsPagination.safePage <= 1}
+                    onClick={() => setPostsPage((p) => Math.max(1, p - 1))}
+                  >
+                    Prev
+                  </button>
+                  <span>
+                    Page {postsPagination.safePage}/{postsPagination.totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    className="ui-btn px-3 py-1.5 min-h-0 text-xs"
+                    data-variant="secondary"
+                    disabled={postsPagination.safePage >= postsPagination.totalPages}
+                    onClick={() => setPostsPage((p) => Math.min(postsPagination.totalPages, p + 1))}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            ) : null}
 
             {!posts ? (
               <div className="divide-y divide-[var(--border)] border-t border-[var(--border)]">
@@ -614,21 +900,21 @@ function AdminDashboardInner() {
                   </div>
                 ))}
               </div>
-            ) : posts.length === 0 ? (
+            ) : filteredPosts.length === 0 ? (
               <div className="ui-card p-4 text-sm text-[var(--muted-foreground)] rounded-md">
-                No posts yet.
+                {posts.length === 0 ? "No posts yet." : "No posts match the current filters."}
               </div>
             ) : (
               <div className="grid gap-4">
-                {posts.map((p) => {
+                {postsPagination.items.map((p) => {
                   const isPublished = p.publishedAt != null;
                   return (
                     <div
                       key={p._id}
-                      className="ui-card p-5 grid gap-4 md:grid-cols-[1fr_auto] md:items-start"
+                      className="ui-card grid gap-4 p-5 text-center md:grid-cols-[1fr_auto] md:items-start md:text-left"
                     >
                       <div className="min-w-0 space-y-3">
-                        <div className="flex items-baseline justify-between gap-4 md:block">
+                        <div className="flex flex-wrap items-center justify-center gap-2 md:block">
                           <h3 className="font-display text-lg font-semibold text-[var(--foreground)]">
                             {p.title}
                           </h3>
@@ -648,7 +934,7 @@ function AdminDashboardInner() {
                           {p.excerpt}
                         </p>
 
-                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-mono uppercase tracking-wider text-[var(--muted-foreground)]">
+                        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs font-mono uppercase tracking-wider text-[var(--muted-foreground)] md:justify-start">
                           <span>/{p.slug}</span>
                           <span>
                             {isPublished
@@ -657,7 +943,7 @@ function AdminDashboardInner() {
                           </span>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2">
+                        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-2 md:justify-start">
                           <button
                             type="button"
                             onClick={() => {

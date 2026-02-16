@@ -54,12 +54,12 @@ export async function NewsletterList() {
           <FadeIn key={post._id} delay={Math.min(idx * 0.04, 0.2)}>
             <Link
               href={`/newsletter/${post.slug}`}
-              className={`group block ui-card ui-hover-lift overflow-hidden bg-card transition-colors hover:border-ring ${isFeatured ? "sm:col-span-2 lg:col-span-2" : ""}`}
+              className={`group block ui-card ui-hover-lift overflow-hidden bg-card text-center transition-colors hover:border-ring sm:text-left ${isFeatured ? "sm:col-span-2 lg:col-span-2" : ""}`}
             >
               <div className="h-1 bg-gradient-to-r from-primary to-brand-caramel" />
 
               <div className={`p-6 ${isFeatured ? "sm:p-8" : ""}`}>
-                <div className="flex items-center justify-between mb-4">
+                <div className="mb-4 flex items-center justify-center gap-3 sm:justify-between">
                   <span className="ui-tag text-muted-foreground border-border">
                     {post.publishedAt ? fmtDate(post.publishedAt, locale) : t("draft")}
                   </span>

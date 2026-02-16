@@ -46,9 +46,9 @@ export async function EventsList() {
     return (
       <div className="rounded-2xl border border-dashed border-border py-16 text-center">
         <div className="mx-auto h-14 w-14 rounded-full bg-secondary flex items-center justify-center mb-4">
-          <Calendar className="h-6 w-6 text-muted-foreground" />
+          <Calendar className="h-6 w-6 text-[var(--accents-6)]" />
         </div>
-        <p className="text-sm text-muted-foreground">{t("noEvents")}</p>
+        <p className="text-sm text-[var(--accents-6)]">{t("noEvents")}</p>
       </div>
     );
   }
@@ -64,7 +64,7 @@ export async function EventsList() {
 
           return (
             <FadeIn key={event._id} delay={Math.min(idx * 0.04, 0.18)}>
-              <div className="ui-hover-lift-sm group grid grid-cols-[auto_1fr_auto] gap-6 sm:gap-8 items-center py-6 sm:py-8 rounded-xl px-3 -mx-3 hover:bg-[color-mix(in_oklch,var(--brand-cream)_4%,transparent)]">
+              <div className="ui-hover-lift-sm group -mx-3 grid grid-cols-[auto_1fr_auto] items-center gap-6 rounded-xl px-3 py-6 text-center hover:bg-[color-mix(in_oklch,var(--brand-cream)_4%,transparent)] sm:gap-8 sm:py-8 sm:text-left">
                 <div className="flex flex-col items-center justify-center w-16 sm:w-20">
                   <span className="text-[10px] font-mono tracking-widest text-muted-foreground">{date.weekday}</span>
                   <span className="font-display text-3xl sm:text-4xl leading-none text-foreground">{date.day}</span>
@@ -73,7 +73,7 @@ export async function EventsList() {
 
                 <div className="min-w-0">
                   <h3 className="font-display text-lg sm:text-xl text-foreground leading-snug truncate">{title}</h3>
-                  <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                  <div className="mt-2 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground sm:justify-start">
                     <span className="inline-flex items-center gap-1.5">
                       <Calendar className="h-3 w-3" /> {date.time}
                     </span>

@@ -24,13 +24,13 @@ export function EmptyState({
             )}
         >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accents-2)]">
-                <Icon className="h-6 w-6 text-[var(--accents-5)]" />
+                <Icon className="h-6 w-6 text-[var(--accents-6)]" />
             </div>
             <h3 className="mt-4 font-display text-lg text-[var(--foreground)]">
                 {title}
             </h3>
             {description && (
-                <p className="mt-2 text-sm text-[var(--accents-5)] max-w-sm">
+                <p className="mt-2 max-w-sm text-sm text-[var(--accents-6)]">
                     {description}
                 </p>
             )}

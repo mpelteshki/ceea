@@ -86,7 +86,9 @@
         "title": "Il Nostro Team",
         "members": "Membri Attuali",
         "alumni": "Alumni",
-        "connect": "Collegati"
+        "connect": "Collegati",
+        "noMembers": "Nessun membro al momento.",
+        "checkBackLater": "Torna più tardi per aggiornamenti."
     },
     "ProjectsPage": {
         "kicker": "Vetrina",

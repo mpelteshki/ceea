@@ -1,8 +1,27 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
 import { renderGradientTitle } from "@/lib/gradient-title";
+import { buildPageMetadata, resolveLocale, toMetaDescription } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const typedLocale = resolveLocale(locale);
+  const t = await getTranslations({ locale: typedLocale, namespace: "JoinUsPage" });
+
+  return buildPageMetadata({
+    locale: typedLocale,
+    pathname: "/join-us",
+    title: t("title"),
+    description: toMetaDescription(t("content")),
+  });
+}
 
 export default async function JoinUsPage() {
   const t = await getTranslations("JoinUsPage");
@@ -14,16 +33,18 @@ export default async function JoinUsPage() {
       <div className="absolute bottom-0 left-0 right-0 h-px bg-[var(--accents-2)]" />
 
       <div className="ui-site-container relative py-24 sm:py-32">
-        <div className="max-w-4xl">
+        <div className="mx-auto max-w-4xl sm:mx-0">
           <FadeInStagger className="space-y-10">
             <FadeIn>
               <h1 className="ui-page-title">{renderGradientTitle(t("title"))}</h1>
             </FadeIn>
             <FadeIn>
-              <p className="max-w-xl text-lg leading-relaxed text-[var(--accents-5)]">{t("content")}</p>
+              <p className="mx-auto max-w-xl text-base leading-relaxed text-[var(--accents-5)] sm:mx-0 sm:text-lg">
+                {t("content")}
+              </p>
             </FadeIn>
             <FadeIn>
-              <div className="flex flex-wrap gap-4 pt-4">
+              <div className="flex flex-wrap justify-center gap-4 pt-4 sm:justify-start">
                 <Link href="/contacts" className="ui-btn group">
                   {t("getInTouch")}
                   <ArrowRight className="ui-icon-shift h-4 w-4" />

@@ -9,29 +9,31 @@ export async function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-[var(--background)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_0%_40%,rgba(25,101,107,0.08),transparent_60%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_100%_0%,rgba(196,154,108,0.06),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_88%_54%_at_2%_42%,rgba(25,101,107,0.12),transparent_62%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_62%_62%_at_100%_0%,rgba(196,154,108,0.1),transparent_62%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(25,101,107,0.02)_68%,transparent_100%)]" />
       <div className="absolute bottom-0 left-0 right-0 h-px bg-[var(--accents-2)]" />
 
       <div className="ui-site-container relative">
-        <div className="pt-16 sm:pt-24 md:pt-32 pb-20 sm:pb-28 md:pb-36 space-y-16 md:space-y-20">
+        <div className="grid min-h-[calc(100dvh-4.15rem)] content-center py-10 sm:py-14 md:py-16">
+          <div className="space-y-10 sm:space-y-12 md:space-y-14">
           <FadeIn>
-            <h1 className="max-w-5xl">
-              <span className="block font-display text-[clamp(2.8rem,7.5vw,7.5rem)] leading-[0.92] tracking-[-0.04em] text-[var(--foreground)]">
+            <h1 className="mx-auto max-w-6xl text-center sm:mx-0 sm:text-left">
+              <span className="block font-display text-[clamp(3.2rem,8.8vw,8.8rem)] leading-[0.88] tracking-[-0.045em] text-[var(--foreground)]">
                 {t("titleLine1")}
               </span>
-              <span className="block font-display text-[clamp(2.8rem,7.5vw,7.5rem)] leading-[0.92] tracking-[-0.04em] text-gradient mt-2">
+              <span className="mt-2 block font-display text-[clamp(3.2rem,8.8vw,8.8rem)] leading-[0.88] tracking-[-0.045em] text-gradient">
                 {t("titleLine2")}
               </span>
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.15}>
-            <div className="grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
-              <p className="max-w-xl text-lg sm:text-xl leading-relaxed text-[var(--accents-5)]">
+            <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 md:mx-0 md:flex-row md:items-end md:justify-between md:gap-10">
+              <p className="mx-auto max-w-2xl text-base leading-relaxed text-[var(--accents-5)] sm:text-lg md:mx-0 md:flex-1 md:text-[1.22rem] md:leading-relaxed">
                 {t("description")}
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex shrink-0 flex-wrap justify-center gap-4 md:justify-end">
                 <Link href="/join-us" className="ui-btn group">
                   {t("joinBtn")}
                   <ArrowRight className="ui-icon-shift h-4 w-4" />
@@ -42,6 +44,7 @@ export async function Hero() {
               </div>
             </div>
           </FadeIn>
+        </div>
         </div>
       </div>
     </section>

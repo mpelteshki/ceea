@@ -1,11 +1,11 @@
 "use client";
 
 import { SignedIn, SignedOut, UserButton, SignOutButton } from "@clerk/nextjs";
-import { Link } from "@/i18n/routing";
+import Link from "next/link";
 
 export function AdminAuthMenu() {
   return (
-    <div className="mt-6 flex flex-wrap items-center gap-3 text-sm">
+    <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-center text-sm">
       <SignedOut>
         <Link
           href="/sign-in"
@@ -21,11 +21,11 @@ export function AdminAuthMenu() {
         </Link>
       </SignedOut>
       <SignedIn>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col items-center gap-4">
           <div className="flex items-center gap-2">
             <UserButton />
             <span className="text-[var(--accents-5)]">
-              Signed in as <span className="font-mono text-[var(--foreground)]">ADMIN</span>
+              Signed in
             </span>
           </div>
           <SignOutButton>
@@ -33,10 +33,6 @@ export function AdminAuthMenu() {
               Sign out from account
             </button>
           </SignOutButton>
-          <p className="text-xs text-[var(--accents-4)]">
-            If you need to switch accounts, sign out and sign in with an email in{" "}
-            <span className="font-mono text-[var(--foreground)]">ADMIN_EMAILS</span>.
-          </p>
         </div>
 
       </SignedIn>
@@ -46,4 +42,3 @@ export function AdminAuthMenu() {
     </div>
   );
 }
-

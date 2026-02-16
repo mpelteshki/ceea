@@ -22,7 +22,7 @@ export async function Divisions() {
       <div className="ui-site-container relative py-24">
         <FadeInStagger className="space-y-16">
           <FadeIn>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
               <div className="ui-title-stack">
                 <h2 className="ui-section-title">{renderGradientTitle(title)}</h2>
               </div>
@@ -33,10 +33,10 @@ export async function Divisions() {
           <div className="grid gap-5 sm:grid-cols-2">
             {divisionKeys.map((d, i) => (
               <FadeIn key={d.key}>
-                <article className="ui-hover-lift group relative flex flex-col rounded-2xl border border-[var(--accents-2)] bg-[var(--background)] p-8 transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] h-full">
+                <article className="ui-hover-lift group relative flex h-full flex-col rounded-2xl border border-[var(--accents-2)] bg-[var(--background)] p-8 text-center transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] sm:text-left">
                   <div className="absolute top-0 left-8 right-8 h-[2px] rounded-full" style={{ background: d.accent }} />
 
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start justify-center gap-4 sm:justify-between">
                     <div
                       className="flex h-12 w-12 items-center justify-center rounded-xl transition-[transform,color,background-color] duration-300 shrink-0 group-hover:scale-105"
                       style={{

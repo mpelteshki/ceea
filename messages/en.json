@@ -5,7 +5,7 @@
     "Hero": {
         "titleLine1": "Central & Eastern European",
         "titleLine2": "Associacion",
-        "description": "A central hub for students connected to Central & Eastern Europe at Bocconi. Flagship events, career acceleration, and a network that spans the region.",
+        "description": "A central hub for Eastern European students. Where Western European funding meets Eastern European minds",
         "joinBtn": "Join Us",
         "eventsBtn": "Upcoming events"
     },
@@ -24,7 +24,7 @@
     },
     "UpcomingEvents": {
         "eyebrow": "Calendar",
-        "title": "Moments worth showing up for.",
+        "title": "Moments worth showing up for",
         "viewFull": "View full calendar",
         "noEvents": "No upcoming events.",
         "checkBackLater": "Check back later for updates."
@@ -89,7 +89,9 @@
         "title": "Our Team",
         "members": "Current Members",
         "alumni": "Alumni",
-        "connect": "Connect"
+        "connect": "Connect",
+        "noMembers": "No members yet.",
+        "checkBackLater": "Check back later for updates."
     },
     "ProjectsPage": {
         "kicker": "Showcase",

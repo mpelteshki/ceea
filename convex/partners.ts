@@ -38,6 +38,42 @@ export const create = mutation({
   },
 });
 
+export const update = mutation({
+    args: {
+        id: v.id("partners"),
+        name: v.optional(v.string()),
+        tier: v.optional(
+            v.union(
+                v.literal("lead"),
+                v.literal("supporting"),
+                v.literal("community"),
+            ),
+        ),
+        websiteUrl: v.optional(v.string()),
+        logoUrl: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        await requireAdmin(ctx);
+        const patch: {
+            name?: string;
+            tier?: "lead" | "supporting" | "community";
+            websiteUrl?: string | undefined;
+            logoUrl?: string | undefined;
+        } = {};
+
+        if (args.name !== undefined) patch.name = args.name;
+        if (args.tier !== undefined) patch.tier = args.tier;
+        if (args.websiteUrl !== undefined) {
+            patch.websiteUrl = normalizeOptionalUrl(args.websiteUrl, "Partner website URL");
+        }
+        if (args.logoUrl !== undefined) {
+            patch.logoUrl = normalizeOptionalUrl(args.logoUrl, "Partner logo URL");
+        }
+
+        await ctx.db.patch(args.id, patch);
+    },
+});
+
 export const remove = mutation({
     args: { id: v.id("partners") },
     handler: async (ctx, args) => {

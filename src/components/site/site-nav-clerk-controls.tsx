@@ -1,7 +1,7 @@
 "use client";
 
 import { SignedIn, SignedOut, UserButton, SignOutButton } from "@clerk/nextjs";
-import { Link } from "@/i18n/routing";
+import Link from "next/link";
 
 export default function SiteNavClerkControls() {
   return (

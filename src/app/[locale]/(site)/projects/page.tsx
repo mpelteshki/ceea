@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowUpRight } from "lucide-react";
+import type { Metadata } from "next";
 
 import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
 import { ExpandableText } from "@/components/ui/expandable-text";
@@ -8,10 +9,35 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { renderGradientTitle } from "@/lib/gradient-title";
+import { AppLocale, buildPageMetadata, resolveLocale, toMetaDescription } from "@/lib/seo";
 import { api } from "../../../../../convex/_generated/api";
 import type { Doc } from "../../../../../convex/_generated/dataModel";
 
 type ProjectDoc = Doc<"projects">;
+
+function projectsDescriptionByLocale(locale: AppLocale): string {
+  if (locale === "it") {
+    return "Scopri i progetti CEEA Bocconi: iniziative guidate dagli studenti su cultura, diplomazia, fintech e community.";
+  }
+  return "Explore CEEA Bocconi projects: student-led initiatives across culture, diplomacy, fintech, and community.";
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const typedLocale = resolveLocale(locale);
+  const t = await getTranslations({ locale: typedLocale, namespace: "ProjectsPage" });
+
+  return buildPageMetadata({
+    locale: typedLocale,
+    pathname: "/projects",
+    title: t("title"),
+    description: toMetaDescription(projectsDescriptionByLocale(typedLocale)),
+  });
+}
 
 export default async function ProjectsPage() {
   const locale = await getLocale();
@@ -69,7 +95,7 @@ export default async function ProjectsPage() {
                     </div>
 
                     <div className={`space-y-6 ${isReversed ? "lg:[direction:ltr]" : ""}`}>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center gap-3 lg:justify-start">
                         <span className="font-mono text-xs text-[var(--accents-4)] tabular-nums">{String(idx + 1).padStart(2, "0")}</span>
                         <span className="h-px flex-1 bg-[var(--accents-2)]" />
                       </div>

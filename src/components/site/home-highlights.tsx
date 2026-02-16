@@ -8,12 +8,12 @@ export function HomeHighlights() {
   return (
     <Section eyebrow={t("eyebrow")} title={t("title")}>
       <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-        <div className="space-y-8">
-          <p className="max-w-prose text-base leading-8 text-[var(--accents-5)]">
+        <div className="space-y-8 text-center sm:text-left">
+          <p className="mx-auto max-w-prose text-base leading-8 text-[var(--accents-5)] sm:mx-0">
             {t("p1")}
           </p>
           <div className="ui-divider" />
-          <p className="max-w-prose text-base leading-8 text-[var(--accents-5)]">
+          <p className="mx-auto max-w-prose text-base leading-8 text-[var(--accents-5)] sm:mx-0">
             {t("p2")}
           </p>
         </div>
@@ -78,8 +78,8 @@ function FeatureRow({
   href: string;
 }) {
   return (
-    <div className="group ui-card ui-hover-lift p-8 hover:border-[var(--brand-teal-soft)]">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <div className="group ui-card ui-hover-lift p-8 text-center hover:border-[var(--brand-teal-soft)] sm:text-left">
+      <div className="mb-4 flex flex-wrap items-center justify-center gap-3 sm:justify-between">
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color-mix(in_oklch,var(--brand-teal)_10%,transparent)] text-xs font-mono font-bold text-[var(--brand-teal)]">
           {number}
         </span>
@@ -90,7 +90,7 @@ function FeatureRow({
       <div className="font-display text-xl text-[var(--foreground)]">
         {title}
       </div>
-      <p className="mt-3 max-w-prose text-sm leading-7 text-[var(--accents-5)]">
+      <p className="mx-auto mt-3 max-w-prose text-sm leading-7 text-[var(--accents-5)] sm:mx-0">
         {desc}
       </p>
     </div>
@@ -99,7 +99,7 @@ function FeatureRow({
 
 function Format({ title, desc }: { title: string; desc: string }) {
   return (
-    <div className="ui-hover-lift-sm p-8 md:p-10 group">
+    <div className="ui-hover-lift-sm group p-8 text-center md:p-10 sm:text-left">
       <div className="font-display text-xl text-[var(--foreground)] group-hover:text-[var(--brand-teal)] transition-colors">{title}</div>
       <p className="mt-3 text-sm leading-7 text-[var(--accents-5)]">
         {desc}

@@ -67,7 +67,7 @@ export const update = mutation({
       role?: { en: string; it: string };
       type?: "member" | "alumni";
       linkedinUrl?: string | undefined;
-      photoId?: string;
+      photoId?: string | undefined;
     } = {};
 
     if (args.firstName !== undefined) patch.firstName = args.firstName;
@@ -77,7 +77,7 @@ export const update = mutation({
     if (args.linkedinUrl !== undefined) {
       patch.linkedinUrl = normalizeOptionalUrl(args.linkedinUrl, "LinkedIn URL");
     }
-    if (args.photoId !== undefined) patch.photoId = args.photoId;
+    if (args.photoId !== undefined) patch.photoId = args.photoId.trim() || undefined;
 
     await ctx.db.patch(args.id, patch);
   },

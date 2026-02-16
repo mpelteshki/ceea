@@ -43,8 +43,8 @@ export function LanguagePicker() {
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-controls={menuId}
-        aria-label="Select language"
-        className="ui-pressable group flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--accents-5)] transition-[color,background-color,transform] hover:bg-[var(--accents-1)] hover:text-[var(--foreground)]"
+        aria-label={`Select language (${locale.toUpperCase()})`}
+        className="ui-pressable group flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--accents-6)] transition-[color,background-color,transform] hover:bg-[var(--accents-1)] hover:text-[var(--foreground)]"
       >
         <Globe className="h-4 w-4 transition-transform duration-200 group-hover:rotate-12" />
         <span className="uppercase">{locale}</span>

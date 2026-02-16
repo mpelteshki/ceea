@@ -1,50 +1,79 @@
 import { MetadataRoute } from "next";
+import { api } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
+import { routing } from "@/i18n/routing";
+import { getConvexServerClient } from "@/lib/convex-server";
+import { hasConvex } from "@/lib/public-env";
+import { localizedAlternates, localizedPath, PUBLIC_SITE_PATHS, SITE_URL } from "@/lib/seo";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = "https://ceea-bocconi.com"; // Replace with actual production URL if different
+type PostDoc = Doc<"posts">;
 
-    return [
-        {
-            url: baseUrl,
-            lastModified: new Date(),
-            changeFrequency: "yearly",
-            priority: 1,
-        },
-        {
-            url: `${baseUrl}/about`,
-            lastModified: new Date(),
-            changeFrequency: "monthly",
-            priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/team`,
-            lastModified: new Date(),
-            changeFrequency: "monthly",
-            priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/events`,
-            lastModified: new Date(),
-            changeFrequency: "weekly",
-            priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/projects`,
-            lastModified: new Date(),
-            changeFrequency: "monthly",
-            priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/join-us`,
-            lastModified: new Date(),
-            changeFrequency: "yearly",
-            priority: 0.5,
-        },
-        {
-            url: `${baseUrl}/contacts`,
-            lastModified: new Date(),
-            changeFrequency: "yearly",
-            priority: 0.5,
-        },
-    ];
+const PAGE_FREQUENCY: Record<string, NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>> = {
+  "/": "weekly",
+  "/events": "weekly",
+  "/newsletter": "weekly",
+  "/projects": "monthly",
+  "/team": "monthly",
+  "/about": "monthly",
+  "/join-us": "monthly",
+  "/contacts": "monthly",
+};
+
+const PAGE_PRIORITY: Record<string, number> = {
+  "/": 1,
+  "/events": 0.9,
+  "/newsletter": 0.9,
+  "/projects": 0.8,
+  "/team": 0.8,
+  "/about": 0.8,
+  "/join-us": 0.7,
+  "/contacts": 0.7,
+};
+
+function absoluteAlternates(pathname: string): Record<string, string> {
+  const languages = localizedAlternates(pathname);
+  return Object.fromEntries(
+    Object.entries(languages).map(([locale, localized]) => [locale, new URL(localized, SITE_URL).toString()]),
+  );
+}
+
+function staticPageEntries(lastModified: Date): MetadataRoute.Sitemap {
+  return PUBLIC_SITE_PATHS.flatMap((pathname) =>
+    routing.locales.map((locale) => ({
+      url: new URL(localizedPath(locale, pathname), SITE_URL).toString(),
+      lastModified,
+      changeFrequency: PAGE_FREQUENCY[pathname] ?? "monthly",
+      priority: PAGE_PRIORITY[pathname] ?? 0.7,
+      alternates: {
+        languages: absoluteAlternates(pathname),
+      },
+    })),
+  );
+}
+
+async function newsletterEntries(): Promise<MetadataRoute.Sitemap> {
+  if (!hasConvex) return [];
+  const convex = getConvexServerClient();
+  if (!convex) return [];
+
+  const posts = (await convex.query(api.posts.listAll, {})) as PostDoc[];
+  const published = posts.filter((post) => post.publishedAt != null);
+
+  return published.flatMap((post) =>
+    routing.locales.map((locale) => ({
+      url: new URL(localizedPath(locale, `/newsletter/${post.slug}`), SITE_URL).toString(),
+      lastModified: new Date(post.publishedAt ?? post.createdAt),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+      alternates: {
+        languages: absoluteAlternates(`/newsletter/${post.slug}`),
+      },
+    })),
+  );
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const now = new Date();
+  const [staticEntries, postEntries] = await Promise.all([Promise.resolve(staticPageEntries(now)), newsletterEntries()]);
+  return [...staticEntries, ...postEntries];
 }

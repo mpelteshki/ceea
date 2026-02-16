@@ -1,7 +1,9 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
 import { Palette, Scale, TrendingUp, Users } from "lucide-react";
 import { renderGradientTitle } from "@/lib/gradient-title";
+import { buildPageMetadata, resolveLocale, toMetaDescription } from "@/lib/seo";
 
 const divisionKeys = [
   { icon: Palette, key: "culture", accent: "var(--brand-caramel)" },
@@ -23,6 +25,23 @@ const partnerItems = [
   { titleKey: "partner3Title", bodyKey: "partner3Body", number: "03" },
 ] as const;
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const typedLocale = resolveLocale(locale);
+  const t = await getTranslations({ locale: typedLocale, namespace: "AboutPage" });
+
+  return buildPageMetadata({
+    locale: typedLocale,
+    pathname: "/about",
+    title: t("title"),
+    description: toMetaDescription(t("mission")),
+  });
+}
+
 export default async function AboutPage() {
   const t = await getTranslations("AboutPage");
   const td = await getTranslations("Divisions");
@@ -35,7 +54,9 @@ export default async function AboutPage() {
         <div className="ui-site-container relative pt-12 sm:pt-20 pb-12 sm:pb-16">
           <FadeIn>
             <h1 className="ui-page-title">{renderGradientTitle(t("title"))}</h1>
-            <p className="mt-6 max-w-3xl text-lg leading-relaxed text-muted-foreground">{t("mission")}</p>
+            <p className="mx-auto mt-6 max-w-3xl text-base leading-relaxed text-muted-foreground sm:mx-0 sm:text-lg">
+              {t("mission")}
+            </p>
           </FadeIn>
         </div>
       </div>
@@ -45,12 +66,14 @@ export default async function AboutPage() {
         <div className="ui-site-container relative py-16 sm:py-24">
           <FadeInStagger className="space-y-12">
             <FadeIn>
-              <div className="flex items-center gap-4 mb-2">
-                <span className="h-6 w-1 rounded-full bg-[var(--brand-teal)]" />
-                <h2 className="font-display text-3xl sm:text-4xl text-foreground">{renderGradientTitle(t("divisionsTitle"))}</h2>
-                <span className="h-px flex-1 bg-border" />
+              <div className="mb-2 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
+                <span className="hidden h-6 w-1 rounded-full bg-[var(--brand-teal)] sm:block" />
+                <h2 className="ui-section-title text-foreground">{renderGradientTitle(t("divisionsTitle"))}</h2>
+                <span className="hidden h-px flex-1 bg-border sm:block" />
               </div>
-              <p className="max-w-2xl text-sm leading-7 text-muted-foreground ml-7">{t("divisionsSubtitle")}</p>
+              <p className="mx-auto max-w-2xl text-sm leading-7 text-muted-foreground sm:ml-7 sm:mx-0">
+                {t("divisionsSubtitle")}
+              </p>
             </FadeIn>
 
             <div className="grid gap-5 sm:grid-cols-2">
@@ -80,10 +103,10 @@ export default async function AboutPage() {
       <div className="ui-site-container py-16 sm:py-24 space-y-24">
         <FadeInStagger className="space-y-12">
           <FadeIn>
-            <div className="flex items-center gap-4">
-              <span className="h-6 w-1 rounded-full bg-[var(--brand-caramel)]" />
-              <h2 className="font-display text-3xl sm:text-4xl text-foreground">{renderGradientTitle(t("realityTitle"))}</h2>
-              <span className="h-px flex-1 bg-border" />
+            <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
+              <span className="hidden h-6 w-1 rounded-full bg-[var(--brand-caramel)] sm:block" />
+              <h2 className="ui-section-title text-foreground">{renderGradientTitle(t("realityTitle"))}</h2>
+              <span className="hidden h-px flex-1 bg-border sm:block" />
             </div>
           </FadeIn>
 
@@ -102,14 +125,16 @@ export default async function AboutPage() {
 
         <FadeInStagger className="space-y-12">
           <FadeIn>
-            <div className="flex items-center gap-4">
-              <span className="h-6 w-1 rounded-full bg-[var(--brand-crimson)]" />
-              <h2 className="font-display text-3xl sm:text-4xl text-foreground">{renderGradientTitle(t("partnersTitle"))}</h2>
-              <span className="h-px flex-1 bg-border" />
+            <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
+              <span className="hidden h-6 w-1 rounded-full bg-[var(--brand-crimson)] sm:block" />
+              <h2 className="ui-section-title text-foreground">{renderGradientTitle(t("partnersTitle"))}</h2>
+              <span className="hidden h-px flex-1 bg-border sm:block" />
             </div>
           </FadeIn>
           <FadeIn>
-            <p className="max-w-2xl text-base leading-8 text-muted-foreground ml-7">{t("partnersBody")}</p>
+            <p className="mx-auto max-w-2xl text-base leading-8 text-muted-foreground sm:ml-7 sm:mx-0">
+              {t("partnersBody")}
+            </p>
           </FadeIn>
 
           <div className="grid gap-5 sm:grid-cols-3">

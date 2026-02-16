@@ -61,14 +61,46 @@ export function SiteNav() {
   const firstLinkRef = useRef<HTMLAnchorElement | null>(null);
   const lastFocusedElement = useRef<HTMLElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const scrollYRef = useRef(0);
+  const shouldRestoreScrollRef = useRef(true);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)");
+    const onMediaChange = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        setMenuOpen(false);
+      }
+    };
+
+    media.addEventListener("change", onMediaChange);
+    return () => media.removeEventListener("change", onMediaChange);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
 
     lastFocusedElement.current = document.activeElement as HTMLElement;
+    scrollYRef.current = window.scrollY;
+    shouldRestoreScrollRef.current = true;
 
     const prevOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevPosition = document.body.style.position;
+    const prevTop = document.body.style.top;
+    const prevWidth = document.body.style.width;
+    const prevOverscrollBehavior = document.documentElement.style.overscrollBehavior;
+
+    const closeFromHistoryNavigation = () => {
+      shouldRestoreScrollRef.current = false;
+      setMenuOpen(false);
+    };
+
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollYRef.current}px`;
+    document.body.style.width = "100%";
+    document.documentElement.style.overscrollBehavior = "none";
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -77,31 +109,48 @@ export function SiteNav() {
       }
 
       if (e.key === "Tab" && menuRef.current) {
-        const focusableElements = menuRef.current.querySelectorAll(
-          'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select',
-        );
-        const firstElement = focusableElements[0] as HTMLElement;
-        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+        const focusableElements = Array.from(
+          menuRef.current.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), textarea:not([disabled]), input:not([type="hidden"]):not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          ),
+        ).filter((el) => el.getAttribute("aria-hidden") !== "true");
+
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
 
         if (e.shiftKey) {
           if (document.activeElement === firstElement) {
             e.preventDefault();
-            lastElement?.focus();
+            lastElement.focus();
           }
-        } else if (document.activeElement === lastElement) {
+        } else if (document.activeElement === lastElement || !menuRef.current.contains(document.activeElement)) {
           e.preventDefault();
-          firstElement?.focus();
+          firstElement.focus();
         }
       }
     };
 
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("popstate", closeFromHistoryNavigation);
     queueMicrotask(() => firstLinkRef.current?.focus());
 
     return () => {
       document.body.style.overflow = prevOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.position = prevPosition;
+      document.body.style.top = prevTop;
+      document.body.style.width = prevWidth;
+      document.documentElement.style.overscrollBehavior = prevOverscrollBehavior;
+      if (shouldRestoreScrollRef.current) {
+        window.scrollTo(0, scrollYRef.current);
+      }
       window.removeEventListener("keydown", onKeyDown);
-      lastFocusedElement.current?.focus();
+      window.removeEventListener("popstate", closeFromHistoryNavigation);
+      if (lastFocusedElement.current && document.contains(lastFocusedElement.current)) {
+        lastFocusedElement.current.focus();
+      }
     };
   }, [menuOpen]);
 
@@ -153,12 +202,12 @@ export function SiteNav() {
             onClick={() => setMenuOpen(false)}
           />
           <div
-            className="absolute left-0 right-0 top-0 bg-[var(--background)] max-h-[90vh] overflow-y-auto shadow-2xl animate-in slide-in-from-top-2 fade-in duration-300"
-            style={{ overscrollBehavior: "contain" }}
+            className="absolute left-0 right-0 top-0 bg-[var(--background)] max-h-[100dvh] overflow-y-auto shadow-2xl animate-in slide-in-from-top-2 fade-in duration-300"
+            style={{ overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}
           >
             <div className="h-[2px] bg-gradient-to-r from-[var(--brand-teal)] via-[var(--brand-caramel)] to-[var(--brand-teal)]" />
 
-            <div className="p-6">
+            <div className="p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
               <div className="mx-auto max-w-6xl">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -187,7 +236,7 @@ export function SiteNav() {
                         href={l.href}
                         ref={idx === 0 ? firstLinkRef : undefined}
                         className={cn(
-                          "block font-display text-xl py-3 px-4 rounded-xl transition-[background-color,color,transform] duration-200 hover:translate-x-1",
+                          "block rounded-xl px-4 py-3 text-center font-display text-xl transition-[background-color,color,transform] duration-200 hover:translate-x-1 sm:text-left",
                           isActive
                             ? "text-[var(--brand-teal)] bg-[color-mix(in_oklch,var(--brand-teal)_8%,var(--background))]"
                             : "text-[var(--foreground)] hover:bg-[var(--accents-1)]",

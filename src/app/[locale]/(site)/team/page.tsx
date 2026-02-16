@@ -1,15 +1,42 @@
 import Image from "next/image";
 import { Linkedin } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
 import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
+import { EmptyState } from "@/components/ui/empty-state";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { renderGradientTitle } from "@/lib/gradient-title";
+import { AppLocale, buildPageMetadata, resolveLocale, toMetaDescription } from "@/lib/seo";
 import { api } from "../../../../../convex/_generated/api";
 import type { Doc } from "../../../../../convex/_generated/dataModel";
 
 type TeamDoc = Doc<"team">;
+
+function teamDescriptionByLocale(locale: AppLocale): string {
+  if (locale === "it") {
+    return "Incontra il team CEEA Bocconi: membri e alumni che guidano eventi, partnership e iniziative nel campus.";
+  }
+  return "Meet the CEEA Bocconi team: members and alumni leading events, partnerships, and initiatives across campus.";
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const typedLocale = resolveLocale(locale);
+  const t = await getTranslations({ locale: typedLocale, namespace: "TeamPage" });
+
+  return buildPageMetadata({
+    locale: typedLocale,
+    pathname: "/team",
+    title: t("title"),
+    description: toMetaDescription(teamDescriptionByLocale(typedLocale)),
+  });
+}
 
 export default async function TeamPage() {
   const locale = await getLocale();
@@ -45,33 +72,37 @@ export default async function TeamPage() {
       <div className="ui-site-container py-12 sm:py-20 space-y-20">
         <FadeInStagger>
           <FadeIn>
-            <div className="flex items-center gap-4 mb-10">
-              <span className="h-6 w-1 rounded-full bg-[var(--brand-teal)]" />
+            <div className="mb-10 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
+              <span className="hidden h-6 w-1 rounded-full bg-[var(--brand-teal)] sm:block" />
               <h2 className="font-display text-2xl text-[var(--foreground)]">{renderGradientTitle(t("members"))}</h2>
-              <span className="h-px flex-1 bg-[var(--accents-2)]" />
-              <span className="font-mono text-xs text-[var(--accents-4)]">{members.length}</span>
+              <span className="hidden h-px flex-1 bg-[var(--accents-2)] sm:block" />
+              <span className="hidden font-mono text-xs text-[var(--accents-4)] sm:inline">{members.length}</span>
             </div>
           </FadeIn>
-          <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {members.map((member) => (
-              <FadeIn key={member._id}>
-                <MemberCard member={member} locale={locale} connectLabel={t("connect")} />
-              </FadeIn>
-            ))}
-          </div>
+          {members.length === 0 ? (
+            <EmptyState title={t("noMembers")} description={t("checkBackLater")} />
+          ) : (
+            <div className="grid grid-cols-1 gap-5 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {members.map((member) => (
+                <FadeIn key={member._id}>
+                  <MemberCard member={member} locale={locale} connectLabel={t("connect")} />
+                </FadeIn>
+              ))}
+            </div>
+          )}
         </FadeInStagger>
 
         {alumni.length > 0 ? (
           <FadeInStagger>
             <FadeIn>
-              <div className="flex items-center gap-4 mb-10">
-                <span className="h-6 w-1 rounded-full bg-[var(--brand-caramel)]" />
+              <div className="mb-10 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
+                <span className="hidden h-6 w-1 rounded-full bg-[var(--brand-caramel)] sm:block" />
                 <h2 className="font-display text-2xl text-[var(--foreground)]">{renderGradientTitle(t("alumni"))}</h2>
-                <span className="h-px flex-1 bg-[var(--accents-2)]" />
-                <span className="font-mono text-xs text-[var(--accents-4)]">{alumni.length}</span>
+                <span className="hidden h-px flex-1 bg-[var(--accents-2)] sm:block" />
+                <span className="hidden font-mono text-xs text-[var(--accents-4)] sm:inline">{alumni.length}</span>
               </div>
             </FadeIn>
-            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <div className="grid grid-cols-1 gap-5 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {alumni.map((member) => (
                 <FadeIn key={member._id}>
                   <MemberCard member={member} locale={locale} connectLabel={t("connect")} />

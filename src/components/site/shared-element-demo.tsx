@@ -42,13 +42,13 @@ export function SharedElementDemo() {
     const selectedItem = items.find((item) => item.id === selectedId);
 
     return (
-        <div className="min-h-screen bg-[var(--background)] p-8 font-sans">
+        <div className="min-h-screen bg-[var(--background)] p-8">
             <div className="mx-auto max-w-5xl">
                 <header className="mb-12">
                     <h1 className="text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
                         Shared Element Transitions
                     </h1>
-                    <p className="mt-4 text-lg text-[var(--accents-5)]">
+                    <p className="mt-4 text-base text-[var(--accents-5)] sm:text-lg">
                         Click on a card to see it seamlessly expand into a detail view using{" "}
                         <code className="rounded bg-[var(--accents-2)] px-1.5 py-0.5 text-sm font-medium text-[var(--foreground)]">
                             layoutId
