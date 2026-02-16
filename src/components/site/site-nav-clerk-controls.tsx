@@ -3,43 +3,25 @@
 import { SignedIn, SignedOut, UserButton, SignOutButton } from "@clerk/nextjs";
 import { Link } from "@/i18n/routing";
 
-export default function SiteNavClerkControls({ isAdmin }: { isAdmin: boolean }) {
+export default function SiteNavClerkControls() {
   return (
     <>
-      <SignedOut>
-        <div className="hidden items-center gap-3 lg:flex">
-          <Link
-            href="/sign-in"
-            className="text-sm font-medium text-[var(--accents-5)] hover:text-[var(--foreground)]"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/sign-up"
-            className="rounded-md bg-[var(--foreground)] px-3 py-1.5 text-sm font-medium text-[var(--background)] hover:opacity-90"
-          >
-            Sign up
-          </Link>
-        </div>
-      </SignedOut>
+      <SignedOut>{/* Public login links hidden - admin only access via /admin */}</SignedOut>
       <SignedIn>
         <div className="flex items-center gap-3">
-          {isAdmin ? (
-            <Link
-              href="/admin"
-              className="hidden text-sm font-medium text-[var(--accents-5)] hover:text-[var(--foreground)] lg:inline"
-            >
-              Admin
-            </Link>
-          ) : null}
+          <Link
+            href="/admin"
+            className="ui-link hidden text-sm font-medium text-[var(--accents-5)] hover:text-[var(--foreground)] lg:inline"
+          >
+            Admin
+          </Link>
           <UserButton />
           <SignOutButton>
-            <button className="text-sm font-medium text-[var(--accents-5)] hover:text-[var(--foreground)] transition-colors">
+            <button className="ui-link ui-pressable text-sm font-medium text-[var(--accents-5)] hover:text-[var(--foreground)]">
               Sign out
             </button>
           </SignOutButton>
         </div>
-
       </SignedIn>
     </>
   );

@@ -4,8 +4,17 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 type Tier = "lead" | "supporting" | "community";
+
+function safeHostname(raw: string): string {
+    try {
+        return new URL(raw).hostname;
+    } catch {
+        return raw;
+    }
+}
 
 export default function PartnersAdminPage() {
     const partners = useQuery(api.partners.listAll);
@@ -50,7 +59,7 @@ export default function PartnersAdminPage() {
     return (
         <div className="space-y-10">
             <header className="space-y-1">
-                <div className="ui-kicker">Manage</div>
+
                 <h2 className="text-3xl font-bold font-display tracking-tight text-[var(--foreground)]">Partners</h2>
                 <p className="text-sm text-[var(--accents-5)] max-w-2xl">
                     Add organizations and companies that support the CEEA mission.
@@ -62,7 +71,9 @@ export default function PartnersAdminPage() {
                     <div className="grid gap-4 md:grid-cols-2">
                         <Field label="Name">
                             <input
-                                placeholder="Partner name"
+                                name="partner_name"
+                                autoComplete="off"
+                                placeholder="Partner name…"
                                 value={form.name}
                                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                                 className="ui-input"
@@ -71,6 +82,8 @@ export default function PartnersAdminPage() {
                         </Field>
                         <Field label="Tier">
                             <select
+                                name="partner_tier"
+                                autoComplete="off"
                                 value={form.tier}
                                 onChange={(e) => setForm({ ...form, tier: e.target.value as Tier })}
                                 className="ui-input"
@@ -83,7 +96,11 @@ export default function PartnersAdminPage() {
                         <Field label="Website URL">
                             <input
                                 type="url"
-                                placeholder="https://company.com"
+                                inputMode="url"
+                                spellCheck={false}
+                                name="partner_website_url"
+                                autoComplete="off"
+                                placeholder="https://company.com…"
                                 value={form.websiteUrl}
                                 onChange={(e) => setForm({ ...form, websiteUrl: e.target.value })}
                                 className="ui-input"
@@ -91,7 +108,12 @@ export default function PartnersAdminPage() {
                         </Field>
                         <Field label="Logo URL">
                             <input
-                                placeholder="https://company.com/logo.png"
+                                type="url"
+                                inputMode="url"
+                                spellCheck={false}
+                                name="partner_logo_url"
+                                autoComplete="off"
+                                placeholder="https://company.com/logo.png…"
                                 value={form.logoUrl}
                                 onChange={(e) => setForm({ ...form, logoUrl: e.target.value })}
                                 className="ui-input"
@@ -106,7 +128,7 @@ export default function PartnersAdminPage() {
             </section>
 
             <section className="space-y-4 pt-8 border-t border-[var(--accents-2)]">
-                <h3 className="text-xl font-semibold">Current Partners</h3>
+                <h3 className="font-display text-xl font-semibold text-[var(--foreground)]">Current Partners</h3>
                 {partners.length === 0 ? (
                     <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-8 text-center text-sm text-[var(--accents-5)] rounded-md">
                         No partners found. Add one above.
@@ -124,7 +146,15 @@ export default function PartnersAdminPage() {
                                 >
                                     <div className="flex items-center gap-4">
                                         {p.logoUrl ? (
-                                            <img src={p.logoUrl} alt={p.name} className="h-10 w-10 object-contain rounded border border-[var(--accents-2)] bg-white p-1" />
+                                            <div className="relative h-10 w-10 overflow-hidden rounded border border-[var(--accents-2)] bg-white p-1">
+                                                <Image
+                                                    src={p.logoUrl}
+                                                    alt={p.name}
+                                                    fill
+                                                    className="object-contain p-1"
+                                                    sizes="40px"
+                                                />
+                                            </div>
                                         ) : (
                                             <div className="h-10 w-10 rounded border border-[var(--accents-2)] bg-[var(--accents-1)] flex items-center justify-center text-[10px] font-bold text-[var(--accents-4)]">
                                                 LOGO
@@ -138,19 +168,19 @@ export default function PartnersAdminPage() {
                                                 <span className="ui-tag">{p.tier}</span>
                                                 {p.websiteUrl && (
                                                     <a href={p.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--accents-5)] hover:text-[var(--foreground)] transition-colors underline decoration-[var(--accents-2)]">
-                                                        {new URL(p.websiteUrl).hostname}
+                                                        {safeHostname(p.websiteUrl)}
                                                     </a>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="opacity-0 transition-opacity group-hover:opacity-100">
                                         <button
                                             onClick={() => {
                                                 if (confirm(`Delete ${p.name}?`)) deletePartner({ id: p._id });
                                             }}
-                                            className="ui-btn py-2 px-4 bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-all font-bold"
+                                            className="ui-btn py-2 px-4 bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-colors font-bold"
                                         >
                                             Delete
                                         </button>

@@ -1,0 +1,215 @@
+{
+  "version": 3,
+  "skills": {
+    "template-skill": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "template/SKILL.md",
+      "skillFolderHash": "a38aa7fa73fd2835b9ce77a60274f7dc62d015a6",
+      "installedAt": "2026-01-25T11:15:13.433Z",
+      "updatedAt": "2026-01-25T11:15:13.433Z"
+    },
+    "algorithmic-art": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/algorithmic-art/SKILL.md",
+      "skillFolderHash": "22db2d12091c56340987a877047435ba84a1cdb2",
+      "installedAt": "2026-01-25T11:15:13.471Z",
+      "updatedAt": "2026-01-25T11:15:13.471Z"
+    },
+    "brand-guidelines": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/brand-guidelines/SKILL.md",
+      "skillFolderHash": "7dc45f289fa37f9763a993008d9500e9a157fa4a",
+      "installedAt": "2026-01-25T11:15:13.507Z",
+      "updatedAt": "2026-01-25T11:15:13.507Z"
+    },
+    "canvas-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/canvas-design/SKILL.md",
+      "skillFolderHash": "928af0a3279dc4e0c0e6ceaf407a8542a2bb2aa2",
+      "installedAt": "2026-01-25T11:15:13.545Z",
+      "updatedAt": "2026-01-25T11:15:13.545Z"
+    },
+    "doc-coauthoring": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/doc-coauthoring/SKILL.md",
+      "skillFolderHash": "d9df960e61fe2bafe9183e37de6f9f6b73b74087",
+      "installedAt": "2026-01-25T11:15:13.581Z",
+      "updatedAt": "2026-01-25T11:15:13.581Z"
+    },
+    "docx": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/docx/SKILL.md",
+      "skillFolderHash": "1e885d469740a354c45677fb3fa0ed66acba511d",
+      "installedAt": "2026-01-25T11:15:13.618Z",
+      "updatedAt": "2026-01-25T11:15:13.618Z"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "skillFolderHash": "928950704df8a8b885c03de5da626331e6f29cf8",
+      "installedAt": "2026-01-25T11:15:13.651Z",
+      "updatedAt": "2026-01-25T11:15:13.651Z"
+    },
+    "internal-comms": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/internal-comms/SKILL.md",
+      "skillFolderHash": "8e2c21adc81f221477a4d3ecec07abcbc8a9320a",
+      "installedAt": "2026-01-25T11:15:13.684Z",
+      "updatedAt": "2026-01-25T11:15:13.684Z"
+    },
+    "mcp-builder": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/mcp-builder/SKILL.md",
+      "skillFolderHash": "9173e2c2107aac82d4ca6c726d71e89d11760470",
+      "installedAt": "2026-01-25T11:15:13.716Z",
+      "updatedAt": "2026-01-25T11:15:13.716Z"
+    },
+    "pdf": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/pdf/SKILL.md",
+      "skillFolderHash": "f3e7babdd8d9cc8b5627311c16e07f1218c39bff",
+      "installedAt": "2026-01-25T11:15:13.751Z",
+      "updatedAt": "2026-01-25T11:15:13.751Z"
+    },
+    "pptx": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/pptx/SKILL.md",
+      "skillFolderHash": "744bc44ba6edd58d6376374206be1fd4b1c8697d",
+      "installedAt": "2026-01-25T11:15:13.785Z",
+      "updatedAt": "2026-01-25T11:15:13.785Z"
+    },
+    "skill-creator": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/skill-creator/SKILL.md",
+      "skillFolderHash": "7bd8fc459f09f0e14dcc2adbb4a5a58e60ea755c",
+      "installedAt": "2026-01-25T11:15:13.905Z",
+      "updatedAt": "2026-01-25T11:15:13.905Z"
+    },
+    "slack-gif-creator": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/slack-gif-creator/SKILL.md",
+      "skillFolderHash": "d5cd683598c6ac0174bdb3b3b5be1dfc35430c12",
+      "installedAt": "2026-01-25T11:15:13.943Z",
+      "updatedAt": "2026-01-25T11:15:13.943Z"
+    },
+    "theme-factory": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/theme-factory/SKILL.md",
+      "skillFolderHash": "007940e80de6ae577a87b2b343b1a5eae715df2b",
+      "installedAt": "2026-01-25T11:15:13.980Z",
+      "updatedAt": "2026-01-25T11:15:13.980Z"
+    },
+    "web-artifacts-builder": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/web-artifacts-builder/SKILL.md",
+      "skillFolderHash": "9ecbeae7c17caa478c5b753ba1bd258688075b5f",
+      "installedAt": "2026-01-25T11:15:14.020Z",
+      "updatedAt": "2026-01-25T11:15:14.020Z"
+    },
+    "webapp-testing": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/webapp-testing/SKILL.md",
+      "skillFolderHash": "74cb751576f9e9af2aedff47e67861ef26db2dc4",
+      "installedAt": "2026-01-25T11:15:14.057Z",
+      "updatedAt": "2026-01-25T11:15:14.057Z"
+    },
+    "xlsx": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/xlsx/SKILL.md",
+      "skillFolderHash": "489906b7d9057e0c371e21467e1a9f96f40be387",
+      "installedAt": "2026-01-25T11:15:14.094Z",
+      "updatedAt": "2026-01-25T11:15:14.094Z"
+    },
+    "building-native-ui": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo-app-design/skills/building-native-ui/SKILL.md",
+      "skillFolderHash": "9e899e3ea35aecf476bbd1b1f440025b66712d46",
+      "installedAt": "2026-01-26T18:48:57.385Z",
+      "updatedAt": "2026-01-26T18:48:57.385Z"
+    },
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-skills.git",
+      "skillPath": "skills/composition-patterns/SKILL.md",
+      "skillFolderHash": "7a651a19b1658c4cd320a5e984c1be4b99d97c2c",
+      "installedAt": "2026-01-28T00:29:23.335Z",
+      "updatedAt": "2026-01-28T00:29:23.335Z"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-skills.git",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "skillFolderHash": "079b06a135401704ea94ab74c7c9d86c92ba259f",
+      "installedAt": "2026-01-28T00:29:23.363Z",
+      "updatedAt": "2026-01-28T00:29:23.363Z"
+    },
+    "vercel-react-native-skills": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-skills.git",
+      "skillPath": "skills/react-native-skills/SKILL.md",
+      "skillFolderHash": "f67a7156afdb6070594715ca0b4f12810ae32a1e",
+      "installedAt": "2026-01-28T00:29:23.390Z",
+      "updatedAt": "2026-01-28T00:29:23.390Z"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-skills.git",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "skillFolderHash": "3116f3e62dbd02b44a598b1aa690d2a8938e8f89",
+      "installedAt": "2026-01-28T00:29:23.420Z",
+      "updatedAt": "2026-01-28T00:29:23.420Z"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/skills.git",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "skillFolderHash": "c2f31172b6f256272305a5e6e7228b258446899f",
+      "installedAt": "2026-01-28T00:29:32.660Z",
+      "updatedAt": "2026-01-28T00:29:32.660Z"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  }
+}

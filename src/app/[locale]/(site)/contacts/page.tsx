@@ -1,44 +1,78 @@
-"use client";
+import { getTranslations } from "next-intl/server";
+import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
+import { Mail, Instagram, Linkedin, ArrowUpRight } from "lucide-react";
+import { renderGradientTitle } from "@/lib/gradient-title";
 
-import { useTranslations } from "next-intl";
-import { FadeIn } from "@/components/ui/fade-in";
-import { Mail, Instagram, Linkedin } from "lucide-react";
+const channels = [
+  {
+    icon: Mail,
+    labelKey: "email",
+    value: "ceea.bocconi@gmail.com",
+    href: "mailto:ceea.bocconi@gmail.com",
+    accent: "var(--brand-teal)",
+  },
+  {
+    icon: Instagram,
+    labelKey: "followUs",
+    value: "@ceea.bocconi",
+    href: "https://www.instagram.com/ceea.bocconi/",
+    accent: "var(--brand-caramel)",
+  },
+  {
+    icon: Linkedin,
+    labelKey: "followUs",
+    value: "CEEA Bocconi",
+    href: "https://www.linkedin.com/company/ceea-bocconi/",
+    accent: "var(--brand-teal-soft)",
+  },
+] as const;
 
-export default function ContactPage() {
-    const t = useTranslations("ContactPage");
+export default async function ContactPage() {
+  const t = await getTranslations("ContactPage");
 
-    return (
-        <div className="py-24 sm:py-32">
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                <FadeIn>
-                    <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
-                        {t("title")}
-                    </h1>
-                </FadeIn>
-
-                <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2">
-                    <FadeIn className="rounded-2xl border border-[var(--accents-2)] p-8">
-                        <h3 className="font-display text-xl font-bold">{t("email")}</h3>
-                        <a href="mailto:ceea@unibocconi.it" className="mt-4 flex items-center gap-3 text-[var(--accents-5)] hover:text-[var(--foreground)]">
-                            <Mail className="h-5 w-5" />
-                            ceea@unibocconi.it
-                        </a>
-                    </FadeIn>
-                    <FadeIn className="rounded-2xl border border-[var(--accents-2)] p-8">
-                        <h3 className="font-display text-xl font-bold">{t("followUs")}</h3>
-                        <div className="mt-4 flex flex-col gap-4">
-                            <a href="https://instagram.com/ceea_bocconi" target="_blank" rel="noopener" className="flex items-center gap-3 text-[var(--accents-5)] hover:text-[var(--foreground)]">
-                                <Instagram className="h-5 w-5" />
-                                Instagram
-                            </a>
-                            <a href="https://linkedin.com/company/ceea-bocconi" target="_blank" rel="noopener" className="flex items-center gap-3 text-[var(--accents-5)] hover:text-[var(--foreground)]">
-                                <Linkedin className="h-5 w-5" />
-                                LinkedIn
-                            </a>
-                        </div>
-                    </FadeIn>
-                </div>
-            </div>
+  return (
+    <>
+      <div className="relative border-b border-[var(--accents-2)]">
+        <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_5%,var(--background))]" />
+        <div className="ui-site-container relative pt-12 sm:pt-20 pb-12 sm:pb-16">
+          <FadeIn>
+            <h1 className="ui-page-title">{renderGradientTitle(t("title"))}</h1>
+          </FadeIn>
         </div>
-    );
+      </div>
+
+      <div className="ui-site-container py-16 sm:py-24">
+        <FadeInStagger className="grid gap-5 sm:grid-cols-3">
+          {channels.map((ch) => (
+            <FadeIn key={ch.value}>
+              <a
+                href={ch.href}
+                target={ch.href.startsWith("mailto:") ? undefined : "_blank"}
+                rel={ch.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                className="ui-hover-lift group flex flex-col justify-between rounded-2xl border border-[var(--accents-2)] p-8 h-full transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]"
+              >
+                <div>
+                  <div
+                    className="h-12 w-12 rounded-xl flex items-center justify-center mb-8"
+                    style={{
+                      background: `color-mix(in oklch, ${ch.accent} 12%, transparent)`,
+                      color: ch.accent,
+                    }}
+                  >
+                    <ch.icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-display text-xl text-[var(--foreground)]">{t(ch.labelKey)}</h3>
+                  <p className="mt-2 text-sm text-[var(--accents-5)]">{ch.value}</p>
+                </div>
+                <div className="mt-8 flex items-center gap-2 text-sm font-medium text-[var(--brand-teal)]">
+                  <span className="group-hover:underline">{t("open")}</span>
+                  <ArrowUpRight className="ui-icon-shift h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5" />
+                </div>
+              </a>
+            </FadeIn>
+          ))}
+        </FadeInStagger>
+      </div>
+    </>
+  );
 }

@@ -3,8 +3,8 @@ import { NewsletterArticle } from "@/components/site/newsletter-article";
 export default async function NewsletterArticlePage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
   return <NewsletterArticle slug={slug} />;
 }

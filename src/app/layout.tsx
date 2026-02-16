@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { Syne, Spline_Sans, Spline_Sans_Mono } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
+import { Plus_Jakarta_Sans, Spline_Sans_Mono } from "next/font/google";
 import "./globals.css";
 
-const display = Syne({
-  variable: "--font-display",
-  subsets: ["latin"],
-});
-
-const body = Spline_Sans({
+const sans = Plus_Jakarta_Sans({
   variable: "--font-body",
   subsets: ["latin"],
 });
@@ -30,13 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body
-        className={`${display.variable} ${body.variable} ${mono.variable} antialiased`}
-      >
-        {children}
-        <Analytics />
-      </body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${sans.variable} ${mono.variable} antialiased`}>{children}</body>
     </html>
   );
 }

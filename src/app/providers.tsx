@@ -6,6 +6,7 @@ import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
 import { useMemo } from "react";
 import { hasClerk, hasConvex } from "@/lib/public-env";
+import { ThemeProvider } from "next-themes";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const convex = useMemo(() => {
@@ -26,7 +27,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
       <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          {children}
+        </ThemeProvider>
       </ConvexProviderWithClerk>
     </ClerkProvider>
   );

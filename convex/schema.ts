@@ -5,10 +5,8 @@ export default defineSchema({
   events: defineTable({
     title: v.string(),
     title_it: v.optional(v.string()), // Localized title
-    title_bg: v.optional(v.string()), // Localized title
     summary: v.string(),
     summary_it: v.optional(v.string()),
-    summary_bg: v.optional(v.string()),
     location: v.string(),
     kind: v.union(
       v.literal("flagship"),
@@ -28,11 +26,9 @@ export default defineSchema({
   posts: defineTable({
     title: v.string(),
     title_it: v.optional(v.string()),
-    title_bg: v.optional(v.string()),
     slug: v.string(),
     excerpt: v.string(),
     excerpt_it: v.optional(v.string()),
-    excerpt_bg: v.optional(v.string()),
     body: v.string(),
     publishedAt: v.optional(v.number()),
     createdAt: v.number(),
@@ -60,7 +56,6 @@ export default defineSchema({
     role: v.object({
       en: v.string(),
       it: v.string(),
-      bg: v.string(),
     }),
     type: v.union(v.literal("member"), v.literal("alumni")),
     linkedinUrl: v.optional(v.string()),
@@ -72,12 +67,10 @@ export default defineSchema({
     title: v.object({
       en: v.string(),
       it: v.string(),
-      bg: v.string(),
     }),
     description: v.object({
       en: v.string(),
       it: v.string(),
-      bg: v.string(),
     }),
     imageUrl: v.optional(v.string()),
     link: v.optional(v.string()),
@@ -89,7 +82,6 @@ export default defineSchema({
     caption: v.object({
       en: v.string(),
       it: v.string(),
-      bg: v.string(),
     }),
     category: v.optional(v.string()),
     createdAt: v.number(),

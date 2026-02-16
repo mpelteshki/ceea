@@ -30,7 +30,7 @@ export function ExpandableText({
         <div className={cn("space-y-2", className)}>
             <div
                 className={cn(
-                    "text-[var(--accents-5)] leading-relaxed transition-all duration-300",
+                    "text-[var(--accents-5)] leading-relaxed transition-[max-height] duration-300",
                     !isExpanded && "line-clamp-3"
                 )}
                 style={{

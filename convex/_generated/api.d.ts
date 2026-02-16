@@ -11,6 +11,8 @@
 import type * as events from "../events.js";
 import type * as gallery from "../gallery.js";
 import type * as lib_admin from "../lib/admin.js";
+import type * as lib_url from "../lib/url.js";
+import type * as migrations from "../migrations.js";
 import type * as partners from "../partners.js";
 import type * as posts from "../posts.js";
 import type * as projects from "../projects.js";
@@ -26,6 +28,8 @@ declare const fullApi: ApiFromModules<{
   events: typeof events;
   gallery: typeof gallery;
   "lib/admin": typeof lib_admin;
+  "lib/url": typeof lib_url;
+  migrations: typeof migrations;
   partners: typeof partners;
   posts: typeof posts;
   projects: typeof projects;

@@ -1,6 +1,9 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/admin";
+import { normalizeOptionalUrl } from "./lib/url";
+
+const MAX_EVENTS_RETURNED = 200;
 
 export const listUpcoming = query({
   args: { limit: v.optional(v.number()) },
@@ -22,7 +25,7 @@ export const listAll = query({
       .query("events")
       .withIndex("by_startsAt", (q) => q)
       .order("desc")
-      .collect();
+      .take(MAX_EVENTS_RETURNED);
   },
 });
 
@@ -30,10 +33,8 @@ export const create = mutation({
   args: {
     title: v.string(),
     title_it: v.optional(v.string()),
-    title_bg: v.optional(v.string()),
     summary: v.string(),
     summary_it: v.optional(v.string()),
-    summary_bg: v.optional(v.string()),
     location: v.string(),
     kind: v.union(
       v.literal("flagship"),
@@ -50,6 +51,8 @@ export const create = mutation({
     const now = Date.now();
     return await ctx.db.insert("events", {
       ...args,
+      rsvpUrl: normalizeOptionalUrl(args.rsvpUrl, "RSVP URL"),
+      moreInfoUrl: normalizeOptionalUrl(args.moreInfoUrl, "More info URL"),
       createdAt: now,
       createdBy: identity.tokenIdentifier,
     });

@@ -10,12 +10,17 @@ export default async function AdminLayout({
   const state = await getAdminState();
   if (!state.ok) {
     return (
-      <div className="site-shell min-h-dvh bg-[var(--accents-1)]">
-        <div className="mx-auto w-full max-w-2xl px-5 py-12">
-          <h1 className="text-2xl font-bold font-display text-[var(--foreground)]">
-            Admin access required
-          </h1>
-          <div className="mt-4 rounded-lg border border-[var(--accents-2)] bg-[var(--background)] p-5 text-sm text-[var(--accents-5)]">
+      <div className="site-shell min-h-dvh flex items-center justify-center bg-[var(--background)]">
+        <div className="w-full max-w-md p-6">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold font-display text-[var(--foreground)]">
+              Admin Access
+            </h1>
+            <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+              Restricted area for CEEA administrators.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
             {state.reason === "clerk_not_configured" ? (
               <>
                 Clerk is not configured. Set{" "}
@@ -68,35 +73,37 @@ export default async function AdminLayout({
             )}
           </div>
 
-          <AdminAuthMenu />
+          <div className="mt-8 flex justify-center">
+            <AdminAuthMenu />
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="site-shell min-h-dvh bg-[var(--accents-1)]">
-      <div className="mx-auto w-full max-w-6xl px-5 py-10">
-        <header className="mb-12 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold font-display tracking-tight">CEEA Admin</h1>
-            <Link href="/" className="text-xs text-[var(--accents-5)] hover:text-[var(--foreground)] transition-colors inline-flex items-center gap-1">
-              <span>←</span> Back to site
+    <div className="site-shell min-h-dvh bg-[var(--background)]">
+      <div className="mx-auto w-full max-w-5xl px-6 py-10">
+        <header className="sticky top-0 z-10 mb-12 -mx-6 px-6 py-4 bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)] flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between transition-colors">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="group flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] transition-colors hover:border-[var(--foreground)] hover:text-[var(--foreground)]">
+              <span className="sr-only">Back to site</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 3.5L2 8L6.5 12.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M2.5 8H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </Link>
+            <h1 className="font-display text-lg font-bold tracking-tight">Admin</h1>
           </div>
 
-          <nav className="flex flex-wrap items-center gap-1 rounded-lg border border-[var(--accents-2)] bg-[var(--background)] p-1">
+          <nav className="flex items-center gap-1">
             {[
               { label: "Dashboard", href: "/admin" },
               { label: "Team", href: "/admin/team" },
               { label: "Projects", href: "/admin/projects" },
-              { label: "Gallery", href: "/admin/gallery" },
               { label: "Partners", href: "/admin/partners" },
             ].map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-md px-4 py-2 text-sm font-medium text-[var(--accents-5)] hover:bg-[var(--accents-1)] hover:text-[var(--foreground)] transition-all"
+                className="rounded-full px-4 py-1.5 text-sm font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)] data-[active=true]:bg-[var(--foreground)] data-[active=true]:text-[var(--background)]"
               >
                 {item.label}
               </Link>
@@ -104,15 +111,14 @@ export default async function AdminLayout({
           </nav>
         </header>
 
-        <main className="min-h-[600px] rounded-xl border border-[var(--accents-2)] bg-[var(--background)] p-8 shadow-sm">
+        <main className="min-h-[600px] animate-in fade-in slide-in-from-bottom-4 duration-500">
           {children}
         </main>
 
-        <footer className="mt-12 text-center text-xs text-[var(--accents-4)]">
+        <footer className="mt-20 border-t border-[var(--border)] pt-8 text-center text-xs text-[var(--muted-foreground)]">
           <p>© {new Date().getFullYear()} CEEA Bocconi • Admin Interface</p>
         </footer>
       </div>
     </div>
   );
 }
-

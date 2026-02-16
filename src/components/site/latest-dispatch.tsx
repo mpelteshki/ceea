@@ -1,104 +1,166 @@
-"use client";
-
+import { getLocale, getTranslations } from "next-intl/server";
+import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/routing";
-import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
-import { Section } from "./section";
 import { hasConvex } from "@/lib/public-env";
-import { ArrowRight } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { getConvexServerClient } from "@/lib/convex-server";
 import { getLocalized } from "@/lib/localization";
+import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
+import { EmptyState } from "@/components/ui/empty-state";
+import { renderGradientTitle } from "@/lib/gradient-title";
 
 type PostDoc = Doc<"posts">;
 
-function fmtDate(ms: number) {
-  return new Intl.DateTimeFormat(undefined, {
+type DispatchLabels = {
+  draft: string;
+  featured: string;
+  readPost: string;
+};
+
+function fmtDate(ms: number, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "short",
     day: "2-digit",
   }).format(new Date(ms));
 }
 
-export function LatestDispatch() {
-  const t = useTranslations("LatestDispatch");
+export async function LatestDispatch() {
+  const t = await getTranslations("LatestDispatch");
+  const sectionTitle = t("title");
+
   if (!hasConvex) {
     return (
-      <Section eyebrow={t("eyebrow")} title={t("title")}>
-        <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-4 text-sm text-[var(--accents-5)] rounded-md">
-          Backend not configured. Set{" "}
-          <span className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</span> in Vercel to
-          show newsletter posts.
+      <section className="space-y-12">
+        <div className="ui-title-stack">
+          <h2 className="ui-section-title mt-4">{renderGradientTitle(sectionTitle)}</h2>
         </div>
-      </Section>
+        <div className="rounded-2xl border border-dashed border-[var(--accents-3)] p-8 text-center text-sm text-[var(--accents-5)]">
+          Set <code className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</code> to show posts.
+        </div>
+      </section>
     );
   }
 
-  return <LatestDispatchInner />;
-}
+  const convex = getConvexServerClient();
+  if (!convex) {
+    return <EmptyState title={t("noPostsYet")} className="bg-card border-border py-20" />;
+  }
 
-function LatestDispatchInner() {
-  const posts = useQuery(api.posts.listPublished, { limit: 2 }) as
-    | PostDoc[]
-    | undefined;
-  const locale = useLocale();
-  const t = useTranslations("LatestDispatch");
+  const locale = await getLocale();
+  const posts = (await convex.query(api.posts.listPublished, { limit: 3 })) as PostDoc[];
 
   return (
-    <Section eyebrow={t("eyebrow")} title={t("title")}>
-      <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
-        {(posts ?? Array.from({ length: 2 })).map((p, idx) => {
-          if (!p) {
-            return (
-              <div key={idx} className="py-8 px-4">
-                <div className="h-6 w-2/3 animate-pulse bg-[var(--accents-2)] rounded" />
-                <div className="mt-4 h-4 w-1/2 animate-pulse bg-[var(--accents-2)] rounded" />
-                <div className="mt-4 h-16 w-full animate-pulse bg-[var(--accents-1)] rounded border border-[var(--accents-2)]" />
-              </div>
-            );
-          }
+    <section className="space-y-12">
+      <FadeIn>
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div className="ui-title-stack">
+            <h2 className="ui-section-title mt-4">{renderGradientTitle(sectionTitle)}</h2>
+          </div>
+          <Link href="/newsletter" className="ui-btn shrink-0" data-variant="secondary">
+            {t("viewAll")}
+            <ArrowRight className="ui-icon-shift h-4 w-4" />
+          </Link>
+        </div>
+      </FadeIn>
 
-          const { title, excerpt } = getLocalized(p, locale, ["title", "excerpt"]);
+      <FadeInStagger>
+        {posts.length > 0 ? (
+          <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
+            <FadeIn>
+              <FeaturedPost
+                post={posts[0]}
+                locale={locale}
+                labels={{ draft: t("draft"), featured: t("featured"), readPost: t("readPost") }}
+              />
+            </FadeIn>
 
-          return (
-            <Link
-              key={p._id}
-              href={`/newsletter/${p.slug}`}
-              aria-label={`${t("viewPost")}: ${title}`}
-              className="ui-rowlink group md:grid-cols-[1fr_auto] md:items-start"
-            >
-              <div className="min-w-0">
-                <div className="flex flex-col gap-1">
-                  <div className="font-display text-2xl font-semibold text-[var(--foreground)]">
-                    {title}
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-[var(--accents-5)] mt-1">
-                    <span className="ui-tag">
-                      {p.publishedAt ? fmtDate(p.publishedAt) : "draft"}
-                    </span>
-                  </div>
-                </div>
-                <p className="mt-3 max-w-2xl line-clamp-2 text-sm leading-6 text-[var(--accents-5)]">
-                  {excerpt}
-                </p>
-                <div className="mt-4 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-[var(--foreground)]">
-                  Read post <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
-                </div>
-              </div>
-            </Link>
-          );
-        })}
+            <div className="grid gap-5">
+              {posts.slice(1).map((post) => (
+                <FadeIn key={post._id}>
+                  <CompactPost post={post} locale={locale} labels={{ draft: t("draft"), featured: t("featured"), readPost: t("readPost") }} />
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <EmptyState title={t("noPostsYet")} className="bg-card border-border py-20" />
+        )}
+      </FadeInStagger>
+    </section>
+  );
+}
+
+function FeaturedPost({
+  post,
+  locale,
+  labels,
+}: {
+  post: PostDoc;
+  locale: string;
+  labels: DispatchLabels;
+}) {
+  const localized = getLocalized(post, locale, ["title", "excerpt"] as const);
+  const title = String(localized.title ?? "");
+  const excerpt = String(localized.excerpt ?? "");
+
+  return (
+    <Link
+      href={`/newsletter/${post.slug}`}
+      className="ui-hover-lift group flex flex-col justify-between rounded-2xl border border-[var(--accents-2)] p-8 transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]"
+    >
+      <div>
+        <div className="flex items-center gap-4 mb-6">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--accents-4)]">
+            {post.publishedAt ? fmtDate(post.publishedAt, locale) : labels.draft}
+          </span>
+          <span className="h-px flex-1 bg-[var(--accents-2)]" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--accents-4)]">{labels.featured}</span>
+        </div>
+        <h3 className="font-display text-3xl sm:text-4xl text-[var(--foreground)] leading-[1.1] group-hover:text-[var(--brand-teal)] transition-colors">
+          {title}
+        </h3>
+        <p className="mt-6 text-[var(--accents-5)] leading-relaxed line-clamp-4">{excerpt}</p>
       </div>
-
-      <div className="mt-8">
-        <Link
-          href="/newsletter"
-          className="ui-btn"
-          data-variant="secondary"
-        >
-          View all posts
-        </Link>
+      <div className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-teal)]">
+        <span className="group-hover:underline">{labels.readPost}</span>
+        <ArrowRight className="ui-icon-shift h-3.5 w-3.5" />
       </div>
-    </Section>
+    </Link>
+  );
+}
+
+function CompactPost({
+  post,
+  locale,
+  labels,
+}: {
+  post: PostDoc;
+  locale: string;
+  labels: DispatchLabels;
+}) {
+  const localized = getLocalized(post, locale, ["title", "excerpt"] as const);
+  const title = String(localized.title ?? "");
+  const excerpt = String(localized.excerpt ?? "");
+
+  return (
+    <Link
+      href={`/newsletter/${post.slug}`}
+      className="ui-hover-lift-sm group flex items-start gap-6 rounded-2xl border border-[var(--accents-2)] p-6 transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
+    >
+      <div className="min-w-0 flex-1">
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--accents-4)]">
+          {post.publishedAt ? fmtDate(post.publishedAt, locale) : labels.draft}
+        </span>
+        <h3 className="mt-2 font-display text-lg text-[var(--foreground)] leading-snug group-hover:text-[var(--brand-teal)] transition-colors line-clamp-2">
+          {title}
+        </h3>
+        <p className="mt-2 text-sm text-[var(--accents-5)] line-clamp-2 leading-relaxed hidden sm:block">{excerpt}</p>
+      </div>
+      <div className="h-8 w-8 rounded-full border border-[var(--accents-2)] flex items-center justify-center text-[var(--accents-4)] group-hover:bg-[var(--brand-teal)] group-hover:border-transparent group-hover:text-white transition-colors shrink-0 mt-4">
+        <ArrowRight className="ui-icon-shift h-3.5 w-3.5" />
+      </div>
+    </Link>
   );
 }

@@ -1,232 +1,130 @@
-"use client";
+import { getTranslations } from "next-intl/server";
+import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
+import { Palette, Scale, TrendingUp, Users } from "lucide-react";
+import { renderGradientTitle } from "@/lib/gradient-title";
 
-import { Section } from "@/components/site/section";
-import { useTranslations } from "next-intl";
+const divisionKeys = [
+  { icon: Palette, key: "culture", accent: "var(--brand-caramel)" },
+  { icon: Scale, key: "diplomacy", accent: "var(--brand-crimson)" },
+  { icon: TrendingUp, key: "fintech", accent: "var(--brand-teal)" },
+  { icon: Users, key: "social", accent: "var(--brand-teal-soft)" },
+] as const;
 
-export default function AboutPage() {
-  const t = useTranslations("AboutPage");
+const realityItems = [
+  { titleKey: "reality1Title", bodyKey: "reality1Body", number: "01" },
+  { titleKey: "reality2Title", bodyKey: "reality2Body", number: "02" },
+  { titleKey: "reality3Title", bodyKey: "reality3Body", number: "03" },
+  { titleKey: "reality4Title", bodyKey: "reality4Body", number: "04" },
+] as const;
+
+const partnerItems = [
+  { titleKey: "partner1Title", bodyKey: "partner1Body", number: "01" },
+  { titleKey: "partner2Title", bodyKey: "partner2Body", number: "02" },
+  { titleKey: "partner3Title", bodyKey: "partner3Body", number: "03" },
+] as const;
+
+export default async function AboutPage() {
+  const t = await getTranslations("AboutPage");
+  const td = await getTranslations("Divisions");
 
   return (
-    <div className="space-y-24">
-      <header className="space-y-6">
-        <div className="ui-kicker">{t("kicker")}</div>
-        <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-6xl">
-          {t("title")}
-        </h1>
-        <p className="max-w-2xl text-lg leading-8 text-[var(--accents-5)]">
-          {t("mission")}
-        </p>
-      </header>
-
-      <Section eyebrow={t("pillarsEyebrow")} title={t("pillarsTitle")}>
-        <div className="border-y border-[var(--accents-2)] mt-8">
-          <div className="grid divide-y divide-[var(--accents-2)] md:grid-cols-3 md:divide-x md:divide-y-0">
-            <Principle
-              number="01"
-              title={t("pillar1Title")}
-              body={t("pillar1Body")}
-            />
-            <Principle
-              number="02"
-              title={t("pillar2Title")}
-              body={t("pillar2Body")}
-            />
-            <Principle
-              number="03"
-              title={t("pillar3Title")}
-              body={t("pillar3Body")}
-            />
-          </div>
+    <>
+      <div className="relative border-b border-border">
+        <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_5%,var(--background))]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_80%_30%,rgba(25,101,107,0.04),transparent)]" />
+        <div className="ui-site-container relative pt-12 sm:pt-20 pb-12 sm:pb-16">
+          <FadeIn>
+            <h1 className="ui-page-title">{renderGradientTitle(t("title"))}</h1>
+            <p className="mt-6 max-w-3xl text-lg leading-relaxed text-muted-foreground">{t("mission")}</p>
+          </FadeIn>
         </div>
-      </Section>
-
-      <Section eyebrow={t("realityEyebrow")} title={t("realityTitle")}>
-        <div className="border-t border-[var(--accents-2)] mt-8">
-          <dl className="grid gap-0 md:grid-cols-2 md:gap-x-12">
-            <Definition
-              number="A"
-              title={t("reality1Title")}
-              body={t("reality1Body")}
-            />
-            <Definition
-              number="B"
-              title={t("reality2Title")}
-              body={t("reality2Body")}
-            />
-            <Definition
-              number="C"
-              title={t("reality3Title")}
-              body={t("reality3Body")}
-            />
-            <Definition
-              number="D"
-              title={t("reality4Title")}
-              body={t("reality4Body")}
-            />
-          </dl>
-        </div>
-      </Section>
-
-      <Section eyebrow={t("peopleEyebrow")} title={t("peopleTitle")}>
-        <p className="max-w-2xl text-lg leading-8 text-[var(--accents-5)] mb-8">
-          {t("peopleBody")}
-        </p>
-        <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-6 text-sm text-[var(--accents-5)] rounded-sm">
-          {t("peopleNote")}
-        </div>
-      </Section>
-
-      <Section eyebrow={t("partnersEyebrow")} title={t("partnersTitle")}>
-        <p className="max-w-2xl text-lg leading-8 text-[var(--accents-5)] mb-8">
-          {t("partnersBody")}
-        </p>
-        <div className="border-y border-[var(--accents-2)] mt-8">
-          <div className="grid divide-y divide-[var(--accents-2)] md:grid-cols-3 md:divide-x md:divide-y-0">
-            <Offer
-              number="01"
-              title={t("partner1Title")}
-              body={t("partner1Body")}
-            />
-            <Offer
-              number="02"
-              title={t("partner2Title")}
-              body={t("partner2Body")}
-            />
-            <Offer
-              number="03"
-              title={t("partner3Title")}
-              body={t("partner3Body")}
-            />
-          </div>
-        </div>
-      </Section>
-
-      <Section eyebrow={t("contactEyebrow")} title={t("contactTitle")}>
-        <p className="max-w-2xl text-lg leading-8 text-[var(--accents-5)] mb-8">
-          {t("contactBody")}
-        </p>
-        <div className="border-t border-[var(--accents-2)] mt-8">
-          <dl className="grid gap-0 md:grid-cols-2 md:gap-x-12">
-            <ContactRow
-              number="01"
-              title={t("contact1Title")}
-              body={
-                <>
-                  Email:{" "}
-                  <span className="font-mono text-[var(--foreground)]">
-                    partnerships@ceea-bocconi.example
-                  </span>
-                  <br />
-                  {t("contact1BodyPre")}
-                </>
-              }
-            />
-            <ContactRow
-              number="02"
-              title={t("contact2Title")}
-              body={
-                <>
-                  Email: <span className="font-mono text-[var(--foreground)]">hello@ceea-bocconi.example</span>
-                  <br />
-                  {t("contact2Body")}
-                </>
-              }
-            />
-          </dl>
-        </div>
-        <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-4 text-sm text-[var(--accents-5)] rounded-md mt-8">
-          Next step: wire this page to a Convex mutation or an email provider
-          (Resend, Postmark) so submissions land in one inbox.
-        </div>
-      </Section>
-    </div>
-  );
-}
-
-function Principle({
-  number,
-  title,
-  body,
-}: {
-  number: string;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="p-6 md:p-8">
-      <div className="mb-3">
-        <span className="ui-tag">{number}</span>
       </div>
-      <div className="font-display text-xl font-semibold text-[var(--foreground)]">{title}</div>
-      <p className="mt-3 text-sm leading-7 text-[var(--accents-5)]">
-        {body}
-      </p>
-    </div>
-  );
-}
 
-function Definition({
-  number,
-  title,
-  body,
-}: {
-  number: string;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="border-b border-[var(--accents-2)] py-6 md:py-8">
-      <dt className="flex items-center gap-3">
-        <span className="ui-tag">{number}</span>
-        <span className="font-display text-xl font-semibold text-[var(--foreground)]">{title}</span>
-      </dt>
-      <dd className="mt-3 text-sm leading-7 text-[var(--accents-5)]">
-        {body}
-      </dd>
-    </div>
-  );
-}
+      <div className="relative border-b border-border">
+        <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_3%,var(--background))]" />
+        <div className="ui-site-container relative py-16 sm:py-24">
+          <FadeInStagger className="space-y-12">
+            <FadeIn>
+              <div className="flex items-center gap-4 mb-2">
+                <span className="h-6 w-1 rounded-full bg-[var(--brand-teal)]" />
+                <h2 className="font-display text-3xl sm:text-4xl text-foreground">{renderGradientTitle(t("divisionsTitle"))}</h2>
+                <span className="h-px flex-1 bg-border" />
+              </div>
+              <p className="max-w-2xl text-sm leading-7 text-muted-foreground ml-7">{t("divisionsSubtitle")}</p>
+            </FadeIn>
 
-function Offer({
-  number,
-  title,
-  body,
-}: {
-  number: string;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="p-6 md:p-8">
-      <div className="mb-3">
-        <span className="ui-tag">{number}</span>
+            <div className="grid gap-5 sm:grid-cols-2">
+              {divisionKeys.map((d, i) => (
+                <FadeIn key={d.key}>
+                  <div className="ui-hover-lift-sm relative flex flex-col rounded-2xl border border-border bg-card p-8 sm:p-10 h-full">
+                    <div className="absolute top-0 left-8 right-8 h-[2px] rounded-full" style={{ background: d.accent }} />
+                    <div className="flex items-start justify-between gap-4 mb-6">
+                      <div
+                        className="flex h-12 w-12 items-center justify-center rounded-xl shrink-0"
+                        style={{ background: `color-mix(in oklch, ${d.accent} 12%, transparent)`, color: d.accent }}
+                      >
+                        <d.icon className="h-5 w-5" />
+                      </div>
+                      <span className="font-mono text-xs text-muted-foreground tabular-nums">0{i + 1}</span>
+                    </div>
+                    <h3 className="font-display text-2xl text-foreground">{td(`${d.key}Name`)}</h3>
+                    <p className="mt-4 text-sm leading-7 text-muted-foreground flex-1">{td(`${d.key}Desc`)}</p>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </FadeInStagger>
+        </div>
       </div>
-      <div className="font-display text-xl font-semibold text-[var(--foreground)]">{title}</div>
-      <p className="mt-3 text-sm leading-7 text-[var(--accents-5)]">
-        {body}
-      </p>
-    </div>
-  );
-}
 
-function ContactRow({
-  number,
-  title,
-  body,
-}: {
-  number: string;
-  title: string;
-  body: React.ReactNode;
-}) {
-  return (
-    <div className="border-b border-[var(--accents-2)] py-6 md:py-8">
-      <dt className="flex items-center gap-3">
-        <span className="ui-tag">{number}</span>
-        <span className="font-display text-xl font-semibold text-[var(--foreground)]">{title}</span>
-      </dt>
-      <dd className="mt-3 text-sm leading-7 text-[var(--accents-5)]">
-        {body}
-      </dd>
-    </div>
+      <div className="ui-site-container py-16 sm:py-24 space-y-24">
+        <FadeInStagger className="space-y-12">
+          <FadeIn>
+            <div className="flex items-center gap-4">
+              <span className="h-6 w-1 rounded-full bg-[var(--brand-caramel)]" />
+              <h2 className="font-display text-3xl sm:text-4xl text-foreground">{renderGradientTitle(t("realityTitle"))}</h2>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+          </FadeIn>
+
+          <div className="grid gap-px bg-border rounded-2xl overflow-hidden sm:grid-cols-2">
+            {realityItems.map((item) => (
+              <FadeIn key={item.number}>
+                <div className="bg-card p-8 sm:p-10 h-full">
+                  <span className="font-mono text-xs text-muted-foreground tabular-nums mb-4 block">{item.number}</span>
+                  <h3 className="font-display text-xl text-foreground">{t(item.titleKey)}</h3>
+                  <p className="mt-3 text-sm leading-7 text-muted-foreground">{t(item.bodyKey)}</p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </FadeInStagger>
+
+        <FadeInStagger className="space-y-12">
+          <FadeIn>
+            <div className="flex items-center gap-4">
+              <span className="h-6 w-1 rounded-full bg-[var(--brand-crimson)]" />
+              <h2 className="font-display text-3xl sm:text-4xl text-foreground">{renderGradientTitle(t("partnersTitle"))}</h2>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+          </FadeIn>
+          <FadeIn>
+            <p className="max-w-2xl text-base leading-8 text-muted-foreground ml-7">{t("partnersBody")}</p>
+          </FadeIn>
+
+          <div className="grid gap-5 sm:grid-cols-3">
+            {partnerItems.map((item) => (
+              <FadeIn key={item.number}>
+                <div className="ui-hover-lift-sm rounded-2xl border border-border p-8 h-full">
+                  <span className="font-mono text-xs text-muted-foreground tabular-nums block mb-4">{item.number}</span>
+                  <h3 className="font-display text-xl text-foreground">{t(item.titleKey)}</h3>
+                  <p className="mt-3 text-sm leading-7 text-muted-foreground">{t(item.bodyKey)}</p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </FadeInStagger>
+      </div>
+    </>
   );
 }

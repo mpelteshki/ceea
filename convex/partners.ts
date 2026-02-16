@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/admin";
+import { normalizeOptionalUrl } from "./lib/url";
 
 export const listAll = query({
     args: {},
@@ -24,15 +25,17 @@ export const create = mutation({
         websiteUrl: v.optional(v.string()),
         logoUrl: v.optional(v.string()),
     },
-    handler: async (ctx, args) => {
-        const { identity } = await requireAdmin(ctx);
-        const now = Date.now();
-        return await ctx.db.insert("partners", {
-            ...args,
-            createdAt: now,
-            createdBy: identity.tokenIdentifier,
-        });
-    },
+  handler: async (ctx, args) => {
+    const { identity } = await requireAdmin(ctx);
+    const now = Date.now();
+    return await ctx.db.insert("partners", {
+        ...args,
+        websiteUrl: normalizeOptionalUrl(args.websiteUrl, "Partner website URL"),
+        logoUrl: normalizeOptionalUrl(args.logoUrl, "Partner logo URL"),
+        createdAt: now,
+        createdBy: identity.tokenIdentifier,
+    });
+  },
 });
 
 export const remove = mutation({

@@ -2,11 +2,13 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/admin";
 
+const MAX_POSTS_RETURNED = 200;
+
 function slugify(input: string): string {
   return input
     .toLowerCase()
     .trim()
-    .replace(/['"]/g, "")
+    .replace(/["']/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
@@ -27,7 +29,7 @@ export const listPublished = query({
 export const listAll = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("posts").order("desc").collect();
+    return await ctx.db.query("posts").order("desc").take(MAX_POSTS_RETURNED);
   },
 });
 
@@ -45,11 +47,9 @@ export const createDraft = mutation({
   args: {
     title: v.string(),
     title_it: v.optional(v.string()),
-    title_bg: v.optional(v.string()),
     excerpt: v.string(),
     excerpt_it: v.optional(v.string()),
-    excerpt_bg: v.optional(v.string()),
-    body: v.string(), // markdown
+    body: v.string(),
     slug: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -67,11 +67,9 @@ export const createDraft = mutation({
     return await ctx.db.insert("posts", {
       title: args.title.trim(),
       title_it: args.title_it?.trim(),
-      title_bg: args.title_bg?.trim(),
       slug,
       excerpt: args.excerpt.trim(),
       excerpt_it: args.excerpt_it?.trim(),
-      excerpt_bg: args.excerpt_bg?.trim(),
       body: args.body,
       createdAt: now,
       createdBy: identity.tokenIdentifier,
@@ -85,10 +83,8 @@ export const updateDraft = mutation({
     id: v.id("posts"),
     title: v.string(),
     title_it: v.optional(v.string()),
-    title_bg: v.optional(v.string()),
     excerpt: v.string(),
     excerpt_it: v.optional(v.string()),
-    excerpt_bg: v.optional(v.string()),
     body: v.string(),
   },
   handler: async (ctx, args) => {
@@ -96,10 +92,8 @@ export const updateDraft = mutation({
     await ctx.db.patch(args.id, {
       title: args.title.trim(),
       title_it: args.title_it?.trim(),
-      title_bg: args.title_bg?.trim(),
       excerpt: args.excerpt.trim(),
       excerpt_it: args.excerpt_it?.trim(),
-      excerpt_bg: args.excerpt_bg?.trim(),
       body: args.body,
     });
   },

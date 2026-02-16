@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, Suspense } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -25,11 +25,7 @@ export function AdminDashboard() {
     );
   }
 
-  return (
-    <Suspense fallback={<div className="p-4 text-sm text-[var(--accents-5)]">Loading...</div>}>
-      <AdminDashboardInner />
-    </Suspense>
-  );
+  return <AdminDashboardInner />;
 }
 
 function AdminDashboardInner() {
@@ -61,10 +57,8 @@ function AdminDashboardInner() {
 
   const [title, setTitle] = useState("");
   const [title_it, setTitleIt] = useState("");
-  const [title_bg, setTitleBg] = useState("");
   const [summary, setSummary] = useState("");
   const [summary_it, setSummaryIt] = useState("");
-  const [summary_bg, setSummaryBg] = useState("");
   const [location, setLocation] = useState("Bocconi University");
   const [kind, setKind] = useState<Kind>("flagship");
   const [startsAt, setStartsAt] = useState(() =>
@@ -75,11 +69,9 @@ function AdminDashboardInner() {
 
   const [postTitle, setPostTitle] = useState("");
   const [postTitle_it, setPostTitleIt] = useState("");
-  const [postTitle_bg, setPostTitleBg] = useState("");
   const [postSlug, setPostSlug] = useState("");
   const [postExcerpt, setPostExcerpt] = useState("");
   const [postExcerpt_it, setPostExcerptIt] = useState("");
-  const [postExcerpt_bg, setPostExcerptBg] = useState("");
   const [postBody, setPostBody] = useState(
     `# Title\n\nWrite in **Markdown**.\n\n- Keep it concrete\n- Add links\n`,
   );
@@ -122,14 +114,14 @@ function AdminDashboardInner() {
       <header className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <div className="ui-kicker">Admin</div>
-            <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
+
+            <h1 className="font-display text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
               Dashboard
             </h1>
           </div>
         </div>
-        <p className="max-w-2xl text-sm leading-6 text-[var(--accents-5)]">
-          Manage your site's content. All changes are synced in real-time.
+        <p className="max-w-2xl text-sm leading-6 text-[var(--muted-foreground)]">
+          Manage your site&rsquo;s content. All changes are synced in real-time.
         </p>
 
         <div className="grid grid-cols-2 gap-4 pt-4 sm:grid-cols-4">
@@ -139,24 +131,24 @@ function AdminDashboardInner() {
             { label: "Published", value: posts?.filter(p => p.publishedAt).length ?? "..." },
             { label: "Drafts", value: posts?.filter(p => !p.publishedAt).length ?? "..." },
           ].map((stat) => (
-            <div key={stat.label} className="rounded-lg border border-[var(--accents-2)] bg-[var(--accents-1)] p-4">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--accents-4)]">{stat.label}</div>
-              <div className="mt-1 text-2xl font-bold font-display">{stat.value}</div>
+            <div key={stat.label} className="ui-card p-4">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">{stat.label}</div>
+              <div className="mt-1 text-2xl font-bold font-display text-[var(--foreground)]">{stat.value}</div>
             </div>
           ))}
         </div>
       </header>
 
 
-      <div className="flex gap-6 border-b border-[var(--accents-2)]">
+      <div className="flex gap-1 bg-[var(--secondary)] p-1 rounded-lg w-fit">
         <button
           type="button"
           onClick={() => router.replace("/admin?tab=events", { scroll: false })}
           className={[
-            "border-b-2 pb-3 text-sm font-medium transition-colors",
+            "px-4 py-2 text-sm font-medium transition-colors rounded-md",
             tab === "events"
-              ? "border-[var(--foreground)] text-[var(--foreground)]"
-              : "border-transparent text-[var(--accents-5)] hover:text-[var(--foreground)]",
+              ? "bg-[var(--background)] text-[var(--foreground)] shadow-sm"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
           ].join(" ")}
         >
           Events
@@ -167,10 +159,10 @@ function AdminDashboardInner() {
             router.replace("/admin?tab=newsletter", { scroll: false })
           }
           className={[
-            "border-b-2 pb-3 text-sm font-medium transition-colors",
+            "px-4 py-2 text-sm font-medium transition-colors rounded-md",
             tab === "posts"
-              ? "border-[var(--foreground)] text-[var(--foreground)]"
-              : "border-transparent text-[var(--accents-5)] hover:text-[var(--foreground)]",
+              ? "bg-[var(--background)] text-[var(--foreground)] shadow-sm"
+              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
           ].join(" ")}
         >
           Newsletter
@@ -182,7 +174,7 @@ function AdminDashboardInner() {
           <section className="space-y-6">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <h2 className="text-xl font-semibold text-[var(--foreground)]">Create event</h2>
+                <h2 className="font-display text-xl font-semibold text-[var(--foreground)]">Create event</h2>
                 <p className="mt-1 text-sm text-[var(--accents-5)]">
                   Keep it short. The public pages are deliberately minimal.
                 </p>
@@ -206,16 +198,6 @@ function AdminDashboardInner() {
                   onChange={(e) => setTitleIt(e.target.value)}
                   placeholder="Dialoghi sul Danubio"
                   name="event_title_it"
-                  autoComplete="off"
-                  className="ui-input"
-                />
-              </Field>
-              <Field label="Title (Bulgarian)">
-                <input
-                  value={title_bg}
-                  onChange={(e) => setTitleBg(e.target.value)}
-                  placeholder="Дунавски диалози"
-                  name="event_title_bg"
                   autoComplete="off"
                   className="ui-input"
                 />
@@ -276,17 +258,6 @@ function AdminDashboardInner() {
                   className="ui-input resize-none"
                 />
               </Field>
-              <Field label="Summary (Bulgarian)" full>
-                <textarea
-                  value={summary_bg}
-                  onChange={(e) => setSummaryBg(e.target.value)}
-                  rows={3}
-                  placeholder="Вечер на дискусии..."
-                  name="event_summary_bg"
-                  autoComplete="off"
-                  className="ui-input resize-none"
-                />
-              </Field>
               <Field label="RSVP URL">
                 <input
                   value={rsvpUrl}
@@ -328,10 +299,8 @@ function AdminDashboardInner() {
                     await createEvent({
                       title: title.trim(),
                       title_it: title_it.trim() || undefined,
-                      title_bg: title_bg.trim() || undefined,
                       summary: summary.trim(),
                       summary_it: summary_it.trim() || undefined,
-                      summary_bg: summary_bg.trim() || undefined,
                       location: location.trim(),
                       kind,
                       startsAt: ms,
@@ -340,10 +309,8 @@ function AdminDashboardInner() {
                     });
                     setTitle("");
                     setTitleIt("");
-                    setTitleBg("");
                     setSummary("");
                     setSummaryIt("");
-                    setSummaryBg("");
                     setRsvpUrl("");
                     setMoreInfoUrl("");
                   } catch (err) {
@@ -356,7 +323,7 @@ function AdminDashboardInner() {
               >
                 {isCreatingEvent ? "Creating..." : "Create"} <span className="text-[10px]">{isCreatingEvent ? "" : "→"}</span>
               </button>
-              <div className="text-xs text-[var(--accents-5)]">
+              <div className="text-xs text-[var(--muted-foreground)]">
                 If this fails: check Clerk JWT + Convex auth config, and `ADMIN_EMAILS`.
               </div>
             </div>
@@ -365,7 +332,7 @@ function AdminDashboardInner() {
           <section className="space-y-4 pt-8 border-t border-[var(--accents-2)]">
             <div className="flex items-end justify-between gap-3">
               <div>
-                <h2 className="text-xl font-semibold text-[var(--foreground)]">Events</h2>
+                <h2 className="font-display text-xl font-semibold text-[var(--foreground)]">Events</h2>
                 <div className="mt-1 text-sm text-[var(--accents-5)]">
                   {events ? `${events.length} total` : "Loading…"}
                 </div>
@@ -373,20 +340,20 @@ function AdminDashboardInner() {
             </div>
 
             {!events ? (
-              <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
+              <div className="divide-y divide-[var(--border)] border-t border-[var(--border)]">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="py-6">
-                    <div className="h-5 w-2/3 animate-pulse bg-[var(--accents-2)] rounded" />
-                    <div className="mt-3 h-4 w-1/2 animate-pulse bg-[var(--accents-2)] rounded" />
+                    <div className="h-5 w-2/3 animate-pulse bg-[var(--secondary)] rounded" />
+                    <div className="mt-3 h-4 w-1/2 animate-pulse bg-[var(--secondary)] rounded" />
                   </div>
                 ))}
               </div>
             ) : events.length === 0 ? (
-              <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-8 text-center text-sm text-[var(--accents-5)] rounded-md">
+              <div className="ui-card p-8 text-center text-sm text-[var(--muted-foreground)]">
                 No events found. Create one to get started.
               </div>
             ) : (
-              <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
+              <div className="grid gap-4">
                 <AnimatePresence initial={false}>
                   {events.map((e) => (
                     <motion.div
@@ -394,19 +361,19 @@ function AdminDashboardInner() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="group grid gap-4 py-6 md:grid-cols-[1fr_auto] md:items-start transition-colors hover:bg-[var(--accents-1)]/50 -mx-4 px-4 rounded-lg"
+                      className="ui-card group grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-start transition-colors hover:bg-[var(--secondary)]/50"
                     >
-                      <div className="min-w-0 space-y-2">
+                      <div className="min-w-0 space-y-3">
                         <div className="flex items-baseline justify-between gap-4 md:block">
-                          <h3 className="font-display text-xl font-semibold text-[var(--foreground)]">
+                          <h3 className="font-display text-lg font-semibold text-[var(--foreground)]">
                             {e.title}
                           </h3>
                           <span className="ui-tag md:mt-2">{e.kind}</span>
                         </div>
-                        <p className="line-clamp-2 text-sm leading-6 text-[var(--accents-5)]">
+                        <p className="line-clamp-2 text-sm leading-6 text-[var(--muted-foreground)]">
                           {e.summary}
                         </p>
-                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-mono uppercase tracking-wider text-[var(--accents-4)]">
+                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-mono uppercase tracking-wider text-[var(--muted-foreground)]">
                           <span>{new Date(e.startsAt).toLocaleDateString()} at {new Date(e.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                           <span>{e.location}</span>
                         </div>
@@ -428,7 +395,7 @@ function AdminDashboardInner() {
                               setDeletingEventId(null);
                             }
                           }}
-                          className="ui-btn py-2 px-4 bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-all font-bold disabled:opacity-50"
+                          className="ui-btn py-1.5 px-3 h-auto text-xs bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-colors font-bold disabled:opacity-50"
                         >
                           {deletingEventId === e._id ? "Deleting..." : "Delete"}
                         </button>
@@ -446,7 +413,7 @@ function AdminDashboardInner() {
           <section className="space-y-6">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
-                <h2 className="text-xl font-semibold text-[var(--foreground)]">
+                <h2 className="font-display text-xl font-semibold text-[var(--foreground)]">
                   {editingPostId ? "Edit post" : "Create post"}
                 </h2>
                 <div className="mt-1 text-sm text-[var(--accents-5)]">
@@ -494,16 +461,6 @@ function AdminDashboardInner() {
                   className="ui-input"
                 />
               </Field>
-              <Field label="Title (Bulgarian)">
-                <input
-                  value={postTitle_bg}
-                  onChange={(e) => setPostTitleBg(e.target.value)}
-                  placeholder="Нов семестър..."
-                  name="post_title_bg"
-                  autoComplete="off"
-                  className="ui-input"
-                />
-              </Field>
               <Field label="Slug (optional override)">
                 <input
                   value={postSlug}
@@ -537,17 +494,6 @@ function AdminDashboardInner() {
                   className="ui-input resize-none"
                 />
               </Field>
-              <Field label="Excerpt (Bulgarian)" full>
-                <textarea
-                  value={postExcerpt_bg}
-                  onChange={(e) => setPostExcerptBg(e.target.value)}
-                  rows={2}
-                  placeholder="Резюме..."
-                  name="post_excerpt_bg"
-                  autoComplete="off"
-                  className="ui-input resize-none"
-                />
-              </Field>
               <Field label="Body (Markdown)" full>
                 <textarea
                   value={postBody}
@@ -575,20 +521,16 @@ function AdminDashboardInner() {
                         id: editingPostId,
                         title: postTitle.trim(),
                         title_it: postTitle_it.trim() || undefined,
-                        title_bg: postTitle_bg.trim() || undefined,
                         excerpt: postExcerpt.trim(),
                         excerpt_it: postExcerpt_it.trim() || undefined,
-                        excerpt_bg: postExcerpt_bg.trim() || undefined,
                         body: postBody,
                       });
                     } else {
                       const id = await createDraft({
                         title: postTitle.trim(),
                         title_it: postTitle_it.trim() || undefined,
-                        title_bg: postTitle_bg.trim() || undefined,
                         excerpt: postExcerpt.trim(),
                         excerpt_it: postExcerpt_it.trim() || undefined,
-                        excerpt_bg: postExcerpt_bg.trim() || undefined,
                         body: postBody,
                         slug: postSlug.trim() || undefined,
                       });
@@ -656,38 +598,38 @@ function AdminDashboardInner() {
 
           <section className="space-y-4 pt-8 border-t border-[var(--accents-2)]">
             <div>
-              <h2 className="text-xl font-semibold text-[var(--foreground)]">Posts</h2>
+              <h2 className="font-display text-xl font-semibold text-[var(--foreground)]">Posts</h2>
               <div className="mt-1 text-sm text-[var(--accents-5)]">
                 {posts ? `${posts.length} total` : "Loading…"}
               </div>
             </div>
 
             {!posts ? (
-              <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
+              <div className="divide-y divide-[var(--border)] border-t border-[var(--border)]">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="py-6">
-                    <div className="h-5 w-2/3 animate-pulse bg-[var(--accents-2)] rounded" />
-                    <div className="mt-3 h-4 w-1/2 animate-pulse bg-[var(--accents-2)] rounded" />
-                    <div className="mt-6 h-4 w-1/3 animate-pulse bg-[var(--accents-2)] rounded" />
+                    <div className="h-5 w-2/3 animate-pulse bg-[var(--secondary)] rounded" />
+                    <div className="mt-3 h-4 w-1/2 animate-pulse bg-[var(--secondary)] rounded" />
+                    <div className="mt-6 h-4 w-1/3 animate-pulse bg-[var(--secondary)] rounded" />
                   </div>
                 ))}
               </div>
             ) : posts.length === 0 ? (
-              <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-4 text-sm text-[var(--accents-5)] rounded-md">
+              <div className="ui-card p-4 text-sm text-[var(--muted-foreground)] rounded-md">
                 No posts yet.
               </div>
             ) : (
-              <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
+              <div className="grid gap-4">
                 {posts.map((p) => {
                   const isPublished = p.publishedAt != null;
                   return (
                     <div
                       key={p._id}
-                      className="grid gap-4 py-6 md:grid-cols-[1fr_auto] md:items-start"
+                      className="ui-card p-5 grid gap-4 md:grid-cols-[1fr_auto] md:items-start"
                     >
-                      <div className="min-w-0 space-y-2">
+                      <div className="min-w-0 space-y-3">
                         <div className="flex items-baseline justify-between gap-4 md:block">
-                          <h3 className="font-display text-xl font-semibold text-[var(--foreground)]">
+                          <h3 className="font-display text-lg font-semibold text-[var(--foreground)]">
                             {p.title}
                           </h3>
                           <span
@@ -695,18 +637,18 @@ function AdminDashboardInner() {
                               "ui-tag md:mt-2",
                               isPublished
                                 ? "border-green-200 bg-green-50 text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-300"
-                                : "text-[var(--accents-5)]",
+                                : "text-[var(--muted-foreground)]",
                             ].join(" ")}
                           >
                             {isPublished ? "published" : "draft"}
                           </span>
                         </div>
 
-                        <p className="line-clamp-2 text-sm leading-6 text-[var(--accents-5)]">
+                        <p className="line-clamp-2 text-sm leading-6 text-[var(--muted-foreground)]">
                           {p.excerpt}
                         </p>
 
-                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-mono uppercase tracking-wider text-[var(--accents-4)]">
+                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-mono uppercase tracking-wider text-[var(--muted-foreground)]">
                           <span>/{p.slug}</span>
                           <span>
                             {isPublished
@@ -722,12 +664,11 @@ function AdminDashboardInner() {
                               setEditingPostId(p._id);
                               setPostTitle(p.title);
                               setPostTitleIt(p.title_it ?? "");
-                              setPostTitleBg(p.title_bg ?? "");
                               setPostSlug("");
                               setPostExcerpt(p.excerpt);
                               setPostExcerptIt(p.excerpt_it ?? "");
-                              setPostExcerptBg(p.excerpt_bg ?? "");
                               setPostBody(p.body);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
                             }}
                             className="ui-link text-sm"
                           >
@@ -816,7 +757,7 @@ function Field({
 }) {
   return (
     <label className={full ? "md:col-span-2" : ""}>
-      <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--accents-5)]">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
         {label}
       </div>
       {children}

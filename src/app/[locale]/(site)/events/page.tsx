@@ -1,35 +1,27 @@
+import { getTranslations } from "next-intl/server";
 import { EventsList } from "@/components/site/events-list";
-import { Suspense } from "react";
+import { FadeIn } from "@/components/ui/fade-in";
+import { renderGradientTitle } from "@/lib/gradient-title";
 
-export default function EventsPage() {
+export default async function EventsPage() {
+  const t = await getTranslations("EventsPage");
+
   return (
-    <div className="space-y-12">
-      <header className="space-y-6">
-        <div className="ui-kicker">Calendar</div>
-        <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-6xl">
-          Events
-        </h1>
-        <p className="max-w-2xl text-lg leading-8 text-[var(--accents-5)]">
-          From flagship speaker nights to small, high-trust formats. If it feels
-          like something you would tell a friend about the next day, we do it.
-        </p>
-      </header>
+    <>
+      <div className="relative border-b border-[var(--accents-2)]">
+        <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_5%,var(--background))]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_80%_20%,rgba(25,101,107,0.04),transparent)]" />
+        <div className="ui-site-container relative pt-12 sm:pt-20 pb-12 sm:pb-16">
+          <FadeIn>
+            <h1 className="ui-page-title">{renderGradientTitle(t("title"))}</h1>
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[var(--accents-5)]">{t("description")}</p>
+          </FadeIn>
+        </div>
+      </div>
 
-      <Suspense
-        fallback={
-          <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="py-6">
-                <div className="h-5 w-1/2 animate-pulse bg-[var(--accents-2)] rounded" />
-                <div className="mt-3 h-4 w-2/3 animate-pulse bg-[var(--accents-2)] rounded" />
-                <div className="mt-6 h-4 w-1/3 animate-pulse bg-[var(--accents-2)] rounded" />
-              </div>
-            ))}
-          </div>
-        }
-      >
+      <div className="ui-site-container py-12 sm:py-16">
         <EventsList />
-      </Suspense>
-    </div>
+      </div>
+    </>
   );
 }

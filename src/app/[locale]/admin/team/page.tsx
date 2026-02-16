@@ -15,7 +15,6 @@ export default function TeamAdminPage() {
         lastName: "",
         roleEn: "",
         roleIt: "",
-        roleBg: "",
         type: "member" as "member" | "alumni",
         linkedinUrl: "",
         photoId: "",
@@ -29,7 +28,6 @@ export default function TeamAdminPage() {
             role: {
                 en: form.roleEn,
                 it: form.roleIt,
-                bg: form.roleBg,
             },
             type: form.type,
             linkedinUrl: form.linkedinUrl || undefined,
@@ -40,7 +38,6 @@ export default function TeamAdminPage() {
             lastName: "",
             roleEn: "",
             roleIt: "",
-            roleBg: "",
             type: "member",
             linkedinUrl: "",
             photoId: "",
@@ -62,19 +59,21 @@ export default function TeamAdminPage() {
     return (
         <div className="space-y-10">
             <header className="space-y-1">
-                <div className="ui-kicker">Manage</div>
+
                 <h2 className="text-3xl font-bold font-display tracking-tight text-[var(--foreground)]">Team</h2>
-                <p className="text-sm text-[var(--accents-5)] max-w-2xl">
+                <p className="text-sm text-[var(--muted-foreground)] max-w-2xl">
                     Maintain the list of student leaders and alumni members.
                 </p>
             </header>
 
             <section className="space-y-6">
-                <form onSubmit={handleSubmit} className="grid gap-6">
+                <form onSubmit={handleSubmit} className="ui-card p-6 grid gap-6">
                     <div className="grid gap-4 md:grid-cols-2">
                         <Field label="First Name">
                             <input
-                                placeholder="First Name"
+                                name="team_first_name"
+                                autoComplete="off"
+                                placeholder="First name…"
                                 value={form.firstName}
                                 onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                                 className="ui-input"
@@ -83,7 +82,9 @@ export default function TeamAdminPage() {
                         </Field>
                         <Field label="Last Name">
                             <input
-                                placeholder="Last Name"
+                                name="team_last_name"
+                                autoComplete="off"
+                                placeholder="Last name…"
                                 value={form.lastName}
                                 onChange={(e) => setForm({ ...form, lastName: e.target.value })}
                                 className="ui-input"
@@ -92,7 +93,9 @@ export default function TeamAdminPage() {
                         </Field>
                         <Field label="Role (EN)">
                             <input
-                                placeholder="President"
+                                name="team_role_en"
+                                autoComplete="off"
+                                placeholder="President…"
                                 value={form.roleEn}
                                 onChange={(e) => setForm({ ...form, roleEn: e.target.value })}
                                 className="ui-input"
@@ -101,24 +104,19 @@ export default function TeamAdminPage() {
                         </Field>
                         <Field label="Role (IT)">
                             <input
-                                placeholder="Presidente"
+                                name="team_role_it"
+                                autoComplete="off"
+                                placeholder="Presidente…"
                                 value={form.roleIt}
                                 onChange={(e) => setForm({ ...form, roleIt: e.target.value })}
                                 className="ui-input"
                                 required
                             />
                         </Field>
-                        <Field label="Role (BG)">
-                            <input
-                                placeholder="Президент"
-                                value={form.roleBg}
-                                onChange={(e) => setForm({ ...form, roleBg: e.target.value })}
-                                className="ui-input"
-                                required
-                            />
-                        </Field>
                         <Field label="Status">
                             <select
+                                name="team_status"
+                                autoComplete="off"
                                 value={form.type}
                                 onChange={(e) => setForm({ ...form, type: e.target.value as "member" | "alumni" })}
                                 className="ui-input"
@@ -129,7 +127,12 @@ export default function TeamAdminPage() {
                         </Field>
                         <Field label="LinkedIn">
                             <input
-                                placeholder="https://..."
+                                type="url"
+                                inputMode="url"
+                                spellCheck={false}
+                                name="team_linkedin_url"
+                                autoComplete="off"
+                                placeholder="https://…"
                                 value={form.linkedinUrl}
                                 onChange={(e) => setForm({ ...form, linkedinUrl: e.target.value })}
                                 className="ui-input"
@@ -137,7 +140,9 @@ export default function TeamAdminPage() {
                         </Field>
                         <Field label="Photo ID/URL">
                             <input
-                                placeholder="Photo ID from Convex or external URL"
+                                name="team_photo_id"
+                                autoComplete="off"
+                                placeholder="Photo ID from Convex or external URL…"
                                 value={form.photoId}
                                 onChange={(e) => setForm({ ...form, photoId: e.target.value })}
                                 className="ui-input"
@@ -145,20 +150,22 @@ export default function TeamAdminPage() {
                         </Field>
                     </div>
 
-                    <button type="submit" className="ui-btn w-fit">
-                        Add Member <span className="text-[10px]">→</span>
-                    </button>
+                    <div className="flex justify-end">
+                        <button type="submit" className="ui-btn">
+                            Add Member <span className="text-[10px]">→</span>
+                        </button>
+                    </div>
                 </form>
             </section>
 
-            <section className="space-y-4 pt-8 border-t border-[var(--accents-2)]">
-                <h3 className="text-xl font-semibold">Current Roster</h3>
+            <section className="space-y-4 pt-8 border-t border-[var(--border)]">
+                <h3 className="font-display text-xl font-semibold text-[var(--foreground)]">Current Roster</h3>
                 {team.length === 0 ? (
-                    <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-8 text-center text-sm text-[var(--accents-5)] rounded-md">
+                    <div className="ui-card p-8 text-center text-sm text-[var(--muted-foreground)]">
                         No team members found.
                     </div>
                 ) : (
-                    <div className="divide-y divide-[var(--accents-2)] border-t border-[var(--accents-2)]">
+                    <div className="grid gap-3">
                         <AnimatePresence initial={false}>
                             {team.map((member) => (
                                 <motion.div
@@ -166,7 +173,7 @@ export default function TeamAdminPage() {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
-                                    className="group grid gap-4 py-6 md:grid-cols-[1fr_auto] md:items-center transition-colors hover:bg-[var(--accents-1)]/50 -mx-4 px-4 rounded-lg"
+                                    className="ui-card group grid gap-4 p-4 md:grid-cols-[1fr_auto] md:items-center transition-colors hover:bg-[var(--secondary)]/50"
                                 >
                                     <div>
                                         <h4 className="font-display text-lg font-semibold text-[var(--foreground)]">
@@ -174,7 +181,7 @@ export default function TeamAdminPage() {
                                         </h4>
                                         <div className="flex items-center gap-2 mt-1">
                                             <span className="ui-tag">{member.type}</span>
-                                            <span className="text-sm text-[var(--accents-5)]">{member.role.en}</span>
+                                            <span className="text-sm text-[var(--muted-foreground)]">{member.role.en}</span>
                                         </div>
                                     </div>
                                     <div className="opacity-0 group-hover:opacity-100 transition-opacity">
@@ -182,7 +189,7 @@ export default function TeamAdminPage() {
                                             onClick={() => {
                                                 if (confirm(`Delete ${member.firstName}?`)) deleteMember({ id: member._id });
                                             }}
-                                            className="ui-btn py-2 px-4 bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-all font-bold"
+                                            className="ui-btn py-1.5 px-3 h-auto text-xs bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-colors font-bold"
                                         >
                                             Delete
                                         </button>
@@ -200,7 +207,7 @@ export default function TeamAdminPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
     return (
         <label className="block space-y-2">
-            <div className="text-xs font-semibold uppercase tracking-wider text-[var(--accents-5)]">
+            <div className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
                 {label}
             </div>
             {children}
