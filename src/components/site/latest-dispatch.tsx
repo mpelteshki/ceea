@@ -1,134 +1,167 @@
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
-import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
+import { FadeIn } from "@/components/ui/fade-in";
 import { EmptyState } from "@/components/ui/empty-state";
-import { renderGradientTitle } from "@/lib/gradient-title";
+import { cycleBrandGradientVars, renderGradientTitle } from "@/lib/gradient-title";
+import { cn } from "@/lib/utils";
 
 type PostDoc = Doc<"posts">;
 
+const DISPATCH_TITLE_GRADIENT = cycleBrandGradientVars(3);
+
 function fmtDate(ms: number) {
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-  }).format(new Date(ms));
+    const d = new Date(ms);
+    return {
+        full: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "2-digit" }).format(d),
+        day: d.getDate().toString().padStart(2, "0"),
+        month: new Intl.DateTimeFormat("en-US", { month: "short" }).format(d).toUpperCase(),
+        year: d.getFullYear(),
+    };
 }
 
 export async function LatestDispatch() {
-  const sectionTitle = "Latest newsletter posts";
+    const sectionTitle = "Latest newsletter posts";
 
-  if (!hasConvex) {
+    if (!hasConvex) {
+        return (
+            <section className="space-y-12">
+                <div className="ui-title-stack">
+                    <h2 className="mt-4 ui-section-title">{renderGradientTitle(sectionTitle, {
+                        highlightClassName: "text-gradient-context",
+                        highlightStyle: DISPATCH_TITLE_GRADIENT,
+                    })}</h2>
+                </div>
+                <div className="rounded-2xl border border-dashed border-[var(--accents-3)] p-8 text-center text-sm text-[var(--accents-5)]">
+                    Set <code className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</code> to show posts.
+                </div>
+            </section>
+        );
+    }
+
+    const convex = getConvexServerClient();
+    if (!convex) {
+        return <EmptyState title="No posts yet." description="Check back later for updates." className="border-border bg-card py-20" />;
+    }
+
+    const posts = (await convex.query(api.posts.listPublished, { limit: 3 })) as PostDoc[];
+
     return (
-      <section className="space-y-12">
-        <div className="ui-title-stack">
-          <h2 className="mt-4 ui-section-title">{renderGradientTitle(sectionTitle)}</h2>
-        </div>
-        <div className="rounded-2xl border border-dashed border-[var(--accents-3)] p-8 text-center text-sm text-[var(--accents-5)]">
-          Set <code className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</code> to show posts.
-        </div>
-      </section>
-    );
-  }
+        <section className="relative overflow-hidden border-b border-[var(--accents-2)]">
+            <div className="absolute inset-0 bg-[var(--background)]" />
 
-  const convex = getConvexServerClient();
-  if (!convex) {
-    return <EmptyState title="No posts yet." className="border-border bg-card py-20" />;
-  }
-
-  const posts = (await convex.query(api.posts.listPublished, { limit: 3 })) as PostDoc[];
-
-  return (
-    <section className="space-y-12">
-      <FadeIn>
-        <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
-          <div className="ui-title-stack">
-            <h2 className="mt-4 ui-section-title">{renderGradientTitle(sectionTitle)}</h2>
-          </div>
-          <Link href="/newsletter" className="ui-btn shrink-0" data-variant="secondary">
-            View all posts
-            <ArrowRight className="ui-icon-shift h-4 w-4" />
-          </Link>
-        </div>
-      </FadeIn>
-
-      <FadeInStagger>
-        {posts.length > 0 ? (
-          <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
-            <FadeIn>
-              <FeaturedPost post={posts[0]} />
-            </FadeIn>
-
-            <div className="grid gap-5">
-              {posts.slice(1).map((post) => (
-                <FadeIn key={post._id}>
-                  <CompactPost post={post} />
+            <div className="ui-site-container relative py-24 sm:py-32">
+                <FadeIn>
+                    <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left mb-24">
+                        <div className="ui-title-stack">
+                            <h2 className="ui-section-title">{renderGradientTitle(sectionTitle, {
+                                highlightClassName: "text-gradient-context",
+                                highlightStyle: DISPATCH_TITLE_GRADIENT,
+                            })}</h2>
+                        </div>
+                        <div className="flex flex-col gap-2 sm:items-end">
+                            <Link href="/newsletter" className="ui-btn shrink-0" data-variant="secondary">
+                                View all posts
+                                <ArrowRight className="ui-icon-shift h-4 w-4" />
+                            </Link>
+                        </div>
+                    </div>
                 </FadeIn>
-              ))}
+
+                {posts.length === 0 ? (
+                    <EmptyState title="No posts yet." description="Check back later for updates." className="relative border-none bg-transparent" />
+                ) : (
+                    <div className="flex flex-col gap-24 sm:gap-32">
+                        {posts.map((post, i) => {
+                            const title = String(post.title || "");
+                            const excerpt = String(post.excerpt || "");
+                            const date = post.publishedAt ? fmtDate(post.publishedAt) : null;
+
+                            // Newsletter brand color
+                            const accent = "var(--brand-blue)";
+
+                            return (
+                                <FadeIn key={post._id}>
+                                    <div
+                                        className={cn(
+                                            "flex flex-col gap-12 lg:items-center lg:gap-24",
+                                            i % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
+                                        )}
+                                    >
+                                        {/* Visual Side: Date/Meta Card */}
+                                        <div className="flex-1 relative group">
+                                            <Link href={`/newsletter/${post.slug}`} className="block">
+                                                <div
+                                                    className="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-[var(--accents-2)] bg-[var(--background)] p-8 relative shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:-translate-y-1"
+                                                >
+                                                    {/* Decorative grid */}
+                                                    <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-[0.03]" />
+
+                                                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                                                        <span className="font-mono text-sm tracking-widest text-[var(--accents-5)] uppercase">
+                                                            Dispatch
+                                                        </span>
+                                                        {date && (
+                                                            <>
+                                                                <span className="font-display text-8xl leading-none tracking-tighter text-[var(--foreground)]" style={{ color: accent }}>
+                                                                    {date.day}
+                                                                </span>
+                                                                <span className="font-mono text-xl tracking-widest text-[var(--accents-5)] uppercase">
+                                                                    {date.month} {date.year}
+                                                                </span>
+                                                            </>
+                                                        )}
+                                                        {!date && (
+                                                            <span className="font-mono text-xl tracking-widest text-[var(--accents-5)] uppercase">
+                                                                DRAFT
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        </div>
+
+                                        {/* Content Side */}
+                                        <div className="flex-1">
+                                            <div className="flex flex-col gap-6">
+                                                <div className="flex items-center gap-3 text-sm text-[var(--accents-5)]">
+                                                    <div className="h-px w-8 bg-[var(--accents-3)]" />
+                                                    <span className="uppercase tracking-widest text-xs font-mono">Editorial</span>
+                                                </div>
+
+                                                <h3 className="font-display text-4xl text-[var(--foreground)] sm:text-5xl lg:text-6xl leading-[1.1]">
+                                                    <Link href={`/newsletter/${post.slug}`} className="hover:text-[var(--accents-6)] transition-colors">
+                                                        {title}
+                                                    </Link>
+                                                </h3>
+
+                                                <p className="text-lg leading-relaxed text-[var(--accents-5)] line-clamp-3">
+                                                    {excerpt}
+                                                </p>
+
+                                                <div className="pt-4">
+                                                    <Link
+                                                        href={`/newsletter/${post.slug}`}
+                                                        className="inline-flex items-center gap-2 font-medium text-lg transition-colors hover:gap-3"
+                                                        style={{ color: accent }}
+                                                    >
+                                                        Read article
+                                                        <ArrowRight className="h-4 w-4" />
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </FadeIn>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
-          </div>
-        ) : (
-          <EmptyState title="No posts yet." className="border-border bg-card py-20" />
-        )}
-      </FadeInStagger>
-    </section>
-  );
-}
-
-function FeaturedPost({ post }: { post: PostDoc }) {
-  const title = String(post.title || "");
-  const excerpt = String(post.excerpt || "");
-
-  return (
-    <Link
-      href={`/newsletter/${post.slug}`}
-      className="ui-hover-lift group flex flex-col justify-between rounded-2xl border border-[var(--accents-2)] p-8 text-center transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] sm:text-left"
-    >
-      <div>
-        <div className="mb-6 flex items-center justify-center gap-4 sm:justify-start">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--accents-4)]">
-            {post.publishedAt ? fmtDate(post.publishedAt) : "Draft"}
-          </span>
-          <span className="h-px flex-1 bg-[var(--accents-2)]" />
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--accents-4)]">Featured</span>
-        </div>
-        <h3 className="font-display text-3xl leading-[1.1] text-[var(--foreground)] transition-colors group-hover:text-[var(--brand-teal)] sm:text-4xl">
-          {title}
-        </h3>
-        <p className="mt-6 line-clamp-4 leading-relaxed text-[var(--accents-5)]">{excerpt}</p>
-      </div>
-      <div className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-teal)]">
-        <span className="group-hover:underline">Read post</span>
-        <ArrowRight className="ui-icon-shift h-3.5 w-3.5" />
-      </div>
-    </Link>
-  );
-}
-
-function CompactPost({ post }: { post: PostDoc }) {
-  const title = String(post.title || "");
-  const excerpt = String(post.excerpt || "");
-
-  return (
-    <Link
-      href={`/newsletter/${post.slug}`}
-      className="ui-hover-lift-sm group flex items-start gap-6 rounded-2xl border border-[var(--accents-2)] p-6 text-center transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.04)] sm:text-left"
-    >
-      <div className="min-w-0 flex-1">
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--accents-4)]">
-          {post.publishedAt ? fmtDate(post.publishedAt) : "Draft"}
-        </span>
-        <h3 className="mt-2 line-clamp-2 font-display text-lg leading-snug text-[var(--foreground)] transition-colors group-hover:text-[var(--brand-teal)]">
-          {title}
-        </h3>
-        <p className="mt-2 hidden line-clamp-2 text-sm leading-relaxed text-[var(--accents-5)] sm:block">{excerpt}</p>
-      </div>
-      <div className="mt-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--accents-2)] text-[var(--accents-4)] transition-colors group-hover:border-transparent group-hover:bg-[var(--brand-teal)] group-hover:text-white">
-        <ArrowRight className="ui-icon-shift h-3.5 w-3.5" />
-      </div>
-    </Link>
-  );
+        </section>
+    );
 }

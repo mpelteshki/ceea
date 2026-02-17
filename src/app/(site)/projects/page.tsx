@@ -7,7 +7,6 @@ import { ExpandableText } from "@/components/ui/expandable-text";
 import { EmptyState } from "@/components/ui/empty-state";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
-import { renderGradientTitle } from "@/lib/gradient-title";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 import { toPlainText } from "@/lib/plain-text";
 import { api } from "../../../../convex/_generated/api";
@@ -40,10 +39,10 @@ export default async function ProjectsPage() {
   return (
     <>
       <div className="relative border-b border-[var(--accents-2)]">
-        <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_5%,var(--background))]" />
-        <div className="ui-site-container relative pb-12 pt-12 sm:pb-16 sm:pt-20">
+        <div className="absolute inset-0 bg-[var(--background)]" />
+        <div className="ui-site-container relative pb-12 pt-28 sm:pb-16 sm:pt-32">
           <FadeIn>
-            <h1 className="ui-page-title">{renderGradientTitle("Our Projects")}</h1>
+            <h1 className="ui-page-title">Our Projects</h1>
           </FadeIn>
         </div>
       </div>
@@ -62,7 +61,7 @@ export default async function ProjectsPage() {
                 <FadeIn key={project._id}>
                   <article className={`ui-hover-lift-sm group grid items-center gap-8 rounded-2xl p-2 lg:grid-cols-2 lg:gap-16 ${isReversed ? "lg:[direction:rtl]" : ""}`}>
                     <div
-                      className={`relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--accents-1)] to-[var(--accents-2)] ${isReversed ? "lg:[direction:ltr]" : ""}`}
+                      className={`relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[var(--accents-2)] ${isReversed ? "lg:[direction:ltr]" : ""}`}
                     >
                       {project.imageUrl ? (
                         <Image

@@ -1,25 +1,25 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { FadeIn } from "@/components/ui/fade-in";
+import { cycleBrandGradientVars } from "@/lib/gradient-title";
+
+const HERO_GRADIENT = cycleBrandGradientVars(0);
 
 export async function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-[var(--background)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_88%_54%_at_2%_42%,rgba(25,101,107,0.12),transparent_62%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_62%_62%_at_100%_0%,rgba(196,154,108,0.1),transparent_62%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(25,101,107,0.02)_68%,transparent_100%)]" />
       <div className="absolute bottom-0 left-0 right-0 h-px bg-[var(--accents-2)]" />
 
       <div className="ui-site-container relative">
-        <div className="grid min-h-[calc(100dvh-4.15rem)] content-center py-10 sm:py-14 md:py-16">
+        <div className="grid min-h-[101dvh] content-center py-10 pt-24 sm:py-14 sm:pt-32 md:py-16 md:pt-36">
           <div className="space-y-10 sm:space-y-12 md:space-y-14">
             <FadeIn>
               <h1 className="mx-auto max-w-6xl text-center sm:mx-0 sm:text-left">
                 <span className="block font-display text-[clamp(3.2rem,8.8vw,8.8rem)] leading-[0.88] tracking-[-0.045em] text-[var(--foreground)]">
                   Central &amp; Eastern European
                 </span>
-                <span className="mt-2 block font-display text-[clamp(3.2rem,8.8vw,8.8rem)] leading-[0.88] tracking-[-0.045em] text-gradient">
+                <span className="mt-2 block font-display text-[clamp(3.2rem,8.8vw,8.8rem)] leading-[0.88] tracking-[-0.045em] text-gradient-context" style={HERO_GRADIENT}>
                   Association
                 </span>
               </h1>

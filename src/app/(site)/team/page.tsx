@@ -42,26 +42,18 @@ export default async function TeamPage() {
   return (
     <>
       <div className="relative border-b border-[var(--accents-2)]">
-        <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_5%,var(--background))]" />
-        <div className="ui-site-container relative pb-12 pt-12 sm:pb-16 sm:pt-20">
+        <div className="absolute inset-0 bg-[var(--background)]" />
+        <div className="ui-site-container relative pb-12 pt-28 sm:pb-16 sm:pt-32">
           <FadeIn>
-            <h1 className="ui-page-title">{renderGradientTitle("Our Team")}</h1>
+            <h1 className="ui-page-title">Our Team</h1>
           </FadeIn>
         </div>
       </div>
 
       <div className="ui-site-container space-y-20 py-12 sm:py-20">
         <FadeInStagger>
-          <FadeIn>
-            <div className="mb-10 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
-              <span className="hidden h-6 w-1 rounded-full bg-[var(--brand-teal)] sm:block" />
-              <h2 className="font-display text-2xl text-[var(--foreground)]">{renderGradientTitle("Current Members")}</h2>
-              <span className="hidden h-px flex-1 bg-[var(--accents-2)] sm:block" />
-              <span className="hidden font-mono text-xs text-[var(--accents-4)] sm:inline">{members.length}</span>
-            </div>
-          </FadeIn>
           {members.length === 0 ? (
-            <EmptyState title="No members yet." description="Check back later for updates." />
+            <EmptyState title="No team members yet." description="Check back later for updates." />
           ) : (
             <div className="grid grid-cols-1 gap-5 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {members.map((member) => (
@@ -102,7 +94,7 @@ function MemberCard({ member }: { member: TeamDoc }) {
 
   return (
     <div className="ui-hover-lift-sm group rounded-2xl p-1">
-      <div className="relative mb-4 aspect-[3/4] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[color-mix(in_oklch,var(--brand-cream)_30%,var(--accents-1))] to-[var(--accents-2)]">
+      <div className="relative mb-4 aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[var(--accents-2)]">
         {member.photoId ? (
           <Image
             src={member.photoId}

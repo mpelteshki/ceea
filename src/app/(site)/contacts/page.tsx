@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
 import { Mail, Instagram, Linkedin, ArrowUpRight } from "lucide-react";
-import { renderGradientTitle } from "@/lib/gradient-title";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 import { SITE_CONTACT, SITE_EMAIL_HREF } from "@/lib/site-contact";
 
@@ -41,10 +40,10 @@ export default async function ContactPage() {
   return (
     <>
       <div className="relative border-b border-[var(--accents-2)]">
-        <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_5%,var(--background))]" />
-        <div className="ui-site-container relative pb-12 pt-12 sm:pb-16 sm:pt-20">
+        <div className="absolute inset-0 bg-[var(--background)]" />
+        <div className="ui-site-container relative pb-12 pt-28 sm:pb-16 sm:pt-32">
           <FadeIn>
-            <h1 className="ui-page-title">{renderGradientTitle("Contact Us")}</h1>
+            <h1 className="ui-page-title">Contact Us</h1>
           </FadeIn>
         </div>
       </div>

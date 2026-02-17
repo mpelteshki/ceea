@@ -17,7 +17,7 @@ function slugify(input: string): string {
 export const listPublished = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const limit = Math.max(1, Math.min(50, args.limit ?? 30));
+    const limit = Math.max(1, Math.min(MAX_POSTS_RETURNED, args.limit ?? 30));
     return await ctx.db
       .query("posts")
       .withIndex("by_publishedAt", (q) => q.gte("publishedAt", 0))
@@ -29,6 +29,7 @@ export const listPublished = query({
 export const listAll = query({
   args: {},
   handler: async (ctx) => {
+    await requireAdmin(ctx);
     return await ctx.db.query("posts").order("desc").take(MAX_POSTS_RETURNED);
   },
 });
@@ -36,6 +37,19 @@ export const listAll = query({
 export const getBySlug = query({
   args: { slug: v.string() },
   handler: async (ctx, args) => {
+    const post = await ctx.db
+      .query("posts")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .unique();
+    if (!post || post.publishedAt == null) return null;
+    return post;
+  },
+});
+
+export const getBySlugAdmin = query({
+  args: { slug: v.string() },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     return await ctx.db
       .query("posts")
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))

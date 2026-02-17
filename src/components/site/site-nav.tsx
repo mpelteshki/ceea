@@ -5,7 +5,15 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import SiteNavClerkControls from "./site-nav-clerk-controls";
+import { SignedIn } from "@clerk/nextjs";
+
+function AdminLink() {
+  return (
+    <SignedIn>
+      <NavLink href="/admin">Admin</NavLink>
+    </SignedIn>
+  );
+}
 
 function NavLink({
   href,
@@ -54,12 +62,24 @@ export function SiteNav() {
   ];
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const menuId = useId();
   const firstLinkRef = useRef<HTMLAnchorElement | null>(null);
   const lastFocusedElement = useRef<HTMLElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const scrollYRef = useRef(0);
   const shouldRestoreScrollRef = useRef(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Check initial state
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1024px)");
@@ -152,11 +172,18 @@ export function SiteNav() {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-40 w-full">
-      <div className="bg-[var(--background)]">
+    <header
+      className={cn(
+        "fixed top-0 z-40 w-full transition-all duration-300 border-b",
+        isScrolled
+          ? "bg-transparent backdrop-blur-sm border-transparent shadow-none"
+          : "bg-transparent border-transparent"
+      )}
+    >
+      <div>
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-6">
           <Link href="/" className="group inline-flex items-center gap-3 transition-transform duration-300 hover:scale-[1.02]">
-            <div className="relative h-9 w-9 rounded-lg bg-gradient-to-br from-[var(--brand-teal)] to-[color-mix(in_oklch,var(--brand-teal)_70%,#0a3a3d)] text-white flex items-center justify-center font-bold text-lg shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
+            <div className="relative h-9 w-9 rounded-lg bg-[var(--brand-teal)] text-white flex items-center justify-center font-bold text-lg shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
               C
             </div>
             <span className="font-brand text-[1.35rem] text-[var(--foreground)] transition-colors duration-200 group-hover:text-[var(--brand-teal)]">
@@ -170,11 +197,10 @@ export function SiteNav() {
                 {l.label}
               </NavLink>
             ))}
+            <AdminLink />
           </nav>
 
           <div className="flex items-center gap-3">
-            <SiteNavClerkControls />
-
             <button
               type="button"
               className="ui-pressable lg:hidden flex items-center justify-center h-10 w-10 rounded-full text-[var(--accents-5)] hover:text-[var(--foreground)] hover:bg-[var(--accents-1)] transition-colors"
@@ -203,7 +229,7 @@ export function SiteNav() {
               <div className="mx-auto max-w-6xl">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[var(--brand-teal)] to-[color-mix(in_oklch,var(--brand-teal)_70%,#0a3a3d)] text-white flex items-center justify-center font-bold text-sm shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
+                    <div className="h-8 w-8 rounded-lg bg-[var(--brand-teal)] text-white flex items-center justify-center font-bold text-sm shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
                       C
                     </div>
                     <div className="font-brand text-xl text-[var(--foreground)]">CEEA</div>
@@ -239,6 +265,20 @@ export function SiteNav() {
                       </Link>
                     );
                   })}
+                  <SignedIn>
+                    <Link
+                      href="/admin"
+                      className={cn(
+                        "block rounded-xl px-4 py-3 text-center font-display text-xl transition-[background-color,color,transform] duration-200 hover:translate-x-1 sm:text-left",
+                        pathname.startsWith("/admin")
+                          ? "text-[var(--brand-teal)] bg-[color-mix(in_oklch,var(--brand-teal)_8%,var(--background))]"
+                          : "text-[var(--foreground)] hover:bg-[var(--accents-1)]",
+                      )}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Admin
+                    </Link>
+                  </SignedIn>
                 </div>
 
                 <div className="mt-8 flex items-center justify-between border-t border-[var(--accents-2)] pt-6">

@@ -4,6 +4,7 @@ import type { Doc } from "../../../convex/_generated/dataModel";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { FadeIn } from "@/components/ui/fade-in";
+import { EmptyState } from "@/components/ui/empty-state";
 
 type EventDoc = Doc<"events">;
 
@@ -39,12 +40,12 @@ export async function EventsList() {
 
   if (list.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-border py-16 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
-          <Calendar className="h-6 w-6 text-[var(--accents-6)]" />
-        </div>
-        <p className="text-sm text-[var(--accents-6)]">No events in this category yet.</p>
-      </div>
+      <EmptyState
+        title="No events yet."
+        description="Check back later for updates."
+        icon={Calendar}
+        className="border-border bg-card/70 py-16"
+      />
     );
   }
 

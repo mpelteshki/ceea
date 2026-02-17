@@ -89,11 +89,10 @@ export default async function AboutPage() {
   return (
     <>
       <div className="relative border-b border-border">
-        <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_5%,var(--background))]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_80%_30%,rgba(25,101,107,0.04),transparent)]" />
+        <div className="absolute inset-0 bg-[var(--background)]" />
         <div className="ui-site-container relative pb-12 pt-12 sm:pb-16 sm:pt-20">
           <FadeIn>
-            <h1 className="ui-page-title">{renderGradientTitle("What CEEA is.")}</h1>
+            <h1 className="ui-page-title">What CEEA is.</h1>
             <p className="mx-auto mt-6 max-w-3xl text-base leading-relaxed text-muted-foreground sm:mx-0 sm:text-lg">
               {MISSION}
             </p>
@@ -102,7 +101,7 @@ export default async function AboutPage() {
       </div>
 
       <div className="relative border-b border-border">
-        <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_3%,var(--background))]" />
+        <div className="absolute inset-0 bg-[var(--background)]" />
         <div className="ui-site-container relative py-16 sm:py-24">
           <FadeInStagger className="space-y-12">
             <FadeIn>
@@ -130,7 +129,9 @@ export default async function AboutPage() {
                       </div>
                       <span className="font-mono text-xs tabular-nums text-muted-foreground">0{i + 1}</span>
                     </div>
-                    <h3 className="font-display text-2xl text-foreground">{division.name}</h3>
+                    <h3 className="font-display text-2xl text-foreground">
+                      {division.name} Division
+                    </h3>
                     <p className="mt-4 flex-1 text-sm leading-7 text-muted-foreground">{division.description}</p>
                   </div>
                 </FadeIn>

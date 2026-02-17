@@ -5,7 +5,7 @@ export const SITE_CONTACT = {
     handle: "@bocconi_ceea",
   },
   linkedin: {
-    url: "https://www.linkedin.com/company/ceea-bocconi/",
+    url: "https://www.linkedin.com/company/central-and-eastern-european-association/",
     label: "CEEA Bocconi",
   },
 } as const;

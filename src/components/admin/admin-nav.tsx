@@ -18,7 +18,7 @@ export function AdminNav() {
   const pathname = normalizeAdminPath(usePathname());
 
   return (
-    <nav className="flex w-full items-center gap-1 overflow-x-auto pb-1 sm:w-auto sm:pb-0">
+    <nav aria-label="Admin sections" className="flex w-full items-center gap-1 overflow-x-auto pb-1 sm:w-auto sm:pb-0">
       {ITEMS.map((item) => {
         const active =
           pathname === item.href ||
@@ -29,6 +29,7 @@ export function AdminNav() {
             key={item.href}
             href={item.href}
             data-active={active ? "true" : "false"}
+            aria-current={active ? "page" : undefined}
             className="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)] data-[active=true]:bg-[var(--foreground)] data-[active=true]:text-[var(--background)]"
           >
             {item.label}

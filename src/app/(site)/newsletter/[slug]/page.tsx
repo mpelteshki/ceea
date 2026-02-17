@@ -13,8 +13,8 @@ export async function generateStaticParams() {
   const convex = getConvexServerClient();
   if (!convex) return [];
 
-  const posts = (await convex.query(api.posts.listAll, {})) as PostDoc[];
-  return posts.filter((post) => post.publishedAt != null).map((post) => ({ slug: post.slug }));
+  const posts = (await convex.query(api.posts.listPublished, { limit: 200 })) as PostDoc[];
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({

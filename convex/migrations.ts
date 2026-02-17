@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 
 function pickEnglishText(value: unknown): string {
   if (typeof value === "string") {
@@ -16,7 +16,7 @@ function pickEnglishText(value: unknown): string {
   return "";
 }
 
-export const flattenLegacyLocalization = mutation({
+export const flattenLegacyLocalization = internalMutation({
   args: {},
   handler: async (ctx) => {
     let changedEvents = 0;

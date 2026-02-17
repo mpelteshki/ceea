@@ -3,6 +3,7 @@ import { getAdminState } from "@/lib/admin";
 import Link from "next/link";
 import { AdminAuthMenu } from "@/components/admin/admin-auth-menu";
 import { AdminNav } from "@/components/admin/admin-nav";
+import { AdminHeaderControls } from "@/components/admin/admin-header-controls";
 import { NO_INDEX_ROBOTS } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -58,8 +59,14 @@ export default async function AdminLayout({
 
   return (
     <div className="site-shell min-h-dvh bg-[var(--background)]">
-      <div className="mx-auto w-full max-w-5xl px-6 py-10">
-        <header className="sticky top-0 z-10 mb-12 -mx-6 flex flex-col items-center gap-4 border-b border-[var(--border)] bg-[var(--background)]/80 px-6 py-4 text-center backdrop-blur-md transition-colors sm:flex-row sm:items-center sm:justify-between sm:text-left">
+      <a
+        href="#admin-main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:border focus:border-[var(--accents-2)] focus:bg-[var(--background)] focus:px-4 focus:py-2 focus:font-mono focus:text-xs focus:uppercase focus:tracking-wider focus:text-[var(--foreground)]"
+      >
+        Skip to content
+      </a>
+      <header className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-md transition-colors">
+        <div className="ui-site-container flex flex-col items-center gap-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:text-left">
           <div className="flex items-center justify-center gap-3">
             <Link href="/" className="group flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] transition-colors hover:border-[var(--foreground)] hover:text-[var(--foreground)]">
               <span className="sr-only">Back to site</span>
@@ -68,17 +75,21 @@ export default async function AdminLayout({
             <h1 className="font-display text-lg font-bold tracking-tight">Admin</h1>
           </div>
 
-          <AdminNav />
-        </header>
+          <div className="flex items-center gap-4">
+            <AdminNav />
+            <div className="h-6 w-px bg-[var(--border)] hidden sm:block" />
+            <AdminHeaderControls />
+          </div>
+        </div>
+      </header>
 
-        <main className="min-h-[600px] animate-in fade-in slide-in-from-bottom-4 text-center duration-500 sm:text-left">
-          {children}
-        </main>
+      <main id="admin-main" tabIndex={-1} className="min-h-[600px] animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {children}
+      </main>
 
-        <footer className="mt-20 border-t border-[var(--border)] pt-8 text-center text-xs text-[var(--muted-foreground)]">
-          <p>© {new Date().getFullYear()} CEEA Bocconi • Admin Interface</p>
-        </footer>
-      </div>
+      <footer className="mt-20 border-t border-[var(--border)] py-8 text-center text-xs text-[var(--muted-foreground)]">
+        <p>© {new Date().getFullYear()} CEEA Bocconi • Admin Interface</p>
+      </footer>
     </div>
   );
 }

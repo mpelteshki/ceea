@@ -1,6 +1,9 @@
+"use client";
+
 import { Palette, Scale, TrendingUp, Users } from "lucide-react";
-import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
-import { renderGradientTitle } from "@/lib/gradient-title";
+import { cn } from "@/lib/utils";
+import { accentGradientVars } from "@/lib/gradient-title";
+import { FadeIn } from "@/components/ui/fade-in";
 
 const divisions = [
   {
@@ -33,52 +36,94 @@ const divisions = [
   },
 ] as const;
 
-export async function Divisions() {
+export function Divisions() {
   return (
-    <section className="relative border-y border-[var(--accents-2)]">
-      <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_6%,var(--background))]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_70%_50%,rgba(25,101,107,0.04),transparent)]" />
+    <>
+      {divisions.map((division, i) => {
+        // First section keeps top border styling
+        if (i === 0) {
+          return (
+            <section key={division.name} className="relative overflow-hidden border-t border-b border-[var(--accents-2)]">
+              <div className="absolute inset-0 bg-[var(--background)]" />
 
-      <div className="ui-site-container relative py-24">
-        <FadeInStagger className="space-y-16">
-          <FadeIn>
-            <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
-              <div className="ui-title-stack">
-                <h2 className="ui-section-title">{renderGradientTitle("Our Divisions")}</h2>
+              <div className="ui-site-container relative py-24 sm:py-32">
+                <FadeIn>
+                  <DivisionContent division={division} index={i} />
+                </FadeIn>
               </div>
-              <p className="max-w-sm text-sm leading-7 text-[var(--accents-5)] sm:text-right">
-                Each division owns its programming, calendar, and partnerships - united by CEEA&apos;s identity and standards.
-              </p>
-            </div>
-          </FadeIn>
+            </section>
+          );
+        }
 
-          <div className="grid gap-5 sm:grid-cols-2">
-            {divisions.map((division, i) => (
-              <FadeIn key={division.name}>
-                <article className="ui-hover-lift group relative flex h-full flex-col rounded-2xl border border-[var(--accents-2)] bg-[var(--background)] p-8 text-center transition-[border-color,box-shadow] duration-300 hover:border-[var(--accents-3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] sm:text-left">
-                  <div className="absolute left-8 right-8 top-0 h-[2px] rounded-full" style={{ background: division.accent }} />
+        return (
+          <section
+            key={division.name}
+            className="relative overflow-hidden border-b border-[var(--accents-2)]"
+          >
+            <div className="absolute inset-0 bg-[var(--background)]" />
 
-                  <div className="flex items-start justify-center gap-4 sm:justify-between">
-                    <div
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-[transform,color,background-color] duration-300 group-hover:scale-105"
-                      style={{
-                        background: `color-mix(in oklch, ${division.accent} 12%, transparent)`,
-                        color: division.accent,
-                      }}
-                    >
-                      <division.icon className="h-5 w-5" />
-                    </div>
-                    <span className="font-mono text-xs tabular-nums text-[var(--accents-4)]">0{i + 1}</span>
-                  </div>
-
-                  <h3 className="mt-6 font-display text-2xl text-[var(--foreground)]">{division.name}</h3>
-                  <p className="mt-4 flex-1 text-sm leading-7 text-[var(--accents-5)]">{division.description}</p>
-                </article>
+            <div className="ui-site-container relative py-24 sm:py-32">
+              <FadeIn>
+                <DivisionContent division={division} index={i} />
               </FadeIn>
-            ))}
+            </div>
+          </section>
+        );
+      })}
+    </>
+  );
+}
+
+function DivisionContent({ division, index }: { division: typeof divisions[number], index: number }) {
+  return (
+    <div
+      className={cn(
+        "flex flex-col gap-12 lg:items-center lg:gap-24",
+        index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
+      )}
+    >
+      {/* Visual Side */}
+      <div className="flex-1 relative group">
+        <div
+          className="aspect-[4/3] w-full overflow-hidden rounded-3xl border border-[var(--accents-2)] bg-[var(--background)] p-8 relative"
+        >
+          {/* Decorative grid */}
+          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-[0.03]" />
+
+          {/* Icon Container */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div
+              className="flex h-24 w-24 items-center justify-center rounded-3xl bg-[var(--background)] border border-[var(--accents-2)] shadow-xl transition-transform duration-500 group-hover:scale-110"
+              style={{
+                color: division.accent
+              }}
+            >
+              <division.icon className="h-10 w-10" />
+            </div>
           </div>
-        </FadeInStagger>
+        </div>
       </div>
-    </section>
+
+      {/* Content Side */}
+      <div className="flex-1">
+        <div className="flex flex-col gap-6">
+          <h3 className="font-display text-4xl text-[var(--foreground)] sm:text-5xl">
+            <span className="text-gradient-context" style={accentGradientVars(division.accent)}>
+              {division.name}
+            </span>{" "}
+            <span>Division</span>
+          </h3>
+
+          <div
+            className="h-1 w-24 rounded-full"
+            style={{ background: division.accent }}
+          />
+
+          <p className="text-lg leading-relaxed text-[var(--accents-5)]">
+            {division.description}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

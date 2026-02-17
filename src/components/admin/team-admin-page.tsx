@@ -4,12 +4,16 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { SearchX, Users } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { toPlainText } from "@/lib/plain-text";
+import { EmptyState } from "@/components/ui/empty-state";
 
 type TeamSort = "newest" | "oldest" | "name";
 
 const TEAM_PAGE_SIZE = 10;
+type TeamStatus = "all" | "member" | "alumni";
 
 function paginate<T>(items: T[], page: number, pageSize: number) {
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
@@ -23,7 +27,24 @@ function paginate<T>(items: T[], page: number, pageSize: number) {
   };
 }
 
+function parsePage(raw: string | null): number {
+  const value = Number(raw);
+  return Number.isInteger(value) && value > 0 ? value : 1;
+}
+
+function parseSort(raw: string | null): TeamSort {
+  if (raw === "oldest" || raw === "name" || raw === "newest") return raw;
+  return "newest";
+}
+
+function parseStatus(raw: string | null): TeamStatus {
+  if (raw === "member" || raw === "alumni" || raw === "all") return raw;
+  return "all";
+}
+
 export default function TeamAdminPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const team = useQuery(api.team.get);
   const createMember = useMutation(api.team.create);
   const updateMember = useMutation(api.team.update);
@@ -41,10 +62,33 @@ export default function TeamAdminPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [deletingMemberId, setDeletingMemberId] = useState<Id<"team"> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "member" | "alumni">("all");
-  const [sortBy, setSortBy] = useState<TeamSort>("newest");
-  const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
+  const [statusFilter, setStatusFilter] = useState<TeamStatus>(() => parseStatus(searchParams.get("status")));
+  const [sortBy, setSortBy] = useState<TeamSort>(() => parseSort(searchParams.get("sort")));
+  const [page, setPage] = useState(() => parsePage(searchParams.get("page")));
+
+  const syncListState = (updates: { q?: string; status?: TeamStatus; sort?: TeamSort; page?: number }) => {
+    const nextQuery = updates.q ?? searchQuery;
+    const nextStatus = updates.status ?? statusFilter;
+    const nextSort = updates.sort ?? sortBy;
+    const nextPage = updates.page ?? page;
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (nextQuery.trim().length > 0) params.set("q", nextQuery);
+    else params.delete("q");
+
+    if (nextStatus === "all") params.delete("status");
+    else params.set("status", nextStatus);
+
+    if (nextSort === "newest") params.delete("sort");
+    else params.set("sort", nextSort);
+
+    if (nextPage > 1) params.set("page", String(nextPage));
+    else params.delete("page");
+
+    const queryString = params.toString();
+    router.replace(queryString ? `/admin/team?${queryString}` : "/admin/team", { scroll: false });
+  };
 
   const resetForm = () => {
     setForm({
@@ -122,275 +166,315 @@ export default function TeamAdminPage() {
 
   const pagination = useMemo(() => paginate(filteredTeam, page, TEAM_PAGE_SIZE), [filteredTeam, page]);
 
-  if (!team) {
-    return (
-      <div className="space-y-6">
-        <div className="h-8 w-48 animate-pulse bg-[var(--accents-2)] rounded" />
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="h-32 animate-pulse bg-[var(--accents-1)] rounded-lg border border-[var(--accents-2)]" />
-          <div className="h-32 animate-pulse bg-[var(--accents-1)] rounded-lg border border-[var(--accents-2)]" />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-10 text-center sm:text-left">
-      {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
-          {error}
-        </div>
-      ) : null}
-
-      <header className="space-y-1">
-        <h2 className="text-3xl font-bold font-display tracking-tight text-[var(--foreground)]">Team</h2>
-        <p className="mx-auto max-w-2xl text-sm text-[var(--muted-foreground)] sm:mx-0">
-          Maintain the list of student leaders and alumni members.
-        </p>
-      </header>
-
-      <section className="space-y-6">
-        <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
-          <div>
-            <h3 className="font-display text-xl font-semibold text-[var(--foreground)]">
-              {editingMemberId ? "Edit member" : "Create member"}
-            </h3>
-          </div>
-          {editingMemberId ? (
+    <div className="flex flex-col border-t border-[var(--accents-2)]">
+      {error && (
+        <div className="ui-site-container mt-4">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">Error:</span>
+              {error}
+            </div>
             <button
               type="button"
-              onClick={() => {
-                setEditingMemberId(null);
-                resetForm();
-              }}
-              className="ui-btn"
-              data-variant="secondary"
+              onClick={() => setError(null)}
+              className="mt-2 text-xs underline hover:no-underline"
             >
-              New member
+              Dismiss
             </button>
-          ) : null}
+          </div>
         </div>
+      )}
 
-        <form onSubmit={handleSubmit} className="ui-card p-6 grid gap-6">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Field label="First Name">
-              <input
-                name="team_first_name"
-                autoComplete="off"
-                placeholder="First name..."
-                value={form.firstName}
-                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-                className="ui-input"
-                required
-              />
-            </Field>
-            <Field label="Last Name">
-              <input
-                name="team_last_name"
-                autoComplete="off"
-                placeholder="Last name..."
-                value={form.lastName}
-                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                className="ui-input"
-                required
-              />
-            </Field>
-            <Field label="Role">
-              <input
-                name="team_role"
-                autoComplete="off"
-                placeholder="President..."
-                value={form.role}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
-                className="ui-input"
-                required
-              />
-            </Field>
-            <Field label="Status">
-              <select
-                name="team_status"
-                autoComplete="off"
-                value={form.type}
-                onChange={(e) => setForm({ ...form, type: e.target.value as "member" | "alumni" })}
-                className="ui-input"
-              >
-                <option value="member">Current Member</option>
-                <option value="alumni">Alumni</option>
-              </select>
-            </Field>
-            <Field label="LinkedIn">
-              <input
-                type="url"
-                inputMode="url"
-                spellCheck={false}
-                name="team_linkedin_url"
-                autoComplete="off"
-                placeholder="https://..."
-                value={form.linkedinUrl}
-                onChange={(e) => setForm({ ...form, linkedinUrl: e.target.value })}
-                className="ui-input"
-              />
-            </Field>
-            <Field label="Photo ID/URL">
-              <input
-                name="team_photo_id"
-                autoComplete="off"
-                placeholder="Photo ID from Convex or external URL..."
-                value={form.photoId}
-                onChange={(e) => setForm({ ...form, photoId: e.target.value })}
-                className="ui-input"
-              />
-            </Field>
+      <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--background)] py-12 sm:py-16">
+        <div className="ui-site-container relative">
+          <div className="flex flex-col gap-6 text-center sm:text-left">
+            <div className="space-y-1">
+              <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
+                Team
+              </h1>
+              <p className="max-w-2xl text-lg leading-relaxed text-[var(--muted-foreground)]">
+                Maintain the list of student leaders and alumni members.
+              </p>
+            </div>
           </div>
-
-          <div className="flex justify-center sm:justify-end">
-            <button type="submit" className={["ui-btn", isSaving ? "opacity-60 cursor-not-allowed" : ""].join(" ")} disabled={isSaving}>
-              {isSaving ? (editingMemberId ? "Saving..." : "Creating...") : (editingMemberId ? "Save changes" : "Add member")} <span className="text-[10px]">{isSaving ? "" : "->"}</span>
-            </button>
-          </div>
-        </form>
+        </div>
       </section>
 
-      <section className="space-y-4 pt-8 border-t border-[var(--border)]">
-        <div className="flex items-end justify-between gap-4">
-          <h3 className="font-display text-xl font-semibold text-[var(--foreground)]">Current Roster</h3>
-          <div className="text-sm text-[var(--muted-foreground)]">
-            {filteredTeam.length} of {team.length} shown
+      <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--accents-1)]/30 py-12 sm:py-16">
+        <div className="ui-site-container relative">
+          <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left mb-8">
+            <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">
+              {editingMemberId ? "Edit member" : "Create member"}
+            </h2>
+            {editingMemberId ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingMemberId(null);
+                  resetForm();
+                }}
+                className="ui-btn"
+                data-variant="secondary"
+              >
+                New member
+              </button>
+            ) : null}
           </div>
-        </div>
 
-        <div className="grid gap-3 md:grid-cols-[1fr_180px_180px_auto]">
-          <input
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Search name, role, LinkedIn..."
-            className="ui-input"
-          />
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value as "all" | "member" | "alumni");
-              setPage(1);
-            }}
-            className="ui-input"
-          >
-            <option value="all">All statuses</option>
-            <option value="member">Members</option>
-            <option value="alumni">Alumni</option>
-          </select>
-          <select
-            value={sortBy}
-            onChange={(e) => {
-              setSortBy(e.target.value as TeamSort);
-              setPage(1);
-            }}
-            className="ui-input"
-          >
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-            <option value="name">Name A-Z</option>
-          </select>
-          <div className="flex items-center justify-end gap-2 text-xs text-[var(--muted-foreground)]">
-            <button
-              type="button"
-              className="ui-btn px-3 py-1.5 min-h-0 text-xs"
-              data-variant="secondary"
-              disabled={pagination.safePage <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              Prev
-            </button>
-            <span>
-              Page {pagination.safePage}/{pagination.totalPages}
-            </span>
-            <button
-              type="button"
-              className="ui-btn px-3 py-1.5 min-h-0 text-xs"
-              data-variant="secondary"
-              disabled={pagination.safePage >= pagination.totalPages}
-              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-
-        {filteredTeam.length === 0 ? (
-          <div className="ui-card p-8 text-center text-sm text-[var(--muted-foreground)]">
-            {team.length === 0 ? "No team members found." : "No team members match the current filters."}
-          </div>
-        ) : (
-          <div className="grid gap-3">
-            <AnimatePresence initial={false}>
-              {pagination.items.map((member) => (
-                <motion.div
-                  key={member._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="ui-card group grid gap-4 p-4 md:grid-cols-[1fr_auto] md:items-center transition-colors hover:bg-[var(--secondary)]/50"
+          <form onSubmit={handleSubmit} className="grid gap-6">
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="First Name">
+                <input
+                  name="team_first_name"
+                  autoComplete="off"
+                  placeholder="First name…"
+                  value={form.firstName}
+                  onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                  className="ui-input"
+                  required
+                />
+              </Field>
+              <Field label="Last Name">
+                <input
+                  name="team_last_name"
+                  autoComplete="off"
+                  placeholder="Last name…"
+                  value={form.lastName}
+                  onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  className="ui-input"
+                  required
+                />
+              </Field>
+              <Field label="Role">
+                <input
+                  name="team_role"
+                  autoComplete="off"
+                  placeholder="President…"
+                  value={form.role}
+                  onChange={(e) => setForm({ ...form, role: e.target.value })}
+                  className="ui-input"
+                  required
+                />
+              </Field>
+              <Field label="Status">
+                <select
+                  name="team_status"
+                  autoComplete="off"
+                  value={form.type}
+                  onChange={(e) => setForm({ ...form, type: e.target.value as "member" | "alumni" })}
+                  className="ui-input"
                 >
-                  <div className="text-center sm:text-left">
-                    <h4 className="font-display text-lg font-semibold text-[var(--foreground)]">
-                      {member.firstName} {member.lastName}
-                    </h4>
-                    <div className="mt-1 flex items-center justify-center gap-2 sm:justify-start">
-                      <span className="ui-tag">{member.type}</span>
-                      <span className="text-sm text-[var(--muted-foreground)]">{toPlainText(member.role)}</span>
-                    </div>
-                  </div>
+                  <option value="member">Current Member</option>
+                  <option value="alumni">Alumni</option>
+                </select>
+              </Field>
+              <Field label="LinkedIn">
+                <input
+                  type="url"
+                  inputMode="url"
+                  spellCheck={false}
+                  name="team_linkedin_url"
+                  autoComplete="off"
+                  placeholder="https://…"
+                  value={form.linkedinUrl}
+                  onChange={(e) => setForm({ ...form, linkedinUrl: e.target.value })}
+                  className="ui-input"
+                />
+              </Field>
+              <Field label="Photo ID/URL">
+                <input
+                  name="team_photo_id"
+                  autoComplete="off"
+                  placeholder="Photo ID from Convex or external URL…"
+                  value={form.photoId}
+                  onChange={(e) => setForm({ ...form, photoId: e.target.value })}
+                  className="ui-input"
+                />
+              </Field>
+            </div>
 
-                  <div className="flex items-center justify-center gap-4 opacity-100 transition-opacity md:justify-end md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingMemberId(member._id);
-                        setForm({
-                          firstName: member.firstName,
-                          lastName: member.lastName,
-                          role: toPlainText(member.role),
-                          type: member.type,
-                          linkedinUrl: member.linkedinUrl ?? "",
-                          photoId: member.photoId ?? "",
-                        });
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="ui-link text-sm"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      disabled={deletingMemberId === member._id}
-                      onClick={async () => {
-                        if (!confirm(`Delete ${member.firstName}?`)) return;
-                        setDeletingMemberId(member._id);
-                        setError(null);
-                        try {
-                          await deleteMember({ id: member._id });
-                          if (editingMemberId === member._id) {
-                            setEditingMemberId(null);
-                            resetForm();
-                          }
-                        } catch (err) {
-                          setError(err instanceof Error ? err.message : "Failed to delete team member");
-                        } finally {
-                          setDeletingMemberId(null);
-                        }
-                      }}
-                      className="ui-btn py-1.5 px-3 h-auto text-xs bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-colors font-bold disabled:opacity-50"
-                    >
-                      {deletingMemberId === member._id ? "Deleting..." : "Delete"}
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+            <div className="flex justify-center sm:justify-start pt-2">
+              <button type="submit" className={["ui-btn", isSaving ? "opacity-60 cursor-not-allowed" : ""].join(" ")} disabled={isSaving}>
+                {isSaving ? (editingMemberId ? "Saving…" : "Creating…") : (editingMemberId ? "Save changes" : "Add member")} <span className="text-[10px]">{isSaving ? "" : "->"}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden bg-[var(--background)] py-12 sm:py-16">
+        <div className="ui-site-container relative">
+          <div className="mb-8">
+            <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">Current Roster</h2>
+            <div className="mt-1 text-sm text-[var(--accents-5)]">
+              {team ? `${filteredTeam.length} of ${team.length} shown` : "Loading…"}
+            </div>
           </div>
-        )}
+
+          <div className="grid gap-3 md:grid-cols-[1fr_180px_180px_auto] mb-6">
+            <input
+              name="team_search"
+              autoComplete="off"
+              aria-label="Search team members"
+              value={searchQuery}
+              onChange={(e) => {
+                const nextQuery = e.target.value;
+                setSearchQuery(nextQuery);
+                setPage(1);
+                syncListState({ q: nextQuery, page: 1 });
+              }}
+              placeholder="Search name, role, LinkedIn…"
+              className="ui-input"
+            />
+            <select
+              name="team_status_filter"
+              autoComplete="off"
+              aria-label="Filter team members by status"
+              value={statusFilter}
+              onChange={(e) => {
+                const nextStatus = e.target.value as TeamStatus;
+                setStatusFilter(nextStatus);
+                setPage(1);
+                syncListState({ status: nextStatus, page: 1 });
+              }}
+              className="ui-input"
+            >
+              <option value="all">All statuses</option>
+              <option value="member">Members</option>
+              <option value="alumni">Alumni</option>
+            </select>
+            <select
+              name="team_sort"
+              autoComplete="off"
+              aria-label="Sort team members"
+              value={sortBy}
+              onChange={(e) => {
+                const nextSort = e.target.value as TeamSort;
+                setSortBy(nextSort);
+                setPage(1);
+                syncListState({ sort: nextSort, page: 1 });
+              }}
+              className="ui-input"
+            >
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="name">Name A-Z</option>
+            </select>
+            <div className="flex items-center justify-center gap-2 text-xs text-[var(--muted-foreground)] sm:justify-end">
+              <button
+                type="button"
+                className="ui-btn px-3 py-1.5 min-h-0 text-xs"
+                data-variant="secondary"
+                disabled={pagination.safePage <= 1}
+                onClick={() => {
+                  const nextPage = Math.max(1, pagination.safePage - 1);
+                  setPage(nextPage);
+                  syncListState({ page: nextPage });
+                }}
+              >
+                Prev
+              </button>
+              <span>
+                Page {pagination.safePage}/{pagination.totalPages}
+              </span>
+              <button
+                type="button"
+                className="ui-btn px-3 py-1.5 min-h-0 text-xs"
+                data-variant="secondary"
+                disabled={pagination.safePage >= pagination.totalPages}
+                onClick={() => {
+                  const nextPage = Math.min(pagination.totalPages, pagination.safePage + 1);
+                  setPage(nextPage);
+                  syncListState({ page: nextPage });
+                }}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+
+          {!team ? (
+            <div className="py-20 text-center">
+              <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent text-[var(--accents-5)]" />
+            </div>
+          ) : filteredTeam.length === 0 ? (
+            <EmptyState
+              title={team.length === 0 ? "No team members yet." : "No team members match the current filters."}
+              description={team.length === 0 ? "Add your first member using the form above." : "Try adjusting or clearing your filters."}
+              icon={team.length === 0 ? Users : SearchX}
+              className="ui-card border-border bg-card/70 py-10"
+            />
+          ) : (
+            <div className="grid gap-3">
+              <AnimatePresence initial={false}>
+                {pagination.items.map((member) => (
+                  <motion.div
+                    key={member._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="ui-card group grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center transition-colors hover:bg-[var(--secondary)]/50"
+                  >
+                    <div className="text-center sm:text-left">
+                      <h4 className="font-display text-lg font-semibold text-[var(--foreground)]">
+                        {member.firstName} {member.lastName}
+                      </h4>
+                      <div className="mt-1 flex items-center justify-center gap-2 sm:justify-start">
+                        <span className="ui-tag">{member.type}</span>
+                        <span className="text-sm text-[var(--muted-foreground)]">{toPlainText(member.role)}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-4 opacity-100 transition-opacity md:justify-end md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingMemberId(member._id);
+                          setForm({
+                            firstName: member.firstName,
+                            lastName: member.lastName,
+                            role: toPlainText(member.role),
+                            type: member.type,
+                            linkedinUrl: member.linkedinUrl ?? "",
+                            photoId: member.photoId ?? "",
+                          });
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        className="ui-link text-sm"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        disabled={deletingMemberId === member._id}
+                        onClick={async () => {
+                          if (!confirm(`Delete ${member.firstName}?`)) return;
+                          setDeletingMemberId(member._id);
+                          setError(null);
+                          try {
+                            await deleteMember({ id: member._id });
+                            if (editingMemberId === member._id) {
+                              setEditingMemberId(null);
+                              resetForm();
+                            }
+                          } catch (err) {
+                            setError(err instanceof Error ? err.message : "Failed to delete team member");
+                          } finally {
+                            setDeletingMemberId(null);
+                          }
+                        }}
+                        className="ui-btn py-1.5 px-3 h-auto text-xs bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-colors font-bold disabled:opacity-50"
+                      >
+                        {deletingMemberId === member._id ? "Deleting…" : "Delete"}
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
       </section>
     </div>
   );

@@ -28,13 +28,13 @@ export async function NewsletterList() {
 
   const convex = getConvexServerClient();
   if (!convex) {
-    return <EmptyState title="No newsletter posts yet." className="border-border bg-card" />;
+    return <EmptyState title="No newsletter posts yet." description="Check back later for updates." className="border-border bg-card" />;
   }
 
   const posts = (await convex.query(api.posts.listPublished, { limit: 30 })) as PostDoc[];
 
   if (posts.length === 0) {
-    return <EmptyState title="No newsletter posts yet." className="border-border bg-card" />;
+    return <EmptyState title="No newsletter posts yet." description="Check back later for updates." className="border-border bg-card" />;
   }
 
   return (
@@ -50,7 +50,7 @@ export async function NewsletterList() {
               href={`/newsletter/${post.slug}`}
               className={`group block ui-card ui-hover-lift overflow-hidden bg-card text-center transition-colors hover:border-ring sm:text-left ${isFeatured ? "sm:col-span-2 lg:col-span-2" : ""}`}
             >
-              <div className="h-1 bg-gradient-to-r from-primary to-brand-caramel" />
+              <div className="h-1 bg-primary" />
 
               <div className={`p-6 ${isFeatured ? "sm:p-8" : ""}`}>
                 <div className="mb-4 flex items-center justify-center gap-3 sm:justify-between">

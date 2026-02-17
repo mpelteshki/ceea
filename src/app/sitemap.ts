@@ -43,8 +43,7 @@ async function newsletterEntries(): Promise<MetadataRoute.Sitemap> {
   const convex = getConvexServerClient();
   if (!convex) return [];
 
-  const posts = (await convex.query(api.posts.listAll, {})) as PostDoc[];
-  const published = posts.filter((post) => post.publishedAt != null);
+  const published = (await convex.query(api.posts.listPublished, { limit: 200 })) as PostDoc[];
 
   return published.map((post) => ({
     url: absoluteUrl(`/newsletter/${post.slug}`),
