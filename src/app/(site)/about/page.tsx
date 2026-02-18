@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
+import { FadeIn, FadeInStagger, StaggerItem } from "@/components/ui/fade-in";
+import { PageHeader } from "@/components/site/page-header";
 import { Palette, Scale, TrendingUp, Users } from "lucide-react";
-import { renderGradientTitle } from "@/lib/gradient-title";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 
 const divisionCards = [
@@ -88,105 +88,87 @@ export const metadata: Metadata = buildPageMetadata({
 export default async function AboutPage() {
   return (
     <>
-      <div className="relative border-b border-border">
-        <div className="absolute inset-0 bg-[var(--background)]" />
-        <div className="ui-site-container relative pb-12 pt-12 sm:pb-16 sm:pt-20">
-          <FadeIn>
-            <h1 className="ui-page-title">What CEEA is.</h1>
-            <p className="mx-auto mt-6 max-w-3xl text-base leading-relaxed text-muted-foreground sm:mx-0 sm:text-lg">
-              {MISSION}
-            </p>
-          </FadeIn>
-        </div>
-      </div>
+      <PageHeader
+        title="What CEEA is."
+        subtitle={MISSION}
+      />
 
-      <div className="relative border-b border-border">
-        <div className="absolute inset-0 bg-[var(--background)]" />
-        <div className="ui-site-container relative py-16 sm:py-24">
-          <FadeInStagger className="space-y-12">
-            <FadeIn>
-              <div className="mb-2 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
-                <span className="hidden h-6 w-1 rounded-full bg-[var(--brand-teal)] sm:block" />
-                <h2 className="ui-section-title text-foreground">{renderGradientTitle("Our Divisions")}</h2>
-                <span className="hidden h-px flex-1 bg-border sm:block" />
-              </div>
-              <p className="mx-auto max-w-2xl text-sm leading-7 text-muted-foreground sm:mx-0 sm:ml-7">
-                Four verticals, one mission. Each owns its programming, calendar, and partnerships.
-              </p>
-            </FadeIn>
-
-            <div className="grid gap-5 sm:grid-cols-2">
-              {divisionCards.map((division, i) => (
-                <FadeIn key={division.name}>
-                  <div className="ui-hover-lift-sm relative flex h-full flex-col rounded-2xl border border-border bg-card p-8 sm:p-10">
-                    <div className="absolute left-8 right-8 top-0 h-[2px] rounded-full" style={{ background: division.accent }} />
-                    <div className="mb-6 flex items-start justify-between gap-4">
-                      <div
-                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-                        style={{ background: `color-mix(in oklch, ${division.accent} 12%, transparent)`, color: division.accent }}
-                      >
-                        <division.icon className="h-5 w-5" />
-                      </div>
-                      <span className="font-mono text-xs tabular-nums text-muted-foreground">0{i + 1}</span>
-                    </div>
-                    <h3 className="font-display text-2xl text-foreground">
-                      {division.name} Division
-                    </h3>
-                    <p className="mt-4 flex-1 text-sm leading-7 text-muted-foreground">{division.description}</p>
-                  </div>
-                </FadeIn>
-              ))}
-            </div>
-          </FadeInStagger>
-        </div>
-      </div>
-
-      <div className="ui-site-container space-y-24 py-16 sm:py-24">
+      <div className="ui-site-container space-y-24 pt-10 pb-16 sm:pt-14 sm:pb-24">
         <FadeInStagger className="space-y-12">
           <FadeIn>
-            <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
-              <span className="hidden h-6 w-1 rounded-full bg-[var(--brand-caramel)] sm:block" />
-              <h2 className="ui-section-title text-foreground">{renderGradientTitle("The Bocconi association reality")}</h2>
-              <span className="hidden h-px flex-1 bg-border sm:block" />
+            <div className="mb-6">
+              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--foreground)]">Our Divisions</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--muted-foreground)]">
+                Four verticals, each owning its own programming, calendar, and partnerships.
+              </p>
             </div>
           </FadeIn>
 
-          <div className="grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2">
-            {realityItems.map((item) => (
-              <FadeIn key={item.number}>
-                <div className="h-full bg-card p-8 sm:p-10">
-                  <span className="mb-4 block font-mono text-xs tabular-nums text-muted-foreground">{item.number}</span>
-                  <h3 className="font-display text-xl text-foreground">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.body}</p>
+          <div className="grid gap-5 sm:grid-cols-2">
+            {divisionCards.map((division, i) => (
+              <StaggerItem key={division.name} scale={0.93} blur>
+                <div className="relative flex h-full flex-col rounded-2xl border border-border bg-card p-8 sm:p-10">
+                  <div className="absolute left-8 right-8 top-0 h-[2px] rounded-full" style={{ background: division.accent }} />
+                  <div className="mb-6 flex items-start justify-between gap-4">
+                    <div
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+                      style={{ background: `color-mix(in oklch, ${division.accent} 12%, var(--background))`, color: division.accent }}
+                    >
+                      <division.icon className="h-5 w-5" />
+                    </div>
+                    <span className="font-mono text-xs tabular-nums text-muted-foreground">0{i + 1}</span>
+                  </div>
+                  <h3 className="font-display text-2xl text-foreground">
+                    {division.name} Division
+                  </h3>
+                  <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">{division.description}</p>
                 </div>
-              </FadeIn>
+              </StaggerItem>
             ))}
           </div>
         </FadeInStagger>
 
         <FadeInStagger className="space-y-12">
           <FadeIn>
-            <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
-              <span className="hidden h-6 w-1 rounded-full bg-[var(--brand-crimson)] sm:block" />
-              <h2 className="ui-section-title text-foreground">{renderGradientTitle("Partners")}</h2>
-              <span className="hidden h-px flex-1 bg-border sm:block" />
+            <div className="mb-6">
+              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--foreground)]">The Bocconi association reality</h2>
+            </div>
+          </FadeIn>
+
+          <div className="grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2">
+            {realityItems.map((item) => (
+              <StaggerItem key={item.number} direction="left" distance={30}>
+                <div className="h-full bg-card p-8 sm:p-10">
+                  <span className="mb-4 block font-mono text-xs tabular-nums text-muted-foreground">{item.number}</span>
+                  <h3 className="font-display text-xl text-foreground">{item.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
+                </div>
+              </StaggerItem>
+            ))}
+          </div>
+        </FadeInStagger>
+
+        <FadeInStagger className="space-y-12">
+          <FadeIn>
+            <div className="mb-6">
+              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--foreground)]">Partners</h2>
             </div>
           </FadeIn>
           <FadeIn>
-            <p className="mx-auto max-w-2xl text-base leading-8 text-muted-foreground sm:mx-0 sm:ml-7">
+            <p className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground sm:mx-0 sm:ml-7">
               We collaborate with companies, alumni, and other Bocconi associations. If you want a curated audience and a clean execution, we should talk.
             </p>
           </FadeIn>
 
           <div className="grid gap-5 sm:grid-cols-3">
             {partnerItems.map((item) => (
-              <FadeIn key={item.number}>
-                <div className="ui-hover-lift-sm h-full rounded-2xl border border-border p-8">
+              <StaggerItem key={item.number} scale={0.93} blur>
+                <div className="h-full rounded-2xl border border-border p-8">
                   <span className="mb-4 block font-mono text-xs tabular-nums text-muted-foreground">{item.number}</span>
                   <h3 className="font-display text-xl text-foreground">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.body}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
                 </div>
-              </FadeIn>
+              </StaggerItem>
             ))}
           </div>
         </FadeInStagger>

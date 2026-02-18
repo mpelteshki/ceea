@@ -1,50 +1,30 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery, useConvexAuth } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Suspense, useMemo, useState } from "react";
+import { AnimatePresence, LazyMotion, domAnimation, m } from "framer-motion";
 import { FolderOpen, SearchX } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { toPlainText } from "@/lib/plain-text";
 import { EmptyState } from "@/components/ui/empty-state";
+import { paginate, readSearchParam, parsePage, parseEnum, AdminPanelFallback } from "@/lib/admin-utils";
+import { ConfirmButton } from "@/components/ui/confirm-button";
 
-type ProjectSort = "newest" | "oldest" | "title";
+const PROJECT_SORTS = ["newest", "oldest", "title"] as const;
+type ProjectSort = typeof PROJECT_SORTS[number];
+type ProjectForm = {
+  title: string;
+  description: string;
+  imageUrl: string;
+  link: string;
+};
 
 const PROJECTS_PAGE_SIZE = 9;
 
-function paginate<T>(items: T[], page: number, pageSize: number) {
-  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
-  const safePage = Math.min(Math.max(1, page), totalPages);
-  const start = (safePage - 1) * pageSize;
-  return {
-    items: items.slice(start, start + pageSize),
-    safePage,
-    totalPages,
-    totalItems: items.length,
-  };
-}
-
-function parsePage(raw: string | null): number {
-  const value = Number(raw);
-  return Number.isInteger(value) && value > 0 ? value : 1;
-}
-
-function parseSort(raw: string | null): ProjectSort {
-  if (raw === "oldest" || raw === "title" || raw === "newest") return raw;
-  return "newest";
-}
-
-export default function ProjectsAdminPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const projects = useQuery(api.projects.get);
-  const createProject = useMutation(api.projects.create);
-  const updateProject = useMutation(api.projects.update);
-  const deleteProject = useMutation(api.projects.remove);
-
-  const [form, setForm] = useState({
+function useProjectsAdminState() {
+  const [form, setForm] = useState<ProjectForm>({
     title: "",
     description: "",
     imageUrl: "",
@@ -54,15 +34,70 @@ export default function ProjectsAdminPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [deletingProjectId, setDeletingProjectId] = useState<Id<"projects"> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
-  const [sortBy, setSortBy] = useState<ProjectSort>(() => parseSort(searchParams.get("sort")));
-  const [page, setPage] = useState(() => parsePage(searchParams.get("page")));
+  const [searchQuery, setSearchQuery] = useState(() => readSearchParam("q") ?? "");
+  const [sortBy, setSortBy] = useState<ProjectSort>(() => parseEnum(readSearchParam("sort"), PROJECT_SORTS, "newest"));
+  const [page, setPage] = useState(() => parsePage(readSearchParam("page")));
+
+  return {
+    form,
+    setForm,
+    editingProjectId,
+    setEditingProjectId,
+    isSaving,
+    setIsSaving,
+    deletingProjectId,
+    setDeletingProjectId,
+    error,
+    setError,
+    searchQuery,
+    setSearchQuery,
+    sortBy,
+    setSortBy,
+    page,
+    setPage,
+  };
+}
+
+export default function ProjectsAdminPage() {
+  return (
+    <Suspense fallback={<AdminPanelFallback label="Loading projects..." />}>
+      <ProjectsAdminPageInner />
+    </Suspense>
+  );
+}
+
+function ProjectsAdminPageInner() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const projects = useQuery(api.projects.get, isAuthenticated ? {} : "skip");
+  const createProject = useMutation(api.projects.create);
+  const updateProject = useMutation(api.projects.update);
+  const deleteProject = useMutation(api.projects.remove);
+
+  const {
+    form,
+    setForm,
+    editingProjectId,
+    setEditingProjectId,
+    isSaving,
+    setIsSaving,
+    deletingProjectId,
+    setDeletingProjectId,
+    error,
+    setError,
+    searchQuery,
+    setSearchQuery,
+    sortBy,
+    setSortBy,
+    page,
+    setPage,
+  } = useProjectsAdminState();
 
   const syncListState = (updates: { q?: string; sort?: ProjectSort; page?: number }) => {
     const nextQuery = updates.q ?? searchQuery;
     const nextSort = updates.sort ?? sortBy;
     const nextPage = updates.page ?? page;
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams();
 
     if (nextQuery.trim().length > 0) params.set("q", nextQuery);
     else params.delete("q");
@@ -146,11 +181,14 @@ export default function ProjectsAdminPage() {
     [filteredProjects, page],
   );
 
+  if (isLoading) return <AdminPanelFallback label="Authenticating…" />;
+
   return (
-    <div className="flex flex-col border-t border-[var(--accents-2)]">
+    <LazyMotion features={domAnimation}>
+      <div className="flex flex-col border-t border-[var(--accents-2)]">
       {error && (
         <div className="ui-site-container mt-4">
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300" role="alert">
             <div className="flex items-center gap-2">
               <span className="font-semibold">Error:</span>
               {error}
@@ -354,7 +392,7 @@ export default function ProjectsAdminPage() {
             <div className="grid gap-3">
               <AnimatePresence initial={false}>
                 {pagination.items.map((project) => (
-                  <motion.div
+                  <m.div
                     key={project._id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -395,12 +433,9 @@ export default function ProjectsAdminPage() {
                       >
                         Edit
                       </button>
-                      <button
-                        type="button"
-                        disabled={deletingProjectId === project._id}
-                        onClick={async () => {
-                          const title = toPlainText(project.title) || "this project";
-                          if (!confirm(`Delete ${title}?`)) return;
+                      <ConfirmButton
+                        pending={deletingProjectId === project._id}
+                        onConfirm={async () => {
                           setDeletingProjectId(project._id);
                           setError(null);
                           try {
@@ -415,19 +450,17 @@ export default function ProjectsAdminPage() {
                             setDeletingProjectId(null);
                           }
                         }}
-                        className="ui-btn py-1.5 px-3 h-auto text-xs bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-colors font-bold disabled:opacity-50"
-                      >
-                        {deletingProjectId === project._id ? "Deleting…" : "Delete"}
-                      </button>
+                      />
                     </div>
-                  </motion.div>
+                  </m.div>
                 ))}
               </AnimatePresence>
             </div>
           )}
         </div>
       </section>
-    </div>
+      </div>
+    </LazyMotion>
   );
 }
 

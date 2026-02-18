@@ -14,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main
         id="main"
         tabIndex={-1}
-        className="flex-1 min-h-[100dvh] text-center sm:text-left"
+        className="flex-1"
       >
         {children}
       </main>

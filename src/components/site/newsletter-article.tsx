@@ -1,25 +1,20 @@
 import Link from "next/link";
+import Script from "next/script";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 
+import { FadeIn } from "@/components/ui/fade-in";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { absoluteUrl, SITE_NAME, SITE_URL } from "@/lib/seo";
+import { fmtLongDate } from "@/lib/format-date";
 
 type PostDoc = Doc<"posts">;
-
-function fmtDate(ms: number) {
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "2-digit",
-  }).format(new Date(ms));
-}
 
 export async function NewsletterArticle({ slug }: { slug: string }) {
   if (!hasConvex) {
@@ -82,36 +77,43 @@ export async function NewsletterArticle({ slug }: { slug: string }) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }} />
-      <div className="relative border-b border-[var(--accents-2)]">
-        <div className="absolute inset-0 bg-[color-mix(in_oklch,var(--brand-cream)_4%,var(--background))]" />
-        <div className="relative mx-auto max-w-3xl space-y-8 px-5 pb-12 pt-8 text-center sm:px-6 sm:pb-16 sm:pt-16 sm:text-left">
-          <Link
-            href="/newsletter"
-            className="group ui-link py-1 text-sm text-[var(--accents-5)] hover:text-[var(--foreground)]"
-          >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Back
-          </Link>
-
-          <div className="space-y-5">
-            <div className="flex items-center justify-center gap-4 sm:justify-start">
-              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--accents-4)]">
-                {fmtDate(post.publishedAt)}
-              </span>
-              <span className="h-px flex-1 bg-[var(--accents-2)]" />
-              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--accents-4)]">/{post.slug}</span>
+      <Script id={`newsletter-article-structured-data-${post.slug}`} type="application/ld+json" strategy="afterInteractive">
+        {JSON.stringify(articleStructuredData)}
+      </Script>
+      <div className="relative border-b border-[var(--border)]">
+        <div className="absolute inset-0 bg-[var(--background)]" />
+        <div className="relative mx-auto max-w-3xl px-5 pb-12 pt-28 sm:px-6 sm:pb-16 sm:pt-32">
+          <FadeIn duration={0.6}>
+            <Link
+              href="/newsletter"
+              className="group mb-6 inline-flex items-center gap-1.5 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-[var(--muted-foreground)] transition-colors hover:text-[var(--foreground)]"
+            >
+              <ArrowLeft className="h-3 w-3" />
+              Newsletter
+            </Link>
+          </FadeIn>
+          <FadeIn duration={0.7} delay={0.1}>
+            <h1 className="text-balance font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-[var(--foreground)]">{title}</h1>
+          </FadeIn>
+          <FadeIn delay={0.25} direction="up" distance={20}>
+            <div className="mt-8 border-t border-[var(--border)]/50 pt-8">
+              <div className="flex items-center gap-4">
+                <span className="font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                  {fmtLongDate(post.publishedAt)}
+                </span>
+              </div>
+              {excerpt && (
+                <p className="mt-4 max-w-2xl text-base leading-relaxed text-[var(--muted-foreground)] sm:text-[1.05rem]">
+                  {excerpt}
+                </p>
+              )}
             </div>
-            <h1 className="text-balance font-display text-[clamp(2rem,5vw,4rem)] leading-[1.05] tracking-tight text-[var(--foreground)]">{title}</h1>
-            <p className="mx-auto max-w-2xl text-balance text-base leading-relaxed text-[var(--accents-5)] sm:mx-0 sm:text-lg">
-              {excerpt}
-            </p>
-          </div>
+          </FadeIn>
         </div>
       </div>
 
       <div className="mx-auto max-w-3xl px-5 py-12 sm:px-6 sm:py-16">
-        <div className="prose prose-zinc max-w-none text-left dark:prose-invert prose-headings:font-display prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[var(--foreground)] prose-p:leading-8 prose-p:text-[var(--accents-5)] prose-a:font-medium prose-a:text-[var(--foreground)] prose-a:underline prose-a:decoration-[var(--brand-tan)] prose-a:underline-offset-4 hover:prose-a:decoration-[var(--brand-teal)] prose-code:bg-[var(--accents-1)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[0.9em] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-blockquote:border-l-[var(--brand-teal)] prose-blockquote:text-[var(--accents-5)] prose-strong:text-[var(--foreground)] first:prose-p:first-letter:font-display first:prose-p:first-letter:text-5xl first:prose-p:first-letter:float-left first:prose-p:first-letter:mr-3 first:prose-p:first-letter:mt-1 first:prose-p:first-letter:text-[var(--brand-teal)]">
+        <div className="prose prose-zinc max-w-none text-left prose-headings:font-display prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[var(--foreground)] prose-p:leading-relaxed prose-p:text-muted-foreground prose-a:font-medium prose-a:text-[var(--foreground)] prose-a:underline prose-a:decoration-[var(--brand-tan)] prose-a:underline-offset-4 hover:prose-a:decoration-[var(--brand-teal)] prose-code:bg-[var(--accents-1)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[0.9em] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-blockquote:border-l-[var(--brand-teal)] prose-blockquote:text-muted-foreground prose-strong:text-[var(--foreground)]">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeSanitize]}

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "ignoreDependencies": ["postcss"],
+  "ignore": [
+    ".agents/skills/algorithmic-art/templates/generator_template.js",
+    ".agents/skills/pptx/scripts/html2pptx.js"
+  ]
+}

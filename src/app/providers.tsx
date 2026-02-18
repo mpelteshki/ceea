@@ -8,6 +8,14 @@ import { useMemo } from "react";
 import { hasClerk, hasConvex } from "@/lib/public-env";
 import { ThemeProvider } from "next-themes";
 
+function Theme({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      {children}
+    </ThemeProvider>
+  );
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
   const convex = useMemo(() => {
     if (!hasConvex) return null;
@@ -17,19 +25,23 @@ export function Providers({ children }: { children: React.ReactNode }) {
   // Allow `next build` / preview deploys without env vars.
   // Data-driven UI will render "backend not configured" fallbacks.
   if (!convex) {
-    return hasClerk ? <ClerkProvider>{children}</ClerkProvider> : children;
+    return hasClerk
+      ? <ClerkProvider><Theme>{children}</Theme></ClerkProvider>
+      : <Theme>{children}</Theme>;
   }
 
   if (!hasClerk) {
-    return <ConvexProvider client={convex}>{children}</ConvexProvider>;
+    return (
+      <ConvexProvider client={convex}>
+        <Theme>{children}</Theme>
+      </ConvexProvider>
+    );
   }
 
   return (
     <ClerkProvider>
       <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
+        <Theme>{children}</Theme>
       </ConvexProviderWithClerk>
     </ClerkProvider>
   );

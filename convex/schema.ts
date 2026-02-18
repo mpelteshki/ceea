@@ -81,17 +81,4 @@ export default defineSchema({
     link: v.optional(v.string()),
     createdAt: v.number(),
   }).index("by_createdAt", ["createdAt"]),
-
-  gallery: defineTable({
-    imageUrl: v.string(),
-    caption: v.union(
-      v.string(),
-      v.object({
-        en: v.string(),
-        it: v.string(),
-      }),
-    ),
-    category: v.optional(v.string()),
-    createdAt: v.number(),
-  }).index("by_createdAt", ["createdAt"]),
 });

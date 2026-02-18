@@ -1,60 +1,38 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery, useConvexAuth } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Suspense, useMemo, useState } from "react";
+import { AnimatePresence, LazyMotion, domAnimation, m } from "framer-motion";
 import { SearchX, Users } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { toPlainText } from "@/lib/plain-text";
 import { EmptyState } from "@/components/ui/empty-state";
+import { paginate, readSearchParam, parsePage, parseEnum, AdminPanelFallback } from "@/lib/admin-utils";
+import { ConfirmButton } from "@/components/ui/confirm-button";
 
-type TeamSort = "newest" | "oldest" | "name";
+const TEAM_SORTS = ["newest", "oldest", "name"] as const;
+type TeamSort = typeof TEAM_SORTS[number];
+const TEAM_STATUSES = ["all", "member", "alumni"] as const;
+type TeamStatus = typeof TEAM_STATUSES[number];
 
 const TEAM_PAGE_SIZE = 10;
-type TeamStatus = "all" | "member" | "alumni";
+type TeamForm = {
+  firstName: string;
+  lastName: string;
+  role: string;
+  type: "member" | "alumni";
+  linkedinUrl: string;
+  photoId: string;
+};
 
-function paginate<T>(items: T[], page: number, pageSize: number) {
-  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
-  const safePage = Math.min(Math.max(1, page), totalPages);
-  const start = (safePage - 1) * pageSize;
-  return {
-    items: items.slice(start, start + pageSize),
-    safePage,
-    totalPages,
-    totalItems: items.length,
-  };
-}
-
-function parsePage(raw: string | null): number {
-  const value = Number(raw);
-  return Number.isInteger(value) && value > 0 ? value : 1;
-}
-
-function parseSort(raw: string | null): TeamSort {
-  if (raw === "oldest" || raw === "name" || raw === "newest") return raw;
-  return "newest";
-}
-
-function parseStatus(raw: string | null): TeamStatus {
-  if (raw === "member" || raw === "alumni" || raw === "all") return raw;
-  return "all";
-}
-
-export default function TeamAdminPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const team = useQuery(api.team.get);
-  const createMember = useMutation(api.team.create);
-  const updateMember = useMutation(api.team.update);
-  const deleteMember = useMutation(api.team.remove);
-
-  const [form, setForm] = useState({
+function useTeamAdminState() {
+  const [form, setForm] = useState<TeamForm>({
     firstName: "",
     lastName: "",
     role: "",
-    type: "member" as "member" | "alumni",
+    type: "member",
     linkedinUrl: "",
     photoId: "",
   });
@@ -62,17 +40,76 @@ export default function TeamAdminPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [deletingMemberId, setDeletingMemberId] = useState<Id<"team"> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
-  const [statusFilter, setStatusFilter] = useState<TeamStatus>(() => parseStatus(searchParams.get("status")));
-  const [sortBy, setSortBy] = useState<TeamSort>(() => parseSort(searchParams.get("sort")));
-  const [page, setPage] = useState(() => parsePage(searchParams.get("page")));
+  const [searchQuery, setSearchQuery] = useState(() => readSearchParam("q") ?? "");
+  const [statusFilter, setStatusFilter] = useState<TeamStatus>(() => parseEnum(readSearchParam("status"), TEAM_STATUSES, "all"));
+  const [sortBy, setSortBy] = useState<TeamSort>(() => parseEnum(readSearchParam("sort"), TEAM_SORTS, "newest"));
+  const [page, setPage] = useState(() => parsePage(readSearchParam("page")));
+
+  return {
+    form,
+    setForm,
+    editingMemberId,
+    setEditingMemberId,
+    isSaving,
+    setIsSaving,
+    deletingMemberId,
+    setDeletingMemberId,
+    error,
+    setError,
+    searchQuery,
+    setSearchQuery,
+    statusFilter,
+    setStatusFilter,
+    sortBy,
+    setSortBy,
+    page,
+    setPage,
+  };
+}
+
+export default function TeamAdminPage() {
+  return (
+    <Suspense fallback={<AdminPanelFallback label="Loading team..." />}>
+      <TeamAdminPageInner />
+    </Suspense>
+  );
+}
+
+function TeamAdminPageInner() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const team = useQuery(api.team.get, isAuthenticated ? {} : "skip");
+  const createMember = useMutation(api.team.create);
+  const updateMember = useMutation(api.team.update);
+  const deleteMember = useMutation(api.team.remove);
+
+  const {
+    form,
+    setForm,
+    editingMemberId,
+    setEditingMemberId,
+    isSaving,
+    setIsSaving,
+    deletingMemberId,
+    setDeletingMemberId,
+    error,
+    setError,
+    searchQuery,
+    setSearchQuery,
+    statusFilter,
+    setStatusFilter,
+    sortBy,
+    setSortBy,
+    page,
+    setPage,
+  } = useTeamAdminState();
 
   const syncListState = (updates: { q?: string; status?: TeamStatus; sort?: TeamSort; page?: number }) => {
     const nextQuery = updates.q ?? searchQuery;
     const nextStatus = updates.status ?? statusFilter;
     const nextSort = updates.sort ?? sortBy;
     const nextPage = updates.page ?? page;
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams();
 
     if (nextQuery.trim().length > 0) params.set("q", nextQuery);
     else params.delete("q");
@@ -166,11 +203,14 @@ export default function TeamAdminPage() {
 
   const pagination = useMemo(() => paginate(filteredTeam, page, TEAM_PAGE_SIZE), [filteredTeam, page]);
 
+  if (isLoading) return <AdminPanelFallback label="Authenticating…" />;
+
   return (
-    <div className="flex flex-col border-t border-[var(--accents-2)]">
+    <LazyMotion features={domAnimation}>
+      <div className="flex flex-col border-t border-[var(--accents-2)]">
       {error && (
         <div className="ui-site-container mt-4">
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300" role="alert">
             <div className="flex items-center gap-2">
               <span className="font-semibold">Error:</span>
               {error}
@@ -409,7 +449,7 @@ export default function TeamAdminPage() {
             <div className="grid gap-3">
               <AnimatePresence initial={false}>
                 {pagination.items.map((member) => (
-                  <motion.div
+                  <m.div
                     key={member._id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -445,11 +485,9 @@ export default function TeamAdminPage() {
                       >
                         Edit
                       </button>
-                      <button
-                        type="button"
-                        disabled={deletingMemberId === member._id}
-                        onClick={async () => {
-                          if (!confirm(`Delete ${member.firstName}?`)) return;
+                      <ConfirmButton
+                        pending={deletingMemberId === member._id}
+                        onConfirm={async () => {
                           setDeletingMemberId(member._id);
                           setError(null);
                           try {
@@ -464,19 +502,17 @@ export default function TeamAdminPage() {
                             setDeletingMemberId(null);
                           }
                         }}
-                        className="ui-btn py-1.5 px-3 h-auto text-xs bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-colors font-bold disabled:opacity-50"
-                      >
-                        {deletingMemberId === member._id ? "Deleting…" : "Delete"}
-                      </button>
+                      />
                     </div>
-                  </motion.div>
+                  </m.div>
                 ))}
               </AnimatePresence>
             </div>
           )}
         </div>
       </section>
-    </div>
+      </div>
+    </LazyMotion>
   );
 }
 

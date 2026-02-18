@@ -7,14 +7,6 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignedIn } from "@clerk/nextjs";
 
-function AdminLink() {
-  return (
-    <SignedIn>
-      <NavLink href="/admin">Admin</NavLink>
-    </SignedIn>
-  );
-}
-
 function NavLink({
   href,
   children,
@@ -34,7 +26,7 @@ function NavLink({
       data-active={isActive ? "true" : "false"}
       className={cn(
         "ui-nav-link group/nav px-3 py-5 text-[13px] font-medium tracking-wide transition-colors duration-200",
-        isActive ? "text-[var(--foreground)]" : "text-[var(--accents-5)] hover:text-[var(--foreground)]",
+        isActive ? "text-[var(--brand-teal)]" : "text-[var(--accents-5)] hover:text-[var(--foreground)]",
       )}
     >
       <span
@@ -59,6 +51,7 @@ export function SiteNav() {
     { href: "/projects", label: "Projects" },
     { href: "/join-us", label: "Join Us" },
     { href: "/contacts", label: "Contacts" },
+    { href: "/admin", label: "Admin", requiredAuth: true },
   ];
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -174,16 +167,16 @@ export function SiteNav() {
   return (
     <header
       className={cn(
-        "fixed top-0 z-40 w-full transition-all duration-300 border-b",
+        "fixed top-0 z-40 w-full transition-all duration-300",
         isScrolled
-          ? "bg-transparent backdrop-blur-sm border-transparent shadow-none"
-          : "bg-transparent border-transparent"
+          ? "bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--accents-2)]"
+          : "bg-transparent"
       )}
     >
       <div>
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-6">
-          <Link href="/" className="group inline-flex items-center gap-3 transition-transform duration-300 hover:scale-[1.02]">
-            <div className="relative h-9 w-9 rounded-lg bg-[var(--brand-teal)] text-white flex items-center justify-center font-bold text-lg shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
+        <div className="mx-auto flex h-16 max-w-[80rem] items-center justify-between px-5 sm:px-6">
+          <Link href="/" className="group inline-flex items-center gap-3">
+            <div className="relative h-9 w-9 rounded-lg bg-[var(--brand-teal)] text-white flex items-center justify-center font-bold text-lg shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
               C
             </div>
             <span className="font-brand text-[1.35rem] text-[var(--foreground)] transition-colors duration-200 group-hover:text-[var(--brand-teal)]">
@@ -192,12 +185,20 @@ export function SiteNav() {
           </Link>
 
           <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
-            {links.map((l) => (
-              <NavLink key={l.href} href={l.href}>
-                {l.label}
-              </NavLink>
-            ))}
-            <AdminLink />
+            {links.map((l) => {
+              if (l.requiredAuth) {
+                return (
+                  <SignedIn key={l.href}>
+                    <NavLink href={l.href}>{l.label}</NavLink>
+                  </SignedIn>
+                );
+              }
+              return (
+                <NavLink key={l.href} href={l.href}>
+                  {l.label}
+                </NavLink>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-3">
@@ -217,75 +218,59 @@ export function SiteNav() {
 
       {menuOpen ? (
         <div ref={menuRef} id={menuId} role="dialog" aria-modal="true" className="fixed inset-0 z-50 lg:hidden">
-          <div
+          <button
+            type="button"
+            aria-label="Close mobile menu"
             className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={() => setMenuOpen(false)}
           />
           <div
-            className="absolute left-0 right-0 top-0 bg-[var(--background)] max-h-[100dvh] overflow-y-auto shadow-2xl animate-in slide-in-from-top-2 fade-in duration-300"
+            className="absolute left-0 right-0 top-0 bg-[var(--background)] max-h-[100dvh] overflow-y-auto shadow-2xl animate-in slide-in-from-top-1 fade-in duration-300"
             style={{ overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}
           >
-            <div className="p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
-              <div className="mx-auto max-w-6xl">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-[var(--brand-teal)] text-white flex items-center justify-center font-bold text-sm shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
-                      C
-                    </div>
-                    <div className="font-brand text-xl text-[var(--foreground)]">CEEA</div>
+            <div className="px-5 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-lg bg-[var(--brand-teal)] text-white flex items-center justify-center font-bold text-lg shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
+                    C
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setMenuOpen(false)}
-                    className="ui-pressable p-3 -mr-3 rounded-full text-[var(--foreground)] transition-colors hover:bg-[var(--accents-1)]"
-                    aria-label="Close menu"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
+                  <div className="font-brand text-[1.35rem] text-[var(--foreground)]">CEEA</div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(false)}
+                  className="ui-pressable p-2.5 -mr-2.5 rounded-full text-[var(--foreground)] transition-colors hover:bg-[var(--accents-1)]"
+                  aria-label="Close menu"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
 
-                <div className="mt-8 grid gap-1">
-                  {links.map((l, idx) => {
-                    const isActive = pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
-
-                    return (
-                      <Link
-                        key={l.href}
-                        href={l.href}
-                        ref={idx === 0 ? firstLinkRef : undefined}
-                        className={cn(
-                          "block rounded-xl px-4 py-3 text-center font-display text-xl transition-[background-color,color,transform] duration-200 hover:translate-x-1 sm:text-left",
-                          isActive
-                            ? "text-[var(--brand-teal)] bg-[color-mix(in_oklch,var(--brand-teal)_8%,var(--background))]"
-                            : "text-[var(--foreground)] hover:bg-[var(--accents-1)]",
-                        )}
-                        onClick={() => setMenuOpen(false)}
-                      >
-                        {l.label}
-                      </Link>
-                    );
-                  })}
-                  <SignedIn>
+              <div className="mt-5 grid gap-0.5">
+                {links.map((l, idx) => {
+                  const isActive = pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
+                  const LinkComponent = (
                     <Link
-                      href="/admin"
+                      key={l.href}
+                      href={l.href}
+                      ref={idx === 0 ? firstLinkRef : undefined}
                       className={cn(
-                        "block rounded-xl px-4 py-3 text-center font-display text-xl transition-[background-color,color,transform] duration-200 hover:translate-x-1 sm:text-left",
-                        pathname.startsWith("/admin")
+                        "block rounded-lg px-3.5 py-3 text-left font-display text-lg transition-[background-color,color] duration-200",
+                        isActive
                           ? "text-[var(--brand-teal)] bg-[color-mix(in_oklch,var(--brand-teal)_8%,var(--background))]"
                           : "text-[var(--foreground)] hover:bg-[var(--accents-1)]",
                       )}
                       onClick={() => setMenuOpen(false)}
                     >
-                      Admin
+                      {l.label}
                     </Link>
-                  </SignedIn>
-                </div>
+                  );
 
-                <div className="mt-8 flex items-center justify-between border-t border-[var(--accents-2)] pt-6">
-                  <div className="text-xs text-[var(--accents-4)]">
-                    <kbd className="rounded bg-[var(--accents-1)] px-1.5 py-0.5 font-mono text-[10px]">ESC</kbd> to close
-                  </div>
-                </div>
+                  if (l.requiredAuth) {
+                    return <SignedIn key={l.href}>{LinkComponent}</SignedIn>;
+                  }
+                  return LinkComponent;
+                })}
               </div>
             </div>
           </div>

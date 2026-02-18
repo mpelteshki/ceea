@@ -4,7 +4,7 @@ function debugLog(...args: unknown[]) {
   if (process.env.ADMIN_DEBUG === "1") console.log(...args);
 }
 
-export type AdminState =
+type AdminState =
   | { ok: true }
   | {
       ok: false;

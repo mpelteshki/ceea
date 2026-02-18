@@ -5,18 +5,9 @@ import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { FadeIn } from "@/components/ui/fade-in";
 import { EmptyState } from "@/components/ui/empty-state";
+import { fmtEventDate } from "@/lib/format-date";
 
 type EventDoc = Doc<"events">;
-
-function fmtDate(ms: number) {
-  const d = new Date(ms);
-  return {
-    month: new Intl.DateTimeFormat("en-US", { month: "short" }).format(d).toUpperCase(),
-    day: d.getDate().toString().padStart(2, "0"),
-    weekday: new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(d),
-    time: new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", hour12: true }).format(d),
-  };
-}
 
 export async function EventsList() {
   if (!hasConvex) {
@@ -51,30 +42,30 @@ export async function EventsList() {
 
   return (
     <div className="space-y-8">
-      <div className="divide-y divide-border border-y border-border">
+      <div className="divide-y divide-border border-t border-border">
         {list.map((event, idx) => {
           const title = String(event.title || "");
           const summary = event.summary || "";
-          const date = fmtDate(event.startsAt);
+          const date = fmtEventDate(event.startsAt);
 
           return (
             <FadeIn key={event._id} delay={Math.min(idx * 0.04, 0.18)}>
-              <div className="ui-hover-lift-sm group -mx-3 grid grid-cols-[auto_1fr_auto] items-center gap-6 rounded-xl px-3 py-6 text-center hover:bg-[color-mix(in_oklch,var(--brand-cream)_4%,transparent)] sm:gap-8 sm:py-8 sm:text-left">
+                <div className="group -mx-4 grid grid-cols-[auto_1fr_auto] items-center gap-6 rounded-xl px-4 py-6 text-center hover:bg-[var(--accents-1)] sm:gap-8 sm:py-8 sm:text-left">
                 <div className="flex w-16 flex-col items-center justify-center sm:w-20">
-                  <span className="text-[10px] font-mono tracking-widest text-muted-foreground">{date.weekday}</span>
+                  <span className="text-[0.6875rem] font-mono font-medium tracking-[0.12em] text-muted-foreground">{date.weekday}</span>
                   <span className="font-display text-3xl leading-none text-foreground sm:text-4xl">{date.day}</span>
-                  <span className="text-[10px] font-mono tracking-widest text-muted-foreground">{date.month}</span>
+                  <span className="text-[0.6875rem] font-mono font-medium tracking-[0.12em] text-muted-foreground">{date.month}</span>
                 </div>
 
                 <div className="min-w-0">
                   <h3 className="truncate font-display text-lg leading-snug text-foreground sm:text-xl">{title}</h3>
                   <div className="mt-2 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground sm:justify-start">
                     <span className="inline-flex items-center gap-1.5">
-                      <Calendar className="h-3 w-3" /> {date.time}
+                      <Calendar className="h-3 w-3" aria-hidden="true" /> {date.time}
                     </span>
                     {event.location ? (
                       <span className="inline-flex items-center gap-1.5">
-                        <MapPin className="h-3 w-3" /> {event.location}
+                        <MapPin className="h-3 w-3" aria-hidden="true" /> {event.location}
                       </span>
                     ) : null}
                   </div>

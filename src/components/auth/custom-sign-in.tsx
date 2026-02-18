@@ -67,7 +67,7 @@ export function CustomSignIn() {
                 <button
                     onClick={handleGoogleSignIn}
                     disabled={!isLoaded || isLoading}
-                    className="relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-[background-color,border-color,color,box-shadow] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm font-medium"
+                    className="relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--accents-1)] hover:border-[var(--accents-3)] transition-[background-color,border-color,color,box-shadow] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm font-medium"
                 >
                     {isLoading ? (
                         <Loader2 className="w-5 h-5 animate-spin text-[var(--accents-4)]" />

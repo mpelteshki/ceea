@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Spline_Sans_Mono } from "next/font/google";
+import Script from "next/script";
 import { Providers } from "./providers";
 import { DeferredAnalytics } from "@/components/ui/deferred-analytics";
 import "./globals.css";
@@ -88,7 +89,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${sans.variable} ${mono.variable} antialiased`}>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+        <Script id="site-structured-data" type="application/ld+json" strategy="beforeInteractive">
+          {JSON.stringify(structuredData)}
+        </Script>
         <Providers>
           {children}
           <DeferredAnalytics />

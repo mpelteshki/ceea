@@ -1,38 +1,32 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useMutation, useQuery } from "convex/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Suspense, useMemo, useState } from "react";
+import { useMutation, useQuery, useConvexAuth } from "convex/react";
+import { AnimatePresence, LazyMotion, domAnimation, m } from "framer-motion";
 import { Calendar, FileText, SearchX } from "lucide-react";
 
 import { api } from "../../../convex/_generated/api";
-import type { Doc } from "../../../convex/_generated/dataModel";
-import type { Id } from "../../../convex/_generated/dataModel";
-import { useRouter, useSearchParams } from "next/navigation";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import { useRouter } from "next/navigation";
 import { hasConvex } from "@/lib/public-env";
 import { EmptyState } from "@/components/ui/empty-state";
+import { paginate, readSearchParam, parsePage, parseEnum, AdminPanelFallback } from "@/lib/admin-utils";
 
 type Kind = "flagship" | "career" | "culture" | "community";
+const KINDS = ["flagship", "career", "culture", "community"] as const;
+const EVENT_KINDS_WITH_ALL = ["all", ...KINDS] as const;
+const EVENT_SORTS = ["soonest", "latest"] as const;
+const POST_SORTS = ["newest", "oldest", "title"] as const;
+const POST_STATUS_FILTERS = ["all", "published", "draft"] as const;
+
 type EventDoc = Doc<"events">;
 type PostDoc = Doc<"posts">;
-type EventSort = "soonest" | "latest";
-type PostSort = "newest" | "oldest" | "title";
-type PostStatusFilter = "all" | "published" | "draft";
+type EventSort = typeof EVENT_SORTS[number];
+type PostSort = typeof POST_SORTS[number];
+type PostStatusFilter = typeof POST_STATUS_FILTERS[number];
 
 const EVENTS_PAGE_SIZE = 8;
 const POSTS_PAGE_SIZE = 8;
-
-function paginate<T>(items: T[], page: number, pageSize: number) {
-  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
-  const safePage = Math.min(Math.max(1, page), totalPages);
-  const start = (safePage - 1) * pageSize;
-  return {
-    items: items.slice(start, start + pageSize),
-    safePage,
-    totalPages,
-    totalItems: items.length,
-  };
-}
 
 function toDatetimeLocal(ms: number) {
   const date = new Date(ms);
@@ -40,46 +34,12 @@ function toDatetimeLocal(ms: number) {
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 }
 
-export function AdminDashboard() {
-  if (!hasConvex) {
-    return (
-      <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-4 text-sm text-[var(--accents-5)] rounded-md">
-        Convex backend not configured. Set{" "}
-        <span className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</span> and Convex
-        deployment env vars in Vercel.
-      </div>
-    );
-  }
-
-  return <AdminDashboardInner />;
-}
-
-function AdminDashboardInner() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const tabParam = searchParams.get("tab");
-  const tab: "events" | "posts" = tabParam === "newsletter" ? "posts" : "events";
-
-  const events = useQuery(api.events.listAll, {}) as EventDoc[] | undefined;
-  const createEvent = useMutation(api.events.create);
-  const updateEvent = useMutation(api.events.update);
-  const removeEvent = useMutation(api.events.remove);
-
-  const posts = useQuery(api.posts.listAll, {}) as PostDoc[] | undefined;
-  const createDraft = useMutation(api.posts.createDraft);
-  const updateDraft = useMutation(api.posts.updateDraft);
-  const publish = useMutation(api.posts.publish);
-  const unpublish = useMutation(api.posts.unpublish);
-  const removePost = useMutation(api.posts.remove);
-
-  // Loading states for mutations
+function useAdminDashboardState() {
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [deletingEventId, setDeletingEventId] = useState<Id<"events"> | null>(null);
   const [deletingPostId, setDeletingPostId] = useState<Id<"posts"> | null>(null);
   const [publishingPostId, setPublishingPostId] = useState<Id<"posts"> | null>(null);
-
-  // Error state
   const [error, setError] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
@@ -100,14 +60,206 @@ function AdminDashboardInner() {
     `# Title\n\nWrite in **Markdown**.\n\n- Keep it concrete\n- Add links\n`,
   );
   const [editingPostId, setEditingPostId] = useState<Id<"posts"> | null>(null);
-  const [eventsQuery, setEventsQuery] = useState("");
-  const [eventsKindFilter, setEventsKindFilter] = useState<"all" | Kind>("all");
-  const [eventsSort, setEventsSort] = useState<EventSort>("soonest");
-  const [eventsPage, setEventsPage] = useState(1);
-  const [postsQuery, setPostsQuery] = useState("");
-  const [postsStatusFilter, setPostsStatusFilter] = useState<PostStatusFilter>("all");
-  const [postsSort, setPostsSort] = useState<PostSort>("newest");
-  const [postsPage, setPostsPage] = useState(1);
+  const [showPostPreview, setShowPostPreview] = useState(false);
+  const [eventsQuery, setEventsQuery] = useState(() => readSearchParam("eq") ?? "");
+  const [eventsKindFilter, setEventsKindFilter] = useState<typeof EVENT_KINDS_WITH_ALL[number]>(() =>
+    parseEnum(readSearchParam("ek"), EVENT_KINDS_WITH_ALL, "all"),
+  );
+  const [eventsSort, setEventsSort] = useState<EventSort>(() =>
+    parseEnum(readSearchParam("es"), EVENT_SORTS, "soonest"),
+  );
+  const [eventsPage, setEventsPage] = useState(() => parsePage(readSearchParam("ep")));
+  const [postsQuery, setPostsQuery] = useState(() => readSearchParam("pq") ?? "");
+  const [postsStatusFilter, setPostsStatusFilter] = useState<PostStatusFilter>(() =>
+    parseEnum(readSearchParam("ps"), POST_STATUS_FILTERS, "all"),
+  );
+  const [postsSort, setPostsSort] = useState<PostSort>(() =>
+    parseEnum(readSearchParam("po"), POST_SORTS, "newest"),
+  );
+  const [postsPage, setPostsPage] = useState(() => parsePage(readSearchParam("pp")));
+
+  return {
+    isCreatingEvent,
+    setIsCreatingEvent,
+    isCreatingPost,
+    setIsCreatingPost,
+    deletingEventId,
+    setDeletingEventId,
+    deletingPostId,
+    setDeletingPostId,
+    publishingPostId,
+    setPublishingPostId,
+    error,
+    setError,
+    title,
+    setTitle,
+    summary,
+    setSummary,
+    location,
+    setLocation,
+    kind,
+    setKind,
+    startsAt,
+    setStartsAt,
+    rsvpUrl,
+    setRsvpUrl,
+    moreInfoUrl,
+    setMoreInfoUrl,
+    editingEventId,
+    setEditingEventId,
+    postTitle,
+    setPostTitle,
+    postSlug,
+    setPostSlug,
+    postExcerpt,
+    setPostExcerpt,
+    postBody,
+    setPostBody,
+    editingPostId,
+    setEditingPostId,
+    eventsQuery,
+    setEventsQuery,
+    eventsKindFilter,
+    setEventsKindFilter,
+    eventsSort,
+    setEventsSort,
+    eventsPage,
+    setEventsPage,
+    postsQuery,
+    setPostsQuery,
+    postsStatusFilter,
+    setPostsStatusFilter,
+    postsSort,
+    setPostsSort,
+    postsPage,
+    setPostsPage,
+    showPostPreview,
+    setShowPostPreview,
+  };
+}
+
+function readDashboardTab(): "events" | "posts" {
+  if (typeof window === "undefined") return "events";
+  const raw = new URLSearchParams(window.location.search).get("tab");
+  return raw === "newsletter" ? "posts" : "events";
+}
+
+export function AdminDashboard() {
+  if (!hasConvex) {
+    return (
+      <div className="border border-[var(--accents-2)] bg-[var(--accents-1)] p-4 text-sm text-[var(--accents-5)] rounded-md">
+        Convex backend not configured. Set{" "}
+        <span className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</span> and Convex
+        deployment env vars in Vercel.
+      </div>
+    );
+  }
+
+  return (
+    <Suspense fallback={<AdminPanelFallback label="Loading dashboard..." />}>
+      <AdminDashboardInner />
+    </Suspense>
+  );
+}
+
+function AdminDashboardInner() {
+  const router = useRouter();
+  const [tab, setTab] = useState<"events" | "posts">(() => readDashboardTab());
+  const { isAuthenticated, isLoading } = useConvexAuth();
+
+  const events = useQuery(api.events.listAll, isAuthenticated ? {} : "skip") as EventDoc[] | undefined;
+  const createEvent = useMutation(api.events.create);
+  const updateEvent = useMutation(api.events.update);
+  const removeEvent = useMutation(api.events.remove);
+
+  const team = useQuery(api.team.get, isAuthenticated ? {} : "skip");
+  const projects = useQuery(api.projects.get, isAuthenticated ? {} : "skip");
+  const partners = useQuery(api.partners.listAll, isAuthenticated ? {} : "skip");
+
+  const posts = useQuery(api.posts.listAll, isAuthenticated ? {} : "skip") as PostDoc[] | undefined;
+  const createDraft = useMutation(api.posts.createDraft);
+  const updateDraft = useMutation(api.posts.updateDraft);
+  const publish = useMutation(api.posts.publish);
+  const unpublish = useMutation(api.posts.unpublish);
+  const removePost = useMutation(api.posts.remove);
+  const {
+    isCreatingEvent,
+    setIsCreatingEvent,
+    isCreatingPost,
+    setIsCreatingPost,
+    deletingEventId,
+    setDeletingEventId,
+    deletingPostId,
+    setDeletingPostId,
+    publishingPostId,
+    setPublishingPostId,
+    error,
+    setError,
+    title,
+    setTitle,
+    summary,
+    setSummary,
+    location,
+    setLocation,
+    kind,
+    setKind,
+    startsAt,
+    setStartsAt,
+    rsvpUrl,
+    setRsvpUrl,
+    moreInfoUrl,
+    setMoreInfoUrl,
+    editingEventId,
+    setEditingEventId,
+    postTitle,
+    setPostTitle,
+    postSlug,
+    setPostSlug,
+    postExcerpt,
+    setPostExcerpt,
+    postBody,
+    setPostBody,
+    editingPostId,
+    setEditingPostId,
+    eventsQuery,
+    setEventsQuery,
+    eventsKindFilter,
+    setEventsKindFilter,
+    eventsSort,
+    setEventsSort,
+    eventsPage,
+    setEventsPage,
+    postsQuery,
+    setPostsQuery,
+    postsStatusFilter,
+    setPostsStatusFilter,
+    postsSort,
+    setPostsSort,
+    postsPage,
+    setPostsPage,
+    showPostPreview,
+    setShowPostPreview,
+  } = useAdminDashboardState();
+
+  const syncEventsUrl = (updates: { eq?: string; ek?: string; es?: string; ep?: number }) => {
+    const params = new URLSearchParams(window.location.search);
+    if ("eq" in updates) { if (updates.eq) params.set("eq", updates.eq); else params.delete("eq"); }
+    if ("ek" in updates) { if (updates.ek && updates.ek !== "all") params.set("ek", updates.ek); else params.delete("ek"); }
+    if ("es" in updates) { if (updates.es && updates.es !== "soonest") params.set("es", updates.es); else params.delete("es"); }
+    if ("ep" in updates) { if (updates.ep && updates.ep > 1) params.set("ep", String(updates.ep)); else params.delete("ep"); }
+    const qs = params.toString();
+    router.replace(qs ? `/admin?${qs}` : "/admin", { scroll: false });
+  };
+
+  const syncPostsUrl = (updates: { pq?: string; ps?: string; po?: string; pp?: number }) => {
+    const params = new URLSearchParams(window.location.search);
+    if ("pq" in updates) { if (updates.pq) params.set("pq", updates.pq); else params.delete("pq"); }
+    if ("ps" in updates) { if (updates.ps && updates.ps !== "all") params.set("ps", updates.ps); else params.delete("ps"); }
+    if ("po" in updates) { if (updates.po && updates.po !== "newest") params.set("po", updates.po); else params.delete("po"); }
+    if ("pp" in updates) { if (updates.pp && updates.pp > 1) params.set("pp", String(updates.pp)); else params.delete("pp"); }
+    const qs = params.toString();
+    router.replace(qs ? `/admin?${qs}` : "/admin", { scroll: false });
+  };
 
   const canSubmit = useMemo(() => {
     return (
@@ -181,11 +333,14 @@ function AdminDashboardInner() {
     [filteredPosts, postsPage],
   );
 
+  if (isLoading) return <AdminPanelFallback label="Authenticating…" />;
+
   return (
-    <div className="flex flex-col border-t border-[var(--accents-2)]">
+    <LazyMotion features={domAnimation}>
+      <div className="flex flex-col border-t border-[var(--accents-2)]">
       {error && (
         <div className="ui-site-container mt-4">
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300" role="alert">
             <div className="flex items-center gap-2">
               <span className="font-semibold">Error:</span>
               {error}
@@ -206,20 +361,23 @@ function AdminDashboardInner() {
         <div className="ui-site-container relative">
           <div className="flex flex-col gap-6 text-center sm:text-left">
             <div className="space-y-1">
-              <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
+              <h2 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
                 Dashboard
-              </h1>
+              </h2>
               <p className="max-w-2xl text-lg leading-relaxed text-[var(--muted-foreground)]">
                 Manage your site&rsquo;s content. All changes are synced in real-time.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
               {[
                 { label: "Events", value: events?.length ?? "…" },
                 { label: "Posts", value: posts?.length ?? "…" },
                 { label: "Published", value: posts?.filter(p => p.publishedAt).length ?? "…" },
                 { label: "Drafts", value: posts?.filter(p => !p.publishedAt).length ?? "…" },
+                { label: "Team", value: team?.length ?? "…" },
+                { label: "Projects", value: projects?.length ?? "…" },
+                { label: "Partners", value: partners?.length ?? "…" },
               ].map((stat) => (
                 <div key={stat.label} className="ui-card p-4">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">{stat.label}</div>
@@ -231,7 +389,13 @@ function AdminDashboardInner() {
             <div className="mx-auto flex w-fit gap-1 rounded-lg bg-[var(--secondary)] p-1 sm:mx-0">
               <button
                 type="button"
-                onClick={() => router.replace("/admin?tab=events", { scroll: false })}
+                onClick={() => {
+                  setTab("events");
+                  const params = new URLSearchParams(window.location.search);
+                  params.delete("tab");
+                  const qs = params.toString();
+                  router.replace(qs ? `/admin?${qs}` : "/admin", { scroll: false });
+                }}
                 className={[
                   "px-4 py-2 text-sm font-medium transition-colors rounded-md",
                   tab === "events"
@@ -243,9 +407,12 @@ function AdminDashboardInner() {
               </button>
               <button
                 type="button"
-                onClick={() =>
-                  router.replace("/admin?tab=newsletter", { scroll: false })
-                }
+                onClick={() => {
+                  setTab("posts");
+                  const params = new URLSearchParams(window.location.search);
+                  params.set("tab", "newsletter");
+                  router.replace(`/admin?${params.toString()}`, { scroll: false });
+                }}
                 className={[
                   "px-4 py-2 text-sm font-medium transition-colors rounded-md",
                   tab === "posts"
@@ -460,6 +627,7 @@ function AdminDashboardInner() {
                     onChange={(e) => {
                       setEventsQuery(e.target.value);
                       setEventsPage(1);
+                      syncEventsUrl({ eq: e.target.value, ep: 1 });
                     }}
                     placeholder="Search title, summary, location…"
                     name="events_search"
@@ -472,6 +640,7 @@ function AdminDashboardInner() {
                     onChange={(e) => {
                       setEventsKindFilter(e.target.value as "all" | Kind);
                       setEventsPage(1);
+                      syncEventsUrl({ ek: e.target.value, ep: 1 });
                     }}
                     name="events_kind_filter"
                     autoComplete="off"
@@ -489,6 +658,7 @@ function AdminDashboardInner() {
                     onChange={(e) => {
                       setEventsSort(e.target.value as EventSort);
                       setEventsPage(1);
+                      syncEventsUrl({ es: e.target.value, ep: 1 });
                     }}
                     name="events_sort_order"
                     autoComplete="off"
@@ -504,7 +674,11 @@ function AdminDashboardInner() {
                       className="ui-btn px-3 py-1.5 min-h-0 text-xs"
                       data-variant="secondary"
                       disabled={eventsPagination.safePage <= 1}
-                      onClick={() => setEventsPage((p) => Math.max(1, p - 1))}
+                      onClick={() => {
+                        const next = Math.max(1, eventsPagination.safePage - 1);
+                        setEventsPage(next);
+                        syncEventsUrl({ ep: next });
+                      }}
                     >
                       Prev
                     </button>
@@ -516,7 +690,11 @@ function AdminDashboardInner() {
                       className="ui-btn px-3 py-1.5 min-h-0 text-xs"
                       data-variant="secondary"
                       disabled={eventsPagination.safePage >= eventsPagination.totalPages}
-                      onClick={() => setEventsPage((p) => Math.min(eventsPagination.totalPages, p + 1))}
+                      onClick={() => {
+                        const next = Math.min(eventsPagination.totalPages, eventsPagination.safePage + 1);
+                        setEventsPage(next);
+                        syncEventsUrl({ ep: next });
+                      }}
                     >
                       Next
                     </button>
@@ -539,7 +717,7 @@ function AdminDashboardInner() {
                 <div className="grid gap-4">
                   <AnimatePresence initial={false}>
                     {eventsPagination.items.map((e) => (
-                      <motion.div
+                      <m.div
                         key={e._id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -584,7 +762,6 @@ function AdminDashboardInner() {
                             type="button"
                             disabled={deletingEventId === e._id}
                             onClick={async () => {
-                              if (!confirm("Delete this event?")) return;
                               setDeletingEventId(e._id);
                               setError(null);
                               try {
@@ -603,7 +780,7 @@ function AdminDashboardInner() {
                             {deletingEventId === e._id ? "Deleting…" : "Delete"}
                           </button>
                         </div>
-                      </motion.div>
+                      </m.div>
                     ))}
                   </AnimatePresence>
                 </div>
@@ -678,15 +855,42 @@ function AdminDashboardInner() {
                   />
                 </Field>
                 <Field label="Body (Markdown)" full>
-                  <textarea
-                    value={postBody}
-                    onChange={(e) => setPostBody(e.target.value)}
-                    rows={12}
-                    name="post_body_markdown"
-                    autoComplete="off"
-                    spellCheck={false}
-                    className="ui-input resize-none font-mono text-[12px] leading-5"
-                  />
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowPostPreview(false)}
+                        className={["text-xs px-2 py-1 rounded transition-colors", !showPostPreview ? "bg-[var(--foreground)] text-[var(--background)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"].join(" ")}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowPostPreview(true)}
+                        className={["text-xs px-2 py-1 rounded transition-colors", showPostPreview ? "bg-[var(--foreground)] text-[var(--background)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"].join(" ")}
+                      >
+                        Preview
+                      </button>
+                    </div>
+                    {showPostPreview ? (
+                      <div
+                        className="ui-input min-h-[200px] overflow-auto whitespace-pre-wrap font-sans text-sm leading-6 text-[var(--foreground)]"
+                        style={{ fontFamily: "inherit" }}
+                      >
+                        {postBody || <span className="text-[var(--muted-foreground)]">Nothing to preview yet.</span>}
+                      </div>
+                    ) : (
+                      <textarea
+                        value={postBody}
+                        onChange={(e) => setPostBody(e.target.value)}
+                        rows={12}
+                        name="post_body_markdown"
+                        autoComplete="off"
+                        spellCheck={false}
+                        className="ui-input resize-none font-mono text-[12px] leading-5"
+                      />
+                    )}
+                  </div>
                 </Field>
               </div>
 
@@ -792,6 +996,7 @@ function AdminDashboardInner() {
                     onChange={(e) => {
                       setPostsQuery(e.target.value);
                       setPostsPage(1);
+                      syncPostsUrl({ pq: e.target.value, pp: 1 });
                     }}
                     placeholder="Search title, excerpt, slug…"
                     name="posts_search"
@@ -804,6 +1009,7 @@ function AdminDashboardInner() {
                     onChange={(e) => {
                       setPostsStatusFilter(e.target.value as PostStatusFilter);
                       setPostsPage(1);
+                      syncPostsUrl({ ps: e.target.value, pp: 1 });
                     }}
                     name="posts_status_filter"
                     autoComplete="off"
@@ -819,6 +1025,7 @@ function AdminDashboardInner() {
                     onChange={(e) => {
                       setPostsSort(e.target.value as PostSort);
                       setPostsPage(1);
+                      syncPostsUrl({ po: e.target.value, pp: 1 });
                     }}
                     name="posts_sort_order"
                     autoComplete="off"
@@ -835,7 +1042,11 @@ function AdminDashboardInner() {
                       className="ui-btn px-3 py-1.5 min-h-0 text-xs"
                       data-variant="secondary"
                       disabled={postsPagination.safePage <= 1}
-                      onClick={() => setPostsPage((p) => Math.max(1, p - 1))}
+                      onClick={() => {
+                        const next = Math.max(1, postsPagination.safePage - 1);
+                        setPostsPage(next);
+                        syncPostsUrl({ pp: next });
+                      }}
                     >
                       Prev
                     </button>
@@ -847,7 +1058,11 @@ function AdminDashboardInner() {
                       className="ui-btn px-3 py-1.5 min-h-0 text-xs"
                       data-variant="secondary"
                       disabled={postsPagination.safePage >= postsPagination.totalPages}
-                      onClick={() => setPostsPage((p) => Math.min(postsPagination.totalPages, p + 1))}
+                      onClick={() => {
+                        const next = Math.min(postsPagination.totalPages, postsPagination.safePage + 1);
+                        setPostsPage(next);
+                        syncPostsUrl({ pp: next });
+                      }}
                     >
                       Next
                     </button>
@@ -868,11 +1083,15 @@ function AdminDashboardInner() {
                 />
               ) : (
                 <div className="grid gap-4">
-                  {postsPagination.items.map((p) => {
+                  <AnimatePresence initial={false}>
+                    {postsPagination.items.map((p) => {
                     const isPublished = p.publishedAt != null;
                     return (
-                      <div
+                      <m.div
                         key={p._id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
                         className="ui-card grid gap-4 p-5 text-center md:grid-cols-[1fr_auto] md:items-start md:text-left"
                       >
                         <div className="min-w-0 space-y-3">
@@ -911,9 +1130,10 @@ function AdminDashboardInner() {
                               onClick={() => {
                                 setEditingPostId(p._id);
                                 setPostTitle(p.title);
-                                setPostSlug("");
+                                setPostSlug(p.slug);
                                 setPostExcerpt(p.excerpt);
                                 setPostBody(p.body);
+                                setShowPostPreview(false);
                                 window.scrollTo({ top: 0, behavior: "smooth" });
                               }}
                               className="ui-link text-sm"
@@ -963,7 +1183,6 @@ function AdminDashboardInner() {
                               type="button"
                               disabled={deletingPostId === p._id}
                               onClick={async () => {
-                                if (!confirm("Delete this post?")) return;
                                 setDeletingPostId(p._id);
                                 setError(null);
                                 try {
@@ -980,16 +1199,18 @@ function AdminDashboardInner() {
                             </button>
                           </div>
                         </div>
-                      </div>
+                      </m.div>
                     );
                   })}
+                  </AnimatePresence>
                 </div>
               )}
             </div>
           </section>
         </>
       )}
-    </div>
+      </div>
+    </LazyMotion>
   );
 }
 

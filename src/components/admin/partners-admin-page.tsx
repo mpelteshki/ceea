@@ -1,47 +1,30 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery, useConvexAuth } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Suspense, useMemo, useState } from "react";
+import { AnimatePresence, LazyMotion, domAnimation, m } from "framer-motion";
 import { Handshake, SearchX } from "lucide-react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { EmptyState } from "@/components/ui/empty-state";
+import { paginate, readSearchParam, parsePage, parseEnum, AdminPanelFallback } from "@/lib/admin-utils";
+import { ConfirmButton } from "@/components/ui/confirm-button";
 
 type Tier = "lead" | "supporting" | "community";
-type PartnerSort = "tier" | "name" | "newest";
-type TierFilter = "all" | Tier;
+const PARTNER_SORTS = ["tier", "name", "newest"] as const;
+type PartnerSort = typeof PARTNER_SORTS[number];
+const TIER_FILTERS = ["all", "lead", "supporting", "community"] as const;
+type TierFilter = typeof TIER_FILTERS[number];
+type PartnerForm = {
+  name: string;
+  tier: Tier;
+  websiteUrl: string;
+  logoUrl: string;
+};
 
 const PARTNERS_PAGE_SIZE = 10;
-
-function paginate<T>(items: T[], page: number, pageSize: number) {
-  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
-  const safePage = Math.min(Math.max(1, page), totalPages);
-  const start = (safePage - 1) * pageSize;
-  return {
-    items: items.slice(start, start + pageSize),
-    safePage,
-    totalPages,
-    totalItems: items.length,
-  };
-}
-
-function parsePage(raw: string | null): number {
-  const value = Number(raw);
-  return Number.isInteger(value) && value > 0 ? value : 1;
-}
-
-function parseSort(raw: string | null): PartnerSort {
-  if (raw === "tier" || raw === "name" || raw === "newest") return raw;
-  return "tier";
-}
-
-function parseTier(raw: string | null): TierFilter {
-  if (raw === "all" || raw === "lead" || raw === "supporting" || raw === "community") return raw;
-  return "all";
-}
 
 function safeHostname(raw: string): string {
   try {
@@ -51,17 +34,10 @@ function safeHostname(raw: string): string {
   }
 }
 
-export default function PartnersAdminPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const partners = useQuery(api.partners.listAll);
-  const createPartner = useMutation(api.partners.create);
-  const updatePartner = useMutation(api.partners.update);
-  const deletePartner = useMutation(api.partners.remove);
-
-  const [form, setForm] = useState({
+function usePartnersAdminState() {
+  const [form, setForm] = useState<PartnerForm>({
     name: "",
-    tier: "community" as Tier,
+    tier: "community",
     websiteUrl: "",
     logoUrl: "",
   });
@@ -69,17 +45,76 @@ export default function PartnersAdminPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [deletingPartnerId, setDeletingPartnerId] = useState<Id<"partners"> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
-  const [tierFilter, setTierFilter] = useState<TierFilter>(() => parseTier(searchParams.get("tier")));
-  const [sortBy, setSortBy] = useState<PartnerSort>(() => parseSort(searchParams.get("sort")));
-  const [page, setPage] = useState(() => parsePage(searchParams.get("page")));
+  const [searchQuery, setSearchQuery] = useState(() => readSearchParam("q") ?? "");
+  const [tierFilter, setTierFilter] = useState<TierFilter>(() => parseEnum(readSearchParam("tier"), TIER_FILTERS, "all"));
+  const [sortBy, setSortBy] = useState<PartnerSort>(() => parseEnum(readSearchParam("sort"), PARTNER_SORTS, "tier"));
+  const [page, setPage] = useState(() => parsePage(readSearchParam("page")));
+
+  return {
+    form,
+    setForm,
+    editingPartnerId,
+    setEditingPartnerId,
+    isSaving,
+    setIsSaving,
+    deletingPartnerId,
+    setDeletingPartnerId,
+    error,
+    setError,
+    searchQuery,
+    setSearchQuery,
+    tierFilter,
+    setTierFilter,
+    sortBy,
+    setSortBy,
+    page,
+    setPage,
+  };
+}
+
+export default function PartnersAdminPage() {
+  return (
+    <Suspense fallback={<AdminPanelFallback label="Loading partners..." />}>
+      <PartnersAdminPageInner />
+    </Suspense>
+  );
+}
+
+function PartnersAdminPageInner() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const partners = useQuery(api.partners.listAll, isAuthenticated ? {} : "skip");
+  const createPartner = useMutation(api.partners.create);
+  const updatePartner = useMutation(api.partners.update);
+  const deletePartner = useMutation(api.partners.remove);
+
+  const {
+    form,
+    setForm,
+    editingPartnerId,
+    setEditingPartnerId,
+    isSaving,
+    setIsSaving,
+    deletingPartnerId,
+    setDeletingPartnerId,
+    error,
+    setError,
+    searchQuery,
+    setSearchQuery,
+    tierFilter,
+    setTierFilter,
+    sortBy,
+    setSortBy,
+    page,
+    setPage,
+  } = usePartnersAdminState();
 
   const syncListState = (updates: { q?: string; tier?: TierFilter; sort?: PartnerSort; page?: number }) => {
     const nextQuery = updates.q ?? searchQuery;
     const nextTier = updates.tier ?? tierFilter;
     const nextSort = updates.sort ?? sortBy;
     const nextPage = updates.page ?? page;
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams();
 
     if (nextQuery.trim().length > 0) params.set("q", nextQuery);
     else params.delete("q");
@@ -172,11 +207,14 @@ export default function PartnersAdminPage() {
     [filteredPartners, page],
   );
 
+  if (isLoading) return <AdminPanelFallback label="Authenticating…" />;
+
   return (
-    <div className="flex flex-col border-t border-[var(--accents-2)]">
+    <LazyMotion features={domAnimation}>
+      <div className="flex flex-col border-t border-[var(--accents-2)]">
       {error && (
         <div className="ui-site-container mt-4">
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300" role="alert">
             <div className="flex items-center gap-2">
               <span className="font-semibold">Error:</span>
               {error}
@@ -398,7 +436,7 @@ export default function PartnersAdminPage() {
             <div className="grid gap-3">
               <AnimatePresence initial={false}>
                 {pagination.items.map((partner) => (
-                  <motion.div
+                  <m.div
                     key={partner._id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -407,7 +445,7 @@ export default function PartnersAdminPage() {
                   >
                     <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
                       {partner.logoUrl ? (
-                        <div className="relative h-10 w-10 overflow-hidden rounded border border-[var(--accents-2)] bg-white p-1">
+                        <div className="relative h-10 w-10 overflow-hidden rounded border border-[var(--accents-2)] bg-[var(--background)] p-1">
                           <Image
                             src={partner.logoUrl}
                             alt={partner.name}
@@ -458,11 +496,9 @@ export default function PartnersAdminPage() {
                       >
                         Edit
                       </button>
-                      <button
-                        type="button"
-                        disabled={deletingPartnerId === partner._id}
-                        onClick={async () => {
-                          if (!confirm(`Delete ${partner.name}?`)) return;
+                      <ConfirmButton
+                        pending={deletingPartnerId === partner._id}
+                        onConfirm={async () => {
                           setDeletingPartnerId(partner._id);
                           setError(null);
                           try {
@@ -477,19 +513,17 @@ export default function PartnersAdminPage() {
                             setDeletingPartnerId(null);
                           }
                         }}
-                        className="ui-btn py-1.5 px-3 h-auto text-xs bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border-red-200 dark:border-red-900 transition-colors font-bold disabled:opacity-50"
-                      >
-                        {deletingPartnerId === partner._id ? "Deleting…" : "Delete"}
-                      </button>
+                      />
                     </div>
-                  </motion.div>
+                  </m.div>
                 ))}
               </AnimatePresence>
             </div>
           )}
         </div>
       </section>
-    </div>
+      </div>
+    </LazyMotion>
   );
 }
 

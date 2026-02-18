@@ -15,14 +15,14 @@ export async function SiteFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden bg-[var(--brand-teal)] text-white">
+    <footer className="relative overflow-hidden bg-[var(--brand-teal-dark)] text-white">
       <div className="ui-site-container relative z-10 py-9 sm:py-10">
         <h2 className="sr-only">Footer</h2>
 
-        <div className="grid gap-8 md:grid-cols-[1.1fr_1fr_1fr]">
+        <div className="grid gap-8 border-b border-white/15 pb-8 md:grid-cols-[1.1fr_1fr_1fr]">
           <section>
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/20 bg-white/10 text-lg font-bold">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-[var(--brand-teal)] text-lg font-bold shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]">
                 C
               </div>
               <p className="font-brand text-xl tracking-wide">CEEA</p>
@@ -39,7 +39,7 @@ export async function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="inline-flex min-h-9 items-center text-sm text-white/78 transition-colors hover:text-white"
+                    className="ui-footer-link inline-flex min-h-9 items-center text-sm text-white/78 transition-colors hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -48,13 +48,13 @@ export async function SiteFooter() {
             </ul>
           </nav>
 
-          <section>
+          <section className="pt-2 sm:pt-0">
             <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-white/60">Contact</p>
             <ul className="mt-3 space-y-1">
               <li>
                 <a
                   href={SITE_EMAIL_HREF}
-                  className="inline-flex min-h-9 items-center text-sm text-white/78 transition-colors hover:text-white"
+                  className="ui-footer-link inline-flex min-h-9 items-center text-sm text-white/78 transition-colors hover:text-white"
                 >
                   {SITE_CONTACT.email}
                 </a>
@@ -64,7 +64,7 @@ export async function SiteFooter() {
                   href={SITE_CONTACT.instagram.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-9 items-center text-sm text-white/78 transition-colors hover:text-white"
+                  className="ui-footer-link inline-flex min-h-9 items-center text-sm text-white/78 transition-colors hover:text-white"
                 >
                   Instagram
                 </a>
@@ -74,7 +74,7 @@ export async function SiteFooter() {
                   href={SITE_CONTACT.linkedin.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-9 items-center text-sm text-white/78 transition-colors hover:text-white"
+                  className="ui-footer-link inline-flex min-h-9 items-center text-sm text-white/78 transition-colors hover:text-white"
                 >
                   LinkedIn
                 </a>
@@ -84,7 +84,7 @@ export async function SiteFooter() {
         </div>
 
         <div
-          className="mt-6 flex flex-col gap-3 border-t border-white/15 pt-4 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between"
+          className="mt-6 flex flex-col gap-2 pt-4 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between"
           style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         >
           <p>© {currentYear} CEEA Bocconi.</p>

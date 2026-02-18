@@ -6,16 +6,9 @@ import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FadeIn } from "@/components/ui/fade-in";
+import { fmtShortDate } from "@/lib/format-date";
 
 type PostDoc = Doc<"posts">;
-
-function fmtDate(ms: number) {
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-  }).format(new Date(ms));
-}
 
 export async function NewsletterList() {
   if (!hasConvex) {
@@ -48,30 +41,23 @@ export async function NewsletterList() {
           <FadeIn key={post._id} delay={Math.min(idx * 0.04, 0.2)}>
             <Link
               href={`/newsletter/${post.slug}`}
-              className={`group block ui-card ui-hover-lift overflow-hidden bg-card text-center transition-colors hover:border-ring sm:text-left ${isFeatured ? "sm:col-span-2 lg:col-span-2" : ""}`}
+              className={`group flex flex-col ui-card overflow-hidden bg-card text-center transition-colors hover:bg-[var(--accents-1)] sm:text-left ${isFeatured ? "sm:col-span-2 lg:col-span-2" : ""}`}
             >
-              <div className="h-1 bg-primary" />
-
-              <div className={`p-6 ${isFeatured ? "sm:p-8" : ""}`}>
-                <div className="mb-4 flex items-center justify-center gap-3 sm:justify-between">
+              <div className="flex flex-1 flex-col p-6">
+                <div className="mb-4 flex items-center justify-center gap-3 sm:justify-start">
                   <span className="ui-tag border-border text-muted-foreground">
-                    {post.publishedAt ? fmtDate(post.publishedAt) : "Draft"}
+                    {post.publishedAt ? fmtShortDate(post.publishedAt) : "Draft"}
                   </span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Dispatch</span>
                 </div>
 
-                <h3
-                  className={`font-display leading-snug text-foreground transition-colors duration-200 group-hover:text-primary ${isFeatured ? "text-2xl sm:text-3xl" : "text-lg"}`}
-                >
+                <h3 className="font-display text-lg leading-snug text-foreground">
                   {title}
                 </h3>
 
-                <div className="ui-divider my-4 max-w-[60px]" />
+                <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{excerpt}</p>
 
-                <p className={`line-clamp-3 text-sm leading-7 text-muted-foreground ${isFeatured ? "max-w-2xl" : ""}`}>{excerpt}</p>
-
-                <div className="mt-6 inline-flex items-center gap-2 text-xs font-medium text-primary">
-                  <span className="group-hover:underline">Read</span>
+                <div className="mt-auto pt-6 inline-flex items-center gap-2 text-xs font-medium text-primary">
+                  Read
                   <ArrowRight className="ui-icon-shift h-3 w-3" />
                 </div>
               </div>

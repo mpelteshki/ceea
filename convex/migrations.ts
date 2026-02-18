@@ -23,7 +23,6 @@ export const flattenLegacyLocalization = internalMutation({
     let changedPosts = 0;
     let changedProjects = 0;
     let changedTeam = 0;
-    let changedGallery = 0;
 
     const events = await ctx.db.query("events").collect();
     for (const event of events) {
@@ -81,22 +80,13 @@ export const flattenLegacyLocalization = internalMutation({
       }
     }
 
-    const gallery = await ctx.db.query("gallery").collect();
-    for (const item of gallery) {
-      const legacy = item as Record<string, unknown>;
-      const nextCaption = pickEnglishText(legacy.caption);
-      if (nextCaption && nextCaption !== legacy.caption) {
-        await ctx.db.patch(item._id, { caption: nextCaption });
-        changedGallery += 1;
-      }
-    }
+    // gallery table removed — skip
 
     return {
       changedEvents,
       changedPosts,
       changedProjects,
       changedTeam,
-      changedGallery,
     };
   },
 });

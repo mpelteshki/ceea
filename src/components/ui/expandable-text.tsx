@@ -30,7 +30,7 @@ export function ExpandableText({
         <div className={cn("space-y-2", className)}>
             <div
                 className={cn(
-                    "text-[var(--accents-5)] leading-relaxed transition-[max-height] duration-300",
+                    "text-muted-foreground leading-relaxed transition-[max-height] duration-300",
                     !isExpanded && "line-clamp-3"
                 )}
                 style={{
@@ -44,6 +44,7 @@ export function ExpandableText({
             </div>
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
+                aria-expanded={isExpanded}
                 className="inline-flex items-center gap-1 text-sm font-medium text-[var(--foreground)] hover:opacity-70 transition-opacity"
             >
                 {isExpanded ? (
