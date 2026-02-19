@@ -4,9 +4,9 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { FadeIn } from "@/components/ui/fade-in";
 import { SectionHeader } from "@/components/site/section-header";
-import { standaloneDivisions } from "@/lib/divisions-data";
+import { assembliesGroup } from "@/lib/divisions-data";
 
-export function Divisions() {
+export function Assemblies() {
   return (
     <section className="relative overflow-hidden">
       <div
@@ -17,19 +17,24 @@ export function Divisions() {
       <div className="ui-site-container relative py-12 sm:py-16">
         <FadeIn>
           <SectionHeader
-            title="Our divisions"
-            accent="var(--brand-teal)"
+            title="Assemblies"
+            accent="var(--brand-caramel)"
             className="mb-6 sm:mb-8"
           />
         </FadeIn>
 
         <FadeIn>
-          <div className="grid grid-cols-1 gap-px bg-[var(--border)] sm:grid-cols-2 lg:grid-cols-3">
-            {standaloneDivisions.map((d) => (
-              <div key={d.name} className="bg-[var(--background)]">
+          <div className="grid grid-cols-1 divide-y divide-[var(--border)] sm:grid-cols-3 sm:divide-y-0">
+            {assembliesGroup.map((d, i) => (
+              <div key={d.slug}>
                 <Link
                   href={`/divisions/${d.slug}`}
-                  className="group flex flex-col items-center gap-5 py-10 text-center transition-colors duration-200 sm:py-12 sm:px-6"
+                  className={[
+                    "group flex flex-col items-center gap-5 py-10 text-center transition-colors duration-200 sm:py-12 sm:px-6",
+                    i < assembliesGroup.length - 1
+                      ? "sm:border-r sm:border-[var(--border)]"
+                      : "",
+                  ].join(" ")}
                 >
                   <div
                     className="flex h-12 w-12 items-center justify-center rounded-2xl"
@@ -40,9 +45,9 @@ export function Divisions() {
                   >
                     <d.icon className="h-6 w-6" strokeWidth={1.75} />
                   </div>
-                  <h3 className="font-display text-lg font-semibold text-[var(--foreground)] sm:text-xl">
+                  <h4 className="font-display text-lg font-semibold text-[var(--foreground)] sm:text-xl">
                     {d.name}
-                  </h3>
+                  </h4>
                   <p className="text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
                     {d.description}
                   </p>

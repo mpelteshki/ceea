@@ -20,7 +20,6 @@ export const flattenLegacyLocalization = internalMutation({
   args: {},
   handler: async (ctx) => {
     let changedEvents = 0;
-    let changedPosts = 0;
     let changedProjects = 0;
     let changedTeam = 0;
 
@@ -37,22 +36,6 @@ export const flattenLegacyLocalization = internalMutation({
       if (Object.keys(patch).length > 0) {
         await ctx.db.patch(event._id, patch);
         changedEvents += 1;
-      }
-    }
-
-    const posts = await ctx.db.query("posts").collect();
-    for (const post of posts) {
-      const legacy = post as Record<string, unknown>;
-      const nextTitle = pickEnglishText(legacy.title);
-      const nextExcerpt = pickEnglishText(legacy.excerpt);
-      const patch: Record<string, unknown> = {};
-      if (nextTitle && nextTitle !== legacy.title) patch.title = nextTitle;
-      if (nextExcerpt && nextExcerpt !== legacy.excerpt) patch.excerpt = nextExcerpt;
-      if ("title_it" in legacy) patch.title_it = undefined;
-      if ("excerpt_it" in legacy) patch.excerpt_it = undefined;
-      if (Object.keys(patch).length > 0) {
-        await ctx.db.patch(post._id, patch);
-        changedPosts += 1;
       }
     }
 
@@ -84,7 +67,6 @@ export const flattenLegacyLocalization = internalMutation({
 
     return {
       changedEvents,
-      changedPosts,
       changedProjects,
       changedTeam,
     };

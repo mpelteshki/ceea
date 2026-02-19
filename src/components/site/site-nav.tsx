@@ -26,7 +26,7 @@ function NavLink({
       data-active={isActive ? "true" : "false"}
       className={cn(
         "ui-nav-link group/nav px-3 py-5 text-[13px] font-medium tracking-wide transition-colors duration-200",
-        isActive ? "text-[var(--brand-teal)]" : "text-[var(--accents-5)] hover:text-[var(--foreground)]",
+        isActive ? "text-[var(--primary)]" : "text-[var(--accents-5)] hover:text-[var(--foreground)]",
       )}
     >
       <span
@@ -169,19 +169,15 @@ export function SiteNav() {
       className={cn(
         "fixed top-0 z-40 w-full transition-all duration-300",
         isScrolled
-          ? "bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--accents-2)]"
+          ? "bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--border)]"
           : "bg-transparent"
       )}
     >
       <div>
         <div className="mx-auto flex h-16 max-w-[80rem] items-center justify-between px-5 sm:px-6">
-          <Link href="/" className="group inline-flex items-center gap-3">
-            <div className="relative h-9 w-9 rounded-lg bg-[var(--brand-teal)] text-white flex items-center justify-center font-bold text-lg shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
-              C
-            </div>
-            <span className="font-brand text-[1.35rem] text-[var(--foreground)] transition-colors duration-200 group-hover:text-[var(--brand-teal)]">
-              CEEA
-            </span>
+          <Link href="/" aria-label="CEEA home">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="CEEA" className="h-11 w-auto" />
           </Link>
 
           <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
@@ -230,11 +226,9 @@ export function SiteNav() {
           >
             <div className="px-5 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-[var(--brand-teal)] text-white flex items-center justify-center font-bold text-lg shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
-                    C
-                  </div>
-                  <div className="font-brand text-[1.35rem] text-[var(--foreground)]">CEEA</div>
+                <div>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logo.svg" alt="CEEA" className="h-11 w-auto" />
                 </div>
                 <button
                   type="button"
@@ -257,7 +251,7 @@ export function SiteNav() {
                       className={cn(
                         "block rounded-lg px-3.5 py-3 text-left font-display text-lg transition-[background-color,color] duration-200",
                         isActive
-                          ? "text-[var(--brand-teal)] bg-[color-mix(in_oklch,var(--brand-teal)_8%,var(--background))]"
+                          ? "text-[var(--primary)] bg-[color-mix(in_oklch,var(--primary)_8%,var(--background))]"
                           : "text-[var(--foreground)] hover:bg-[var(--accents-1)]",
                       )}
                       onClick={() => setMenuOpen(false)}

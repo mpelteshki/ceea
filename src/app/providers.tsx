@@ -7,11 +7,14 @@ import { ConvexReactClient } from "convex/react";
 import { useMemo } from "react";
 import { hasClerk, hasConvex } from "@/lib/public-env";
 import { ThemeProvider } from "next-themes";
+import { LazyMotion, domAnimation } from "framer-motion";
 
 function Theme({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      {children}
+      <LazyMotion features={domAnimation} strict>
+        {children}
+      </LazyMotion>
     </ThemeProvider>
   );
 }

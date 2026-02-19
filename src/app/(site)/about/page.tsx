@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { FadeIn, FadeInStagger, StaggerItem } from "@/components/ui/fade-in";
 import { PageHeader } from "@/components/site/page-header";
-import { Palette, Scale, TrendingUp, Users } from "lucide-react";
+import { Palette, Scale, TrendingUp, Users, Briefcase, Newspaper } from "lucide-react";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 
 const divisionCards = [
+  // ── Assemblies sub-divisions ─────────────────────────────────────────────
   {
     icon: Palette,
     accent: "var(--brand-caramel)",
     name: "Culture",
+    group: "Assemblies",
     description:
       "Promotes the diverse cultural palette of the region through themed events, traditions, food, music, and collaborations, celebrating diversity and creating cultural osmosis on campus.",
   },
@@ -16,22 +18,42 @@ const divisionCards = [
     icon: Scale,
     accent: "var(--brand-crimson)",
     name: "Diplomacy & Politics",
+    group: "Assemblies",
     description:
       "Organizes debates, discussions, panels, and speaker events on international relations, policy, and regional affairs, encouraging informed debate and engagement with current issues.",
   },
   {
+    icon: Users,
+    accent: "var(--brand-teal-soft)",
+    name: "Community",
+    group: "Assemblies",
+    description:
+      "Plans and delivers social events that bring people together, both members and guests, strengthen the community, and create a welcoming space for networking and friendships.",
+  },
+  // ── Standalone divisions ──────────────────────────────────────────────────
+  {
     icon: TrendingUp,
     accent: "var(--brand-teal)",
-    name: "Fintech",
+    name: "Projects",
+    group: undefined,
     description:
       "Curates events and learning opportunities focused on fintech and innovation in the region, connecting students with industry trends, professionals, and practical insights in finance and tech.",
   },
   {
-    icon: Users,
-    accent: "var(--brand-teal-soft)",
-    name: "Social",
+    icon: Briefcase,
+    accent: "var(--brand-crimson)",
+    name: "Career Services",
+    group: undefined,
     description:
-      "Plans and delivers social events that bring people together, both members and guests, strengthen the community, and create a welcoming space for networking and friendships.",
+      "Connects members with career opportunities, internships, and professional development across Central & Eastern Europe and beyond.",
+  },
+  {
+    icon: Newspaper,
+    accent: "var(--brand-caramel)",
+    name: "Newsletter",
+    group: undefined,
+    description:
+      "Curates stories, insights, and updates from Central & Eastern Europe — published regularly for students by students.",
   },
 ] as const;
 
@@ -99,7 +121,7 @@ export default async function AboutPage() {
             <div className="mb-6">
               <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--foreground)]">Our Divisions</h2>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--muted-foreground)]">
-                Four verticals, each owning its own programming, calendar, and partnerships.
+                Six verticals across two tracks — Assemblies (Culture, Diplomacy & Politics, Community) and standalone divisions (Projects, Career Services, Newsletter) — each owning its own programming, calendar, and partnerships.
               </p>
             </div>
           </FadeIn>
@@ -119,7 +141,10 @@ export default async function AboutPage() {
                     <span className="font-mono text-xs tabular-nums text-muted-foreground">0{i + 1}</span>
                   </div>
                   <h3 className="font-display text-2xl text-foreground">
-                    {division.name} Division
+                    {division.name}
+                    {division.group && (
+                      <span className="ml-2 text-sm font-normal text-muted-foreground">{division.group}</span>
+                    )}
                   </h3>
                   <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">{division.description}</p>
                 </div>

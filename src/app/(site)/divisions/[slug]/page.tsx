@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -11,7 +11,7 @@ import { getConvexServerClient } from "@/lib/convex-server";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 import { api } from "../../../../../convex/_generated/api";
 import type { Doc } from "../../../../../convex/_generated/dataModel";
-import { divisions } from "@/lib/divisions-data";
+import { divisions, assembliesGroup } from "@/lib/divisions-data";
 
 type ProjectDoc = Doc<"projects">;
 
@@ -88,23 +88,67 @@ export default async function DivisionPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Projects */}
-      <div className="ui-site-container py-8 sm:py-16">
-        {projects.length === 0 ? (
-          <EmptyState
-            title="No projects yet."
-            description={`Check back later for ${division.name.toLowerCase()} projects and initiatives.`}
-          />
-        ) : (
-          <FadeInStagger className="space-y-20">
-            {projects.map((project, idx) => (
-              <FadeIn key={project._id}>
-                <ProjectCard project={project} index={idx} />
+      {/* Assemblies: show three sub-divisions */}
+      {division.slug === "assemblies" && (
+        <div className="ui-site-container py-8 sm:py-16">
+          <FadeIn>
+            <p className="mb-8 max-w-2xl text-sm font-medium uppercase tracking-widest text-[var(--muted-foreground)]">
+              Sub-divisions
+            </p>
+          </FadeIn>
+          <FadeInStagger className="grid gap-px bg-[var(--border)] sm:grid-cols-3">
+            {assembliesGroup.map((sub) => (
+              <FadeIn key={sub.slug}>
+                <div className="bg-[var(--background)] p-8">
+                  <div
+                    className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl"
+                    style={{
+                      color: sub.accent,
+                      background: `color-mix(in oklch, ${sub.accent} 10%, var(--background))`,
+                    }}
+                  >
+                    <sub.icon className="h-5 w-5" strokeWidth={1.75} />
+                  </div>
+                  <h3 className="font-display mb-2 text-lg font-semibold text-[var(--foreground)]">
+                    {sub.name}
+                  </h3>
+                  <p className="mb-6 text-sm leading-relaxed text-[var(--muted-foreground)]">
+                    {sub.description}
+                  </p>
+                  <Link
+                    href={`/divisions/${sub.slug}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide transition-colors duration-200"
+                    style={{ color: sub.accent }}
+                  >
+                    Explore
+                    <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
               </FadeIn>
             ))}
           </FadeInStagger>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Projects */}
+      {division.slug !== "assemblies" && (
+        <div className="ui-site-container py-8 sm:py-16">
+          {projects.length === 0 ? (
+            <EmptyState
+              title="No projects yet."
+              description={`Check back later for ${division.name.toLowerCase()} projects and initiatives.`}
+            />
+          ) : (
+            <FadeInStagger className="space-y-20">
+              {projects.map((project, idx) => (
+                <FadeIn key={project._id}>
+                  <ProjectCard project={project} index={idx} />
+                </FadeIn>
+              ))}
+            </FadeInStagger>
+          )}
+        </div>
+      )}
     </>
   );
 }

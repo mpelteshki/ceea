@@ -19,9 +19,8 @@ export async function Hero() {
           {/* Body + CTA */}
           <FadeIn delay={0.1} direction="up" distance={16}>
             <div className="mt-6 flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-between">
-              <p className="max-w-lg text-base leading-relaxed text-[var(--muted-foreground)]">
-                A student association for those from Central and Eastern Europe
-                studying at Bocconi — connecting culture, policy, and community.
+              <p className="max-w-lg text-lg tracking-[-0.01em] leading-relaxed text-[var(--muted-foreground)] sm:text-xl">
+                From the heart of Europe to the heart of Bocconi.
               </p>
               <div className="flex shrink-0 flex-wrap justify-center gap-3 sm:justify-start">
                 <Link href="/join-us" className="ui-btn group">

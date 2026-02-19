@@ -21,7 +21,7 @@ export default function HomePage() {
         <Hero />
       </HomeScrollSection>
 
-      <HomeScrollSection tone="warm">
+      <HomeScrollSection tone="soft">
         <Divisions />
       </HomeScrollSection>
 

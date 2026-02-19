@@ -7,54 +7,24 @@ import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 
 import { FadeIn } from "@/components/ui/fade-in";
-import { hasConvex } from "@/lib/public-env";
-import { getConvexServerClient } from "@/lib/convex-server";
-import { api } from "../../../convex/_generated/api";
-import type { Doc } from "../../../convex/_generated/dataModel";
+import { getPostBySlug } from "@/lib/posts";
 import { absoluteUrl, SITE_NAME, SITE_URL } from "@/lib/seo";
 import { fmtLongDate } from "@/lib/format-date";
 
-type PostDoc = Doc<"posts">;
-
 export async function NewsletterArticle({ slug }: { slug: string }) {
-  if (!hasConvex) {
-    return (
-      <div className="mx-auto max-w-3xl space-y-6 px-5 py-16 text-center sm:px-6">
-        <div className="rounded-2xl border border-dashed border-[var(--accents-3)] p-8 text-center text-sm text-[var(--accents-5)]">
-          Backend not configured.
-        </div>
-      </div>
-    );
-  }
+  const post = getPostBySlug(slug);
 
-  const convex = getConvexServerClient();
-  if (!convex) {
-    return (
-      <div className="mx-auto max-w-3xl space-y-6 px-5 py-16 text-center sm:px-6">
-        <p className="text-sm text-[var(--accents-5)]">Not found.</p>
-        <Link href="/newsletter" className="ui-btn">
-          Back to newsletter
-        </Link>
-      </div>
-    );
-  }
-
-  const post = (await convex.query(api.posts.getBySlug, { slug })) as PostDoc | null;
-
-  if (!post || post.publishedAt == null) {
+  if (!post) {
     notFound();
   }
 
-  const title = String(post.title || "");
-  const excerpt = String(post.excerpt || "");
-  const body = String(post.body || "");
   const articleUrl = absoluteUrl(`/newsletter/${post.slug}`);
   const publishedAtIso = new Date(post.publishedAt).toISOString();
   const articleStructuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    headline: title,
-    description: excerpt,
+    headline: post.title,
+    description: post.excerpt,
     datePublished: publishedAtIso,
     dateModified: publishedAtIso,
     url: articleUrl,
@@ -93,7 +63,7 @@ export async function NewsletterArticle({ slug }: { slug: string }) {
             </Link>
           </FadeIn>
           <FadeIn duration={0.7} delay={0.1}>
-            <h1 className="text-balance font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-[var(--foreground)]">{title}</h1>
+            <h1 className="text-balance font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-[var(--foreground)]">{post.title}</h1>
           </FadeIn>
           <FadeIn delay={0.25} direction="up" distance={20}>
             <div className="mt-8 border-t border-[var(--border)]/50 pt-8">
@@ -102,9 +72,9 @@ export async function NewsletterArticle({ slug }: { slug: string }) {
                   {fmtLongDate(post.publishedAt)}
                 </span>
               </div>
-              {excerpt && (
+              {post.excerpt && (
                 <p className="mt-4 max-w-2xl text-base leading-relaxed text-[var(--muted-foreground)] sm:text-[1.05rem]">
-                  {excerpt}
+                  {post.excerpt}
                 </p>
               )}
             </div>
@@ -132,7 +102,7 @@ export async function NewsletterArticle({ slug }: { slug: string }) {
               },
             }}
           >
-            {body}
+            {post.body}
           </ReactMarkdown>
         </div>
       </div>

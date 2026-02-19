@@ -1,7 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { LazyMotion, domAnimation, m, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 
 /* ------------------------------------------------------------------ */
 /*  Direction → initial offset map                                     */
@@ -84,21 +83,19 @@ export function FadeIn({
   const Component = (m as any)[Tag] as typeof m.div;
 
   return (
-    <LazyMotion features={domAnimation}>
-      <Component
-        className={cn("will-change-[transform,opacity]", className)}
-        initial={initial}
-        whileInView={visible}
-        viewport={{ once, amount }}
-        transition={{
-          duration: reduceMotion ? 0 : duration,
-          delay: reduceMotion ? 0 : delay,
-          ease: [0.22, 1, 0.36, 1],
-        }}
-      >
-        {children}
-      </Component>
-    </LazyMotion>
+    <Component
+      className={className}
+      initial={initial}
+      whileInView={visible}
+      viewport={{ once, amount }}
+      transition={{
+        duration: reduceMotion ? 0 : duration,
+        delay: reduceMotion ? 0 : delay,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+    >
+      {children}
+    </Component>
   );
 }
 
@@ -123,20 +120,18 @@ export function FadeInStagger({
   const stagger = reduceMotion ? 0 : faster ? 0.06 : 0.1;
 
   return (
-    <LazyMotion features={domAnimation}>
-      <m.div
-        className={className}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once, amount }}
-        variants={{
-          hidden: {},
-          visible: { transition: { staggerChildren: stagger } },
-        }}
-      >
-        {children}
-      </m.div>
-    </LazyMotion>
+    <m.div
+      className={className}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once, amount }}
+      variants={{
+        hidden: {},
+        visible: { transition: { staggerChildren: stagger } },
+      }}
+    >
+      {children}
+    </m.div>
   );
 }
 
@@ -168,7 +163,7 @@ export function StaggerItem({
 
   return (
     <Component
-      className={cn("will-change-[transform,opacity]", className)}
+      className={className}
       variants={{
         hidden: {
           opacity: 0,

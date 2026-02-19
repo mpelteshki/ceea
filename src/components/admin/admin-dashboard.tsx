@@ -3,7 +3,7 @@
 import { Suspense, useMemo, useState } from "react";
 import { useMutation, useQuery, useConvexAuth } from "convex/react";
 import { AnimatePresence, LazyMotion, domAnimation, m } from "framer-motion";
-import { Calendar, FileText, SearchX } from "lucide-react";
+import { Calendar, SearchX } from "lucide-react";
 
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
@@ -16,17 +16,11 @@ type Kind = "flagship" | "career" | "culture" | "community";
 const KINDS = ["flagship", "career", "culture", "community"] as const;
 const EVENT_KINDS_WITH_ALL = ["all", ...KINDS] as const;
 const EVENT_SORTS = ["soonest", "latest"] as const;
-const POST_SORTS = ["newest", "oldest", "title"] as const;
-const POST_STATUS_FILTERS = ["all", "published", "draft"] as const;
 
 type EventDoc = Doc<"events">;
-type PostDoc = Doc<"posts">;
 type EventSort = typeof EVENT_SORTS[number];
-type PostSort = typeof POST_SORTS[number];
-type PostStatusFilter = typeof POST_STATUS_FILTERS[number];
 
 const EVENTS_PAGE_SIZE = 8;
-const POSTS_PAGE_SIZE = 8;
 
 function toDatetimeLocal(ms: number) {
   const date = new Date(ms);
@@ -36,10 +30,7 @@ function toDatetimeLocal(ms: number) {
 
 function useAdminDashboardState() {
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
-  const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [deletingEventId, setDeletingEventId] = useState<Id<"events"> | null>(null);
-  const [deletingPostId, setDeletingPostId] = useState<Id<"posts"> | null>(null);
-  const [publishingPostId, setPublishingPostId] = useState<Id<"posts"> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
@@ -53,14 +44,6 @@ function useAdminDashboardState() {
   const [moreInfoUrl, setMoreInfoUrl] = useState("");
   const [editingEventId, setEditingEventId] = useState<Id<"events"> | null>(null);
 
-  const [postTitle, setPostTitle] = useState("");
-  const [postSlug, setPostSlug] = useState("");
-  const [postExcerpt, setPostExcerpt] = useState("");
-  const [postBody, setPostBody] = useState(
-    `# Title\n\nWrite in **Markdown**.\n\n- Keep it concrete\n- Add links\n`,
-  );
-  const [editingPostId, setEditingPostId] = useState<Id<"posts"> | null>(null);
-  const [showPostPreview, setShowPostPreview] = useState(false);
   const [eventsQuery, setEventsQuery] = useState(() => readSearchParam("eq") ?? "");
   const [eventsKindFilter, setEventsKindFilter] = useState<typeof EVENT_KINDS_WITH_ALL[number]>(() =>
     parseEnum(readSearchParam("ek"), EVENT_KINDS_WITH_ALL, "all"),
@@ -69,26 +52,12 @@ function useAdminDashboardState() {
     parseEnum(readSearchParam("es"), EVENT_SORTS, "soonest"),
   );
   const [eventsPage, setEventsPage] = useState(() => parsePage(readSearchParam("ep")));
-  const [postsQuery, setPostsQuery] = useState(() => readSearchParam("pq") ?? "");
-  const [postsStatusFilter, setPostsStatusFilter] = useState<PostStatusFilter>(() =>
-    parseEnum(readSearchParam("ps"), POST_STATUS_FILTERS, "all"),
-  );
-  const [postsSort, setPostsSort] = useState<PostSort>(() =>
-    parseEnum(readSearchParam("po"), POST_SORTS, "newest"),
-  );
-  const [postsPage, setPostsPage] = useState(() => parsePage(readSearchParam("pp")));
 
   return {
     isCreatingEvent,
     setIsCreatingEvent,
-    isCreatingPost,
-    setIsCreatingPost,
     deletingEventId,
     setDeletingEventId,
-    deletingPostId,
-    setDeletingPostId,
-    publishingPostId,
-    setPublishingPostId,
     error,
     setError,
     title,
@@ -107,16 +76,6 @@ function useAdminDashboardState() {
     setMoreInfoUrl,
     editingEventId,
     setEditingEventId,
-    postTitle,
-    setPostTitle,
-    postSlug,
-    setPostSlug,
-    postExcerpt,
-    setPostExcerpt,
-    postBody,
-    setPostBody,
-    editingPostId,
-    setEditingPostId,
     eventsQuery,
     setEventsQuery,
     eventsKindFilter,
@@ -125,24 +84,9 @@ function useAdminDashboardState() {
     setEventsSort,
     eventsPage,
     setEventsPage,
-    postsQuery,
-    setPostsQuery,
-    postsStatusFilter,
-    setPostsStatusFilter,
-    postsSort,
-    setPostsSort,
-    postsPage,
-    setPostsPage,
-    showPostPreview,
-    setShowPostPreview,
   };
 }
 
-function readDashboardTab(): "events" | "posts" {
-  if (typeof window === "undefined") return "events";
-  const raw = new URLSearchParams(window.location.search).get("tab");
-  return raw === "newsletter" ? "posts" : "events";
-}
 
 export function AdminDashboard() {
   if (!hasConvex) {
@@ -164,7 +108,6 @@ export function AdminDashboard() {
 
 function AdminDashboardInner() {
   const router = useRouter();
-  const [tab, setTab] = useState<"events" | "posts">(() => readDashboardTab());
   const { isAuthenticated, isLoading } = useConvexAuth();
 
   const events = useQuery(api.events.listAll, isAuthenticated ? {} : "skip") as EventDoc[] | undefined;
@@ -176,23 +119,11 @@ function AdminDashboardInner() {
   const projects = useQuery(api.projects.get, isAuthenticated ? {} : "skip");
   const partners = useQuery(api.partners.listAll, isAuthenticated ? {} : "skip");
 
-  const posts = useQuery(api.posts.listAll, isAuthenticated ? {} : "skip") as PostDoc[] | undefined;
-  const createDraft = useMutation(api.posts.createDraft);
-  const updateDraft = useMutation(api.posts.updateDraft);
-  const publish = useMutation(api.posts.publish);
-  const unpublish = useMutation(api.posts.unpublish);
-  const removePost = useMutation(api.posts.remove);
   const {
     isCreatingEvent,
     setIsCreatingEvent,
-    isCreatingPost,
-    setIsCreatingPost,
     deletingEventId,
     setDeletingEventId,
-    deletingPostId,
-    setDeletingPostId,
-    publishingPostId,
-    setPublishingPostId,
     error,
     setError,
     title,
@@ -211,16 +142,6 @@ function AdminDashboardInner() {
     setMoreInfoUrl,
     editingEventId,
     setEditingEventId,
-    postTitle,
-    setPostTitle,
-    postSlug,
-    setPostSlug,
-    postExcerpt,
-    setPostExcerpt,
-    postBody,
-    setPostBody,
-    editingPostId,
-    setEditingPostId,
     eventsQuery,
     setEventsQuery,
     eventsKindFilter,
@@ -229,16 +150,6 @@ function AdminDashboardInner() {
     setEventsSort,
     eventsPage,
     setEventsPage,
-    postsQuery,
-    setPostsQuery,
-    postsStatusFilter,
-    setPostsStatusFilter,
-    postsSort,
-    setPostsSort,
-    postsPage,
-    setPostsPage,
-    showPostPreview,
-    setShowPostPreview,
   } = useAdminDashboardState();
 
   const syncEventsUrl = (updates: { eq?: string; ek?: string; es?: string; ep?: number }) => {
@@ -251,15 +162,6 @@ function AdminDashboardInner() {
     router.replace(qs ? `/admin?${qs}` : "/admin", { scroll: false });
   };
 
-  const syncPostsUrl = (updates: { pq?: string; ps?: string; po?: string; pp?: number }) => {
-    const params = new URLSearchParams(window.location.search);
-    if ("pq" in updates) { if (updates.pq) params.set("pq", updates.pq); else params.delete("pq"); }
-    if ("ps" in updates) { if (updates.ps && updates.ps !== "all") params.set("ps", updates.ps); else params.delete("ps"); }
-    if ("po" in updates) { if (updates.po && updates.po !== "newest") params.set("po", updates.po); else params.delete("po"); }
-    if ("pp" in updates) { if (updates.pp && updates.pp > 1) params.set("pp", String(updates.pp)); else params.delete("pp"); }
-    const qs = params.toString();
-    router.replace(qs ? `/admin?${qs}` : "/admin", { scroll: false });
-  };
 
   const canSubmit = useMemo(() => {
     return (
@@ -269,13 +171,6 @@ function AdminDashboardInner() {
     );
   }, [title, summary, location]);
 
-  const canSubmitPost = useMemo(() => {
-    return (
-      postTitle.trim().length >= 3 &&
-      postExcerpt.trim().length >= 10 &&
-      postBody.trim().length >= 10
-    );
-  }, [postTitle, postExcerpt, postBody]);
 
   const filteredEvents = useMemo(() => {
     if (!events) return [] as EventDoc[];
@@ -294,43 +189,10 @@ function AdminDashboardInner() {
     return list;
   }, [events, eventsKindFilter, eventsQuery, eventsSort]);
 
-  const filteredPosts = useMemo(() => {
-    if (!posts) return [] as PostDoc[];
-    const q = postsQuery.trim().toLowerCase();
-    const list = posts.filter((post) => {
-      const isPublished = post.publishedAt != null;
-      const matchesStatus = postsStatusFilter === "all"
-        ? true
-        : postsStatusFilter === "published"
-          ? isPublished
-          : !isPublished;
-      const matchesQuery = q.length === 0
-        ? true
-        : [post.title, post.excerpt, post.slug]
-          .filter(Boolean)
-          .some((value) => String(value).toLowerCase().includes(q));
-      return matchesStatus && matchesQuery;
-    });
-
-    if (postsSort === "title") {
-      list.sort((a, b) => a.title.localeCompare(b.title));
-    } else {
-      list.sort((a, b) => {
-        const aDate = a.createdAt;
-        const bDate = b.createdAt;
-        return postsSort === "newest" ? bDate - aDate : aDate - bDate;
-      });
-    }
-    return list;
-  }, [posts, postsQuery, postsSort, postsStatusFilter]);
 
   const eventsPagination = useMemo(
     () => paginate(filteredEvents, eventsPage, EVENTS_PAGE_SIZE),
     [filteredEvents, eventsPage],
-  );
-  const postsPagination = useMemo(
-    () => paginate(filteredPosts, postsPage, POSTS_PAGE_SIZE),
-    [filteredPosts, postsPage],
   );
 
   if (isLoading) return <AdminPanelFallback label="Authenticating…" />;
@@ -369,12 +231,9 @@ function AdminDashboardInner() {
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[
                 { label: "Events", value: events?.length ?? "…" },
-                { label: "Posts", value: posts?.length ?? "…" },
-                { label: "Published", value: posts?.filter(p => p.publishedAt).length ?? "…" },
-                { label: "Drafts", value: posts?.filter(p => !p.publishedAt).length ?? "…" },
                 { label: "Team", value: team?.length ?? "…" },
                 { label: "Projects", value: projects?.length ?? "…" },
                 { label: "Partners", value: partners?.length ?? "…" },
@@ -386,49 +245,11 @@ function AdminDashboardInner() {
               ))}
             </div>
 
-            <div className="mx-auto flex w-fit gap-1 rounded-lg bg-[var(--secondary)] p-1 sm:mx-0">
-              <button
-                type="button"
-                onClick={() => {
-                  setTab("events");
-                  const params = new URLSearchParams(window.location.search);
-                  params.delete("tab");
-                  const qs = params.toString();
-                  router.replace(qs ? `/admin?${qs}` : "/admin", { scroll: false });
-                }}
-                className={[
-                  "px-4 py-2 text-sm font-medium transition-colors rounded-md",
-                  tab === "events"
-                    ? "bg-[var(--background)] text-[var(--foreground)] shadow-sm"
-                    : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
-                ].join(" ")}
-              >
-                Events
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setTab("posts");
-                  const params = new URLSearchParams(window.location.search);
-                  params.set("tab", "newsletter");
-                  router.replace(`/admin?${params.toString()}`, { scroll: false });
-                }}
-                className={[
-                  "px-4 py-2 text-sm font-medium transition-colors rounded-md",
-                  tab === "posts"
-                    ? "bg-[var(--background)] text-[var(--foreground)] shadow-sm"
-                    : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
-                ].join(" ")}
-              >
-                Newsletter
-              </button>
-            </div>
+
           </div>
         </div>
       </section>
 
-      {tab === "events" ? (
-        <>
           <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--accents-1)]/30 py-12 sm:py-16">
             <div className="ui-site-container relative">
               <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left mb-8">
@@ -787,428 +608,6 @@ function AdminDashboardInner() {
               )}
             </div>
           </section>
-        </>
-      ) : (
-        <>
-          <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--accents-1)]/30 py-12 sm:py-16">
-            <div className="ui-site-container relative">
-              <div className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:items-end sm:text-left mb-8">
-                <div>
-                  <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">
-                    {editingPostId ? "Edit post" : "Create post"}
-                  </h2>
-                  <div className="mt-1 text-sm text-[var(--accents-5)]">
-                    Renders publicly at <span className="font-mono text-[var(--foreground)]">/newsletter</span>.
-                  </div>
-                </div>
-                {editingPostId ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditingPostId(null);
-                      setPostTitle("");
-                      setPostSlug("");
-                      setPostExcerpt("");
-                      setPostBody(
-                        `# Title\n\nWrite in **Markdown**.\n\n- Keep it concrete\n- Add links\n`,
-                      );
-                    }}
-                    className="ui-btn"
-                    data-variant="secondary"
-                  >
-                    New draft
-                  </button>
-                ) : null}
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Title">
-                  <input
-                    value={postTitle}
-                    onChange={(e) => setPostTitle(e.target.value)}
-                    placeholder="A new semester, a tighter cadence"
-                    name="post_title"
-                    autoComplete="off"
-                    className="ui-input"
-                  />
-                </Field>
-                <Field label="Slug (optional override)">
-                  <input
-                    value={postSlug}
-                    onChange={(e) => setPostSlug(e.target.value)}
-                    placeholder="new-semester-tighter-cadence"
-                    name="post_slug_override"
-                    autoComplete="off"
-                    spellCheck={false}
-                    className="ui-input"
-                  />
-                </Field>
-                <Field label="Excerpt" full>
-                  <textarea
-                    value={postExcerpt}
-                    onChange={(e) => setPostExcerpt(e.target.value)}
-                    rows={2}
-                    placeholder="One paragraph summary…"
-                    name="post_excerpt"
-                    autoComplete="off"
-                    className="ui-input resize-none"
-                  />
-                </Field>
-                <Field label="Body (Markdown)" full>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setShowPostPreview(false)}
-                        className={["text-xs px-2 py-1 rounded transition-colors", !showPostPreview ? "bg-[var(--foreground)] text-[var(--background)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"].join(" ")}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowPostPreview(true)}
-                        className={["text-xs px-2 py-1 rounded transition-colors", showPostPreview ? "bg-[var(--foreground)] text-[var(--background)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"].join(" ")}
-                      >
-                        Preview
-                      </button>
-                    </div>
-                    {showPostPreview ? (
-                      <div
-                        className="ui-input min-h-[200px] overflow-auto whitespace-pre-wrap font-sans text-sm leading-6 text-[var(--foreground)]"
-                        style={{ fontFamily: "inherit" }}
-                      >
-                        {postBody || <span className="text-[var(--muted-foreground)]">Nothing to preview yet.</span>}
-                      </div>
-                    ) : (
-                      <textarea
-                        value={postBody}
-                        onChange={(e) => setPostBody(e.target.value)}
-                        rows={12}
-                        name="post_body_markdown"
-                        autoComplete="off"
-                        spellCheck={false}
-                        className="ui-input resize-none font-mono text-[12px] leading-5"
-                      />
-                    )}
-                  </div>
-                </Field>
-              </div>
-
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-4 sm:justify-start">
-                <button
-                  type="button"
-                  disabled={!canSubmitPost || isCreatingPost}
-                  onClick={async () => {
-                    if (!canSubmitPost || isCreatingPost) return;
-                    setIsCreatingPost(true);
-                    setError(null);
-                    try {
-                      if (editingPostId) {
-                        await updateDraft({
-                          id: editingPostId,
-                          title: postTitle.trim(),
-                          excerpt: postExcerpt.trim(),
-                          body: postBody,
-                        });
-                      } else {
-                        const id = await createDraft({
-                          title: postTitle.trim(),
-                          excerpt: postExcerpt.trim(),
-                          body: postBody,
-                          slug: postSlug.trim() || undefined,
-                        });
-                        setEditingPostId(id);
-                      }
-                    } catch (err) {
-                      setError(err instanceof Error ? err.message : "Failed to save post");
-                    } finally {
-                      setIsCreatingPost(false);
-                    }
-                  }}
-                  className={["ui-btn", (!canSubmitPost || isCreatingPost) ? "opacity-50 cursor-not-allowed" : ""].join(" ")}
-                >
-                  {isCreatingPost ? (editingPostId ? "Saving…" : "Creating…") : (editingPostId ? "Save changes" : "Create draft")}
-                </button>
-
-                {editingPostId ? (
-                  <>
-                    <button
-                      type="button"
-                      disabled={publishingPostId === editingPostId}
-                      onClick={async () => {
-                        setPublishingPostId(editingPostId);
-                        setError(null);
-                        try {
-                          await publish({ id: editingPostId });
-                        } catch (err) {
-                          setError(err instanceof Error ? err.message : "Failed to publish");
-                        } finally {
-                          setPublishingPostId(null);
-                        }
-                      }}
-                      className="ui-btn disabled:opacity-50"
-                      data-variant="secondary"
-                    >
-                      {publishingPostId === editingPostId ? "Publishing…" : "Publish"}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={publishingPostId === editingPostId}
-                      onClick={async () => {
-                        setPublishingPostId(editingPostId);
-                        setError(null);
-                        try {
-                          await unpublish({ id: editingPostId });
-                        } catch (err) {
-                          setError(err instanceof Error ? err.message : "Failed to unpublish");
-                        } finally {
-                          setPublishingPostId(null);
-                        }
-                      }}
-                      className="ui-btn disabled:opacity-50"
-                      data-variant="secondary"
-                    >
-                      {publishingPostId === editingPostId ? "Unpublishing…" : "Unpublish"}
-                    </button>
-                  </>
-                ) : null}
-
-                <div className="text-xs text-[var(--accents-5)]">
-                  Tip: keep the excerpt short; the body can be longer.
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="relative overflow-hidden bg-[var(--background)] py-12 sm:py-16">
-            <div className="ui-site-container relative">
-              <div className="mb-8">
-                <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">Posts</h2>
-                <div className="mt-1 text-sm text-[var(--accents-5)]">
-                  {posts ? `${filteredPosts.length} of ${posts.length} shown` : "Loading…"}
-                </div>
-              </div>
-
-              {posts ? (
-                <div className="grid gap-3 md:grid-cols-[1fr_180px_180px_auto]">
-                  <input
-                    value={postsQuery}
-                    onChange={(e) => {
-                      setPostsQuery(e.target.value);
-                      setPostsPage(1);
-                      syncPostsUrl({ pq: e.target.value, pp: 1 });
-                    }}
-                    placeholder="Search title, excerpt, slug…"
-                    name="posts_search"
-                    autoComplete="off"
-                    aria-label="Search posts"
-                    className="ui-input"
-                  />
-                  <select
-                    value={postsStatusFilter}
-                    onChange={(e) => {
-                      setPostsStatusFilter(e.target.value as PostStatusFilter);
-                      setPostsPage(1);
-                      syncPostsUrl({ ps: e.target.value, pp: 1 });
-                    }}
-                    name="posts_status_filter"
-                    autoComplete="off"
-                    aria-label="Filter posts by status"
-                    className="ui-input"
-                  >
-                    <option value="all">All statuses</option>
-                    <option value="published">Published</option>
-                    <option value="draft">Draft</option>
-                  </select>
-                  <select
-                    value={postsSort}
-                    onChange={(e) => {
-                      setPostsSort(e.target.value as PostSort);
-                      setPostsPage(1);
-                      syncPostsUrl({ po: e.target.value, pp: 1 });
-                    }}
-                    name="posts_sort_order"
-                    autoComplete="off"
-                    aria-label="Sort posts"
-                    className="ui-input"
-                  >
-                    <option value="newest">Newest first</option>
-                    <option value="oldest">Oldest first</option>
-                    <option value="title">Title A-Z</option>
-                  </select>
-                  <div className="flex items-center justify-end gap-2 text-xs text-[var(--muted-foreground)]">
-                    <button
-                      type="button"
-                      className="ui-btn px-3 py-1.5 min-h-0 text-xs"
-                      data-variant="secondary"
-                      disabled={postsPagination.safePage <= 1}
-                      onClick={() => {
-                        const next = Math.max(1, postsPagination.safePage - 1);
-                        setPostsPage(next);
-                        syncPostsUrl({ pp: next });
-                      }}
-                    >
-                      Prev
-                    </button>
-                    <span>
-                      Page {postsPagination.safePage}/{postsPagination.totalPages}
-                    </span>
-                    <button
-                      type="button"
-                      className="ui-btn px-3 py-1.5 min-h-0 text-xs"
-                      data-variant="secondary"
-                      disabled={postsPagination.safePage >= postsPagination.totalPages}
-                      onClick={() => {
-                        const next = Math.min(postsPagination.totalPages, postsPagination.safePage + 1);
-                        setPostsPage(next);
-                        syncPostsUrl({ pp: next });
-                      }}
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
-              ) : null}
-
-              {!posts ? (
-                <div className="py-20 text-center">
-                  <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent text-[var(--accents-5)]" />
-                </div>
-              ) : filteredPosts.length === 0 ? (
-                <EmptyState
-                  title={posts.length === 0 ? "No posts yet." : "No posts match the current filters."}
-                  description={posts.length === 0 ? "Create your first newsletter post using the form above." : "Try adjusting or clearing your filters."}
-                  icon={posts.length === 0 ? FileText : SearchX}
-                  className="ui-card border-border bg-card/70 py-10"
-                />
-              ) : (
-                <div className="grid gap-4">
-                  <AnimatePresence initial={false}>
-                    {postsPagination.items.map((p) => {
-                    const isPublished = p.publishedAt != null;
-                    return (
-                      <m.div
-                        key={p._id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="ui-card grid gap-4 p-5 text-center md:grid-cols-[1fr_auto] md:items-start md:text-left"
-                      >
-                        <div className="min-w-0 space-y-3">
-                          <div className="flex flex-wrap items-center justify-center gap-2 md:block">
-                            <h3 className="font-display text-lg font-semibold text-[var(--foreground)]">
-                              {p.title}
-                            </h3>
-                            <span
-                              className={[
-                                "ui-tag md:mt-2",
-                                isPublished
-                                  ? "border-green-200 bg-green-50 text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-300"
-                                  : "text-[var(--muted-foreground)]",
-                              ].join(" ")}
-                            >
-                              {isPublished ? "published" : "draft"}
-                            </span>
-                          </div>
-
-                          <p className="line-clamp-2 text-sm leading-6 text-[var(--muted-foreground)]">
-                            {p.excerpt}
-                          </p>
-
-                          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs font-mono uppercase tracking-wider text-[var(--muted-foreground)] md:justify-start">
-                            <span>/{p.slug}</span>
-                            <span>
-                              {isPublished
-                                ? `published ${new Date(p.publishedAt!).toISOString()}`
-                                : "draft"}
-                            </span>
-                          </div>
-
-                          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-2 md:justify-start">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setEditingPostId(p._id);
-                                setPostTitle(p.title);
-                                setPostSlug(p.slug);
-                                setPostExcerpt(p.excerpt);
-                                setPostBody(p.body);
-                                setShowPostPreview(false);
-                                window.scrollTo({ top: 0, behavior: "smooth" });
-                              }}
-                              className="ui-link text-sm"
-                            >
-                              Edit
-                            </button>
-                            {isPublished ? (
-                              <button
-                                type="button"
-                                disabled={publishingPostId === p._id}
-                                onClick={async () => {
-                                  setPublishingPostId(p._id);
-                                  setError(null);
-                                  try {
-                                    await unpublish({ id: p._id });
-                                  } catch (err) {
-                                    setError(err instanceof Error ? err.message : "Failed to unpublish");
-                                  } finally {
-                                    setPublishingPostId(null);
-                                  }
-                                }}
-                                className="ui-link text-sm disabled:opacity-50"
-                              >
-                                {publishingPostId === p._id ? "Unpublishing…" : "Unpublish"}
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                disabled={publishingPostId === p._id}
-                                onClick={async () => {
-                                  setPublishingPostId(p._id);
-                                  setError(null);
-                                  try {
-                                    await publish({ id: p._id });
-                                  } catch (err) {
-                                    setError(err instanceof Error ? err.message : "Failed to publish");
-                                  } finally {
-                                    setPublishingPostId(null);
-                                  }
-                                }}
-                                className="ui-link text-sm disabled:opacity-50"
-                              >
-                                {publishingPostId === p._id ? "Publishing…" : "Publish"}
-                              </button>
-                            )}
-                            <button
-                              type="button"
-                              disabled={deletingPostId === p._id}
-                              onClick={async () => {
-                                setDeletingPostId(p._id);
-                                setError(null);
-                                try {
-                                  await removePost({ id: p._id });
-                                } catch (err) {
-                                  setError(err instanceof Error ? err.message : "Failed to delete post");
-                                } finally {
-                                  setDeletingPostId(null);
-                                }
-                              }}
-                              className="ui-link text-sm text-red-600 hover:text-red-700 decoration-red-200 hover:decoration-red-600 disabled:opacity-50"
-                            >
-                              {deletingPostId === p._id ? "Deleting…" : "Delete"}
-                            </button>
-                          </div>
-                        </div>
-                      </m.div>
-                    );
-                  })}
-                  </AnimatePresence>
-                </div>
-              )}
-            </div>
-          </section>
-        </>
-      )}
       </div>
     </LazyMotion>
   );

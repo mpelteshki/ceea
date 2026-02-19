@@ -21,18 +21,6 @@ export default defineSchema({
     .index("by_startsAt", ["startsAt"])
     .index("by_kind_startsAt", ["kind", "startsAt"]),
 
-  posts: defineTable({
-    title: v.string(),
-    slug: v.string(),
-    excerpt: v.string(),
-    body: v.string(),
-    publishedAt: v.optional(v.number()),
-    createdAt: v.number(),
-    createdBy: v.optional(v.string()),
-  })
-    .index("by_slug", ["slug"])
-    .index("by_publishedAt", ["publishedAt"]),
-
   partners: defineTable({
     name: v.string(),
     tier: v.union(

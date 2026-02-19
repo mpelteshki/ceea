@@ -8,7 +8,7 @@ export const run = internalMutation({
   args: {},
   handler: async (ctx) => {
     const now = Date.now();
-    const counts = { events: 0, posts: 0, team: 0, projects: 0, partners: 0 };
+    const counts = { events: 0, team: 0, projects: 0, partners: 0 };
 
     // ── Events ──────────────────────────────────────────────────
     const existingEvents = await ctx.db.query("events").first();
@@ -60,42 +60,6 @@ export const run = internalMutation({
       for (const ev of eventData) {
         await ctx.db.insert("events", { ...ev, createdAt: now });
         counts.events++;
-      }
-    }
-
-    // ── Posts (newsletter) ──────────────────────────────────────
-    const existingPosts = await ctx.db.query("posts").first();
-    if (!existingPosts) {
-      const postData = [
-        {
-          title: "Spring Semester Kick-off",
-          slug: "spring-semester-kick-off",
-          excerpt:
-            "A look at what CEEA has planned for the spring — new divisions, bigger events, and deeper community ties.",
-          body: `# Spring Semester Kick-off\n\nWelcome back! This semester we're launching our revamped divisions structure and a packed calendar of events.\n\n## What's New\n\n- **Fintech Division** now hosts monthly workshop sprints\n- **Culture Division** introducing a film series\n- **Diplomacy & Politics Division** partnering with SDA Bocconi for a lecture series\n\nStay tuned for weekly updates right here in The Dispatch.`,
-          publishedAt: now - 3 * 24 * 60 * 60 * 1000,
-        },
-        {
-          title: "Voices from the Region: Interview with Ambassador Novak",
-          slug: "voices-from-the-region-ambassador-novak",
-          excerpt:
-            "We sat down with the Czech Ambassador to Italy to discuss student mobility, EU policy, and the future of CEE in Europe.",
-          body: `# Voices from the Region\n\n*An interview with Ambassador Jan Novak*\n\nAmbassador Novak spoke candidly about the growing importance of student associations in bridging cultural gaps across Europe.\n\n> "Associations like CEEA are exactly the kind of grassroots diplomacy we need more of."\n\nThe full conversation covered education policy, visa challenges for Eastern European students, and what Milan means as a hub for the region.`,
-          publishedAt: now - 10 * 24 * 60 * 60 * 1000,
-        },
-        {
-          title: "Recap: Winter Gala 2025",
-          slug: "recap-winter-gala-2025",
-          excerpt:
-            "Over 200 attendees, three live performances, and a record-breaking charity auction — here's everything that happened.",
-          body: `# Winter Gala 2025 Recap\n\nOur biggest event of the year did not disappoint. The Winter Gala brought together students, alumni, and partners for an evening of celebration.\n\n## Highlights\n\n- 🎵 Live performance by the Bocconi Chamber Ensemble\n- 🎨 Art auction raising €2,400 for scholarship funds\n- 🤝 Networking with 15+ partner organisations\n\nThank you to everyone who made this possible.`,
-          publishedAt: now - 30 * 24 * 60 * 60 * 1000,
-        },
-      ];
-
-      for (const post of postData) {
-        await ctx.db.insert("posts", { ...post, createdAt: now });
-        counts.posts++;
       }
     }
 

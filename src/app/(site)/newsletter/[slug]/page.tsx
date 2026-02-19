@@ -1,20 +1,10 @@
 import type { Metadata } from "next";
 import { NewsletterArticle } from "@/components/site/newsletter-article";
-import { getConvexServerClient } from "@/lib/convex-server";
-import { hasConvex } from "@/lib/public-env";
+import { getPostBySlug, getAllPosts } from "@/lib/posts";
 import { buildPageMetadata, SITE_NAME, toMetaDescription } from "@/lib/seo";
-import { api } from "../../../../../convex/_generated/api";
-import type { Doc } from "../../../../../convex/_generated/dataModel";
 
-type PostDoc = Doc<"posts">;
-
-export async function generateStaticParams() {
-  if (!hasConvex) return [];
-  const convex = getConvexServerClient();
-  if (!convex) return [];
-
-  const posts = (await convex.query(api.posts.listPublished, { limit: 200 })) as PostDoc[];
-  return posts.map((post) => ({ slug: post.slug }));
+export function generateStaticParams() {
+  return getAllPosts().map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({
@@ -24,8 +14,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const pathname = `/newsletter/${slug}`;
+  const post = getPostBySlug(slug);
 
-  if (!hasConvex) {
+  if (!post) {
     return buildPageMetadata({
       pathname,
       title: `Not found. | ${SITE_NAME}`,
@@ -34,32 +25,10 @@ export async function generateMetadata({
     });
   }
 
-  const convex = getConvexServerClient();
-  if (!convex) {
-    return buildPageMetadata({
-      pathname,
-      title: `Not found. | ${SITE_NAME}`,
-      description: toMetaDescription("Not found."),
-      noIndex: true,
-    });
-  }
-
-  const post = (await convex.query(api.posts.getBySlug, { slug })) as PostDoc | null;
-  if (!post || post.publishedAt == null) {
-    return buildPageMetadata({
-      pathname,
-      title: `Not found. | ${SITE_NAME}`,
-      description: toMetaDescription("Not found."),
-      noIndex: true,
-    });
-  }
-
-  const title = String(post.title || SITE_NAME);
-  const description = toMetaDescription(String(post.excerpt || ""));
   const metadata = buildPageMetadata({
     pathname: `/newsletter/${post.slug}`,
-    title,
-    description,
+    title: post.title,
+    description: toMetaDescription(post.excerpt || ""),
   });
 
   return {
