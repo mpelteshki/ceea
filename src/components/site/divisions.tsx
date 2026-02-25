@@ -23,41 +23,40 @@ export function Divisions() {
           />
         </FadeIn>
 
-        <FadeIn>
-          <div className="grid grid-cols-1 gap-px bg-[var(--border)] sm:grid-cols-2 lg:grid-cols-3">
-            {standaloneDivisions.map((d) => (
-              <div key={d.name} className="bg-[var(--background)]">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {standaloneDivisions.map((d, i) => (
+            <FadeIn key={d.name} delay={i * 0.08} direction="up" distance={16}>
                 <Link
                   href={`/divisions/${d.slug}`}
-                  className="group flex flex-col items-center gap-5 py-10 text-center transition-colors duration-200 sm:py-12 sm:px-6"
+                  className="group ui-card flex h-full flex-col items-start gap-5 p-8"
                 >
                   <div
-                    className="flex h-12 w-12 items-center justify-center rounded-2xl"
+                    className="flex h-12 w-12 items-center justify-center rounded-xl"
                     style={{
                       color: d.accent,
-                      background: `color-mix(in oklch, ${d.accent} 10%, var(--background))`,
+                      background: `color-mix(in oklch, ${d.accent} 12%, var(--background))`,
                     }}
                   >
-                    <d.icon className="h-6 w-6" strokeWidth={1.75} />
+                    <d.icon className="h-5 w-5" strokeWidth={1.75} />
                   </div>
-                  <h3 className="font-display text-lg font-semibold text-[var(--foreground)] sm:text-xl">
-                    {d.name}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-                    {d.description}
-                  </p>
-                  <span
-                    className="mt-auto inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide transition-colors duration-200"
-                    style={{ color: d.accent }}
-                  >
-                    Explore
-                    <ArrowRight className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
-                  </span>
+                  
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-display text-lg font-semibold text-foreground">
+                      {d.name}
+                    </h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {d.description}
+                    </p>
+                  </div>
+                  
+                  <div className="mt-auto pt-4 flex items-center gap-2 text-sm font-medium" style={{ color: d.accent }}>
+                    <span>Explore</span>
+                    <ArrowRight className="ui-icon-shift h-3.5 w-3.5" />
+                  </div>
                 </Link>
-              </div>
-            ))}
-          </div>
-        </FadeIn>
+            </FadeIn>
+          ))}
+        </div>
       </div>
     </section>
   );

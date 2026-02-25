@@ -17,7 +17,7 @@ export const run = internalMutation({
         title: string;
         summary: string;
         location: string;
-        kind: "flagship" | "career" | "culture" | "community";
+        kind: "signature" | "career" | "culture" | "community";
         startsAt: number;
         rsvpUrl?: string;
       }> = [
@@ -35,7 +35,7 @@ export const run = internalMutation({
           summary:
             "A panel discussion with policy analysts on the future of EU expansion into the Western Balkans and Eastern Partnership countries.",
           location: "Bocconi — Room AS01",
-          kind: "flagship",
+          kind: "signature",
           startsAt: now + 14 * 24 * 60 * 60 * 1000, // +2 weeks
         },
         {

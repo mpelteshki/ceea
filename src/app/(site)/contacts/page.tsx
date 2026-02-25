@@ -50,7 +50,7 @@ export default async function ContactPage() {
                 href={channel.href}
                 target={channel.href.startsWith("mailto:") ? undefined : "_blank"}
                 rel={channel.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
-                className="group flex h-full flex-col justify-between rounded-2xl border border-border p-8 transition-[border-color,box-shadow] duration-300 hover:border-[var(--ring)] hover:shadow-[0_8px_24px_color-mix(in_oklch,var(--foreground)_5%,transparent)]"
+                className="group flex h-full flex-col justify-between ui-card p-8"
               >
                 <div className="text-center sm:text-left">
                   <div

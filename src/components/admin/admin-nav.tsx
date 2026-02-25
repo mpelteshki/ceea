@@ -8,6 +8,7 @@ const ITEMS = [
   { label: "Team", href: "/admin/team" },
   { label: "Projects", href: "/admin/projects" },
   { label: "Partners", href: "/admin/partners" },
+  { label: "Newsletter", href: "/admin/newsletter" },
 ] as const;
 
 function normalizeAdminPath(pathname: string) {
@@ -30,7 +31,7 @@ export function AdminNav() {
             href={item.href}
             data-active={active ? "true" : "false"}
             aria-current={active ? "page" : undefined}
-            className="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)] data-[active=true]:bg-[var(--foreground)] data-[active=true]:text-[var(--background)]"
+            className="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-[var(--secondary)] hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
           >
             {item.label}
           </Link>

@@ -7,12 +7,32 @@ import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 
 import { FadeIn } from "@/components/ui/fade-in";
-import { getPostBySlug } from "@/lib/posts";
+import type { Post } from "@/lib/posts";
 import { absoluteUrl, SITE_NAME, SITE_URL } from "@/lib/seo";
 import { fmtLongDate } from "@/lib/format-date";
+import { hasConvex } from "@/lib/public-env";
+import { getConvexServerClient } from "@/lib/convex-server";
+import { api } from "../../../convex/_generated/api";
+
+async function resolvePost(slug: string): Promise<Post | null> {
+  if (!hasConvex) return null;
+  const convex = getConvexServerClient();
+  if (!convex) return null;
+
+  const row = await convex.query(api.posts.getBySlug, { slug });
+  if (!row || row.publishedAt == null) return null;
+
+  return {
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt,
+    body: row.body,
+    publishedAt: row.publishedAt,
+  };
+}
 
 export async function NewsletterArticle({ slug }: { slug: string }) {
-  const post = getPostBySlug(slug);
+  const post = await resolvePost(slug);
 
   if (!post) {
     notFound();
@@ -50,30 +70,30 @@ export async function NewsletterArticle({ slug }: { slug: string }) {
       <Script id={`newsletter-article-structured-data-${post.slug}`} type="application/ld+json" strategy="afterInteractive">
         {JSON.stringify(articleStructuredData)}
       </Script>
-      <div className="relative border-b border-[var(--border)]">
+      <div className="relative border-b border-border">
         <div className="absolute inset-0 bg-[var(--background)]" />
         <div className="relative mx-auto max-w-3xl px-5 pb-12 pt-28 sm:px-6 sm:pb-16 sm:pt-32">
           <FadeIn duration={0.6}>
             <Link
               href="/newsletter"
-              className="group mb-6 inline-flex items-center gap-1.5 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-[var(--muted-foreground)] transition-colors hover:text-[var(--foreground)]"
+              className="group mb-6 inline-flex items-center gap-1.5 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
             >
               <ArrowLeft className="h-3 w-3" />
               Newsletter
             </Link>
           </FadeIn>
           <FadeIn duration={0.7} delay={0.1}>
-            <h1 className="text-balance font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-[var(--foreground)]">{post.title}</h1>
+            <h1 className="text-balance font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-foreground">{post.title}</h1>
           </FadeIn>
           <FadeIn delay={0.25} direction="up" distance={20}>
-            <div className="mt-8 border-t border-[var(--border)]/50 pt-8">
+            <div className="mt-8 border-t border-border/50 pt-8">
               <div className="flex items-center gap-4">
-                <span className="font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                <span className="font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
                   {fmtLongDate(post.publishedAt)}
                 </span>
               </div>
               {post.excerpt && (
-                <p className="mt-4 max-w-2xl text-base leading-relaxed text-[var(--muted-foreground)] sm:text-[1.05rem]">
+                <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-[1.05rem]">
                   {post.excerpt}
                 </p>
               )}

@@ -44,17 +44,30 @@ export function SectionHeader({
           </h2>
         </div>
 
-        {/* CTA — hidden on mobile */}
+        {/* CTA — hidden on mobile, shown inline on desktop */}
         {cta && (
           <Link
             href={cta.href}
-            className="ui-section-cta hidden sm:ml-8 sm:inline-flex sm:shrink-0"
+            className="group ui-section-cta hidden sm:ml-8 sm:inline-flex sm:shrink-0"
           >
             {cta.label}
-            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/cta:translate-x-0.5" />
+            <ArrowRight className="ui-icon-shift h-3.5 w-3.5" />
           </Link>
         )}
       </div>
+
+      {/* CTA — mobile only, below heading */}
+      {cta && (
+        <div className="mt-4 text-center sm:hidden">
+          <Link
+            href={cta.href}
+            className="ui-section-cta inline-flex"
+          >
+            {cta.label}
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+      )}
 
       {subtitle && (
         <div

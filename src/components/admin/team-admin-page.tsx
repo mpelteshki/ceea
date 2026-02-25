@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useConvexAuth } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Suspense, useMemo, useState } from "react";
-import { AnimatePresence, LazyMotion, domAnimation, m } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { SearchX, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -206,7 +206,6 @@ function TeamAdminPageInner() {
   if (isLoading) return <AdminPanelFallback label="Authenticating…" />;
 
   return (
-    <LazyMotion features={domAnimation}>
       <div className="flex flex-col border-t border-[var(--accents-2)]">
       {error && (
         <div className="ui-site-container mt-4">
@@ -454,7 +453,7 @@ function TeamAdminPageInner() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="ui-card group grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center transition-colors hover:bg-[var(--secondary)]/50"
+                    className="ui-card group grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center"
                   >
                     <div className="text-center sm:text-left">
                       <h4 className="font-display text-lg font-semibold text-[var(--foreground)]">
@@ -512,7 +511,6 @@ function TeamAdminPageInner() {
         </div>
       </section>
       </div>
-    </LazyMotion>
   );
 }
 

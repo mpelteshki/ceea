@@ -361,8 +361,8 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 10;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
 }
 
@@ -528,15 +528,6 @@ body {
     transform: scale(0.98);
   }
 
-  .ui-icon-shift {
-    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .group:hover .ui-icon-shift,
-  .group:focus-within .ui-icon-shift {
-    transform: translateX(2px);
-  }
-
   .ui-nav-link {
     position: relative;
     overflow: hidden;
@@ -550,22 +541,26 @@ body {
     bottom: 0.75rem;
     height: 2px;
     border-radius: 999px;
-    background: color-mix(in oklch, var(--foreground) 88%, transparent);
+    background: color-mix(in oklch, var(--foreground) 60%, transparent);
     transform: scaleX(0);
     transform-origin: center;
-    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), background-color 200ms ease;
   }
 
   .ui-nav-link:hover::after,
-  .ui-nav-link:focus-visible::after,
+  .ui-nav-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+
   .ui-nav-link[data-active="true"]::after {
     transform: scaleX(1);
+    background: var(--brand-teal);
   }
 
   .ui-footer-link {
     position: relative;
     width: fit-content;
-    transition: color 200ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: color 200ms ease;
   }
 
   .ui-footer-link::after {
@@ -580,10 +575,6 @@ body {
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .ui-footer-link:hover {
-    transform: translateX(2px);
   }
 
   .ui-footer-link:hover::after,
@@ -734,7 +725,6 @@ body {
 
   /* Row link */
   .ui-rowlink {
-    @apply transition-colors duration-200;
     position: relative;
     display: grid;
     gap: 0.85rem;
@@ -743,12 +733,11 @@ body {
     min-height: 48px;
     color: var(--foreground);
     border-radius: 12px;
-    transition: background-color 200ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: background-color 200ms ease;
   }
 
   .ui-rowlink:hover {
     background: var(--secondary);
-    transform: translateX(2px);
   }
 
   /* Input */
@@ -781,19 +770,7 @@ body {
     background: var(--card);
     overflow: hidden;
     transition: border-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform;
-  }
-
-  .ui-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), transparent 42%);
-    opacity: 0;
-    transition: opacity 260ms ease;
+      box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .ui-card:hover {
@@ -801,11 +778,6 @@ body {
     box-shadow:
       0 8px 24px color-mix(in oklch, var(--brand-tan) 10%, transparent),
       0 2px 8px rgba(0, 0, 0, 0.04);
-    transform: translateY(-2px);
-  }
-
-  .ui-card:hover::after {
-    opacity: 1;
   }
 
   .dark .ui-card:hover {
@@ -836,7 +808,7 @@ body {
   }
 
   .ui-home-scroll-section[data-tone="warm"] {
-    --home-section-bg: color-mix(in oklch, var(--color-cream) 6%, var(--background));
+    --home-section-bg: color-mix(in oklch, var(--color-cream) 12%, var(--background));
     --home-section-accent: var(--brand-teal);
   }
 

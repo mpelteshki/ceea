@@ -1,6 +1,8 @@
 import { MetadataRoute } from "next";
 import { absoluteUrl, PUBLIC_SITE_PATHS } from "@/lib/seo";
-import { getAllPosts } from "@/lib/posts";
+import { hasConvex } from "@/lib/public-env";
+import { getConvexServerClient } from "@/lib/convex-server";
+import { api } from "../../convex/_generated/api";
 
 const PAGE_FREQUENCY: Record<string, NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>> = {
   "/": "weekly",
@@ -33,18 +35,31 @@ function staticPageEntries(lastModified: Date): MetadataRoute.Sitemap {
   }));
 }
 
-function newsletterEntries(): MetadataRoute.Sitemap {
-  const posts = getAllPosts();
+async function newsletterEntries(): Promise<MetadataRoute.Sitemap> {
+  if (!hasConvex) return [];
+  const convex = getConvexServerClient();
+  if (!convex) return [];
 
-  return posts.map((post) => ({
-    url: absoluteUrl(`/newsletter/${post.slug}`),
-    lastModified: new Date(post.publishedAt),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  try {
+    const posts = (await convex.query(api.posts.listPublished, {})) as Array<{
+      slug: string;
+      publishedAt?: number | null;
+    }>;
+
+    return posts
+      .filter((p) => p.publishedAt != null)
+      .map((post) => ({
+        url: absoluteUrl(`/newsletter/${post.slug}`),
+        lastModified: new Date(post.publishedAt!),
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      }));
+  } catch {
+    return [];
+  }
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  return [...staticPageEntries(now), ...newsletterEntries()];
+  return [...staticPageEntries(now), ...(await newsletterEntries())];
 }

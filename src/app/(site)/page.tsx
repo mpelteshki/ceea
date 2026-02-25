@@ -21,15 +21,15 @@ export default function HomePage() {
         <Hero />
       </HomeScrollSection>
 
-      <HomeScrollSection tone="soft">
+      <HomeScrollSection tone="warm">
         <Divisions />
       </HomeScrollSection>
 
-      <HomeScrollSection tone="soft">
+      <HomeScrollSection tone="teal">
         <UpcomingEvents />
       </HomeScrollSection>
 
-      <HomeScrollSection tone="crimson">
+      <HomeScrollSection tone="warm">
         <LatestDispatch />
       </HomeScrollSection>
     </>

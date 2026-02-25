@@ -119,8 +119,8 @@ export default async function AboutPage() {
         <FadeInStagger className="space-y-12">
           <FadeIn>
             <div className="mb-6">
-              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--foreground)]">Our Divisions</h2>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--muted-foreground)]">
+              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground">Our Divisions</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
                 Six verticals across two tracks — Assemblies (Culture, Diplomacy & Politics, Community) and standalone divisions (Projects, Career Services, Newsletter) — each owning its own programming, calendar, and partnerships.
               </p>
             </div>
@@ -156,7 +156,7 @@ export default async function AboutPage() {
         <FadeInStagger className="space-y-12">
           <FadeIn>
             <div className="mb-6">
-              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--foreground)]">The Bocconi association reality</h2>
+              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground">The Bocconi association reality</h2>
             </div>
           </FadeIn>
 
@@ -176,7 +176,7 @@ export default async function AboutPage() {
         <FadeInStagger className="space-y-12">
           <FadeIn>
             <div className="mb-6">
-              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--foreground)]">Partners</h2>
+              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground">Partners</h2>
             </div>
           </FadeIn>
           <FadeIn>

@@ -52,13 +52,13 @@ export default async function DivisionPage({ params }: PageProps) {
   return (
     <>
       {/* Hero header */}
-      <div className="relative border-b border-[var(--border)]">
+      <div className="relative border-b border-border">
         <div className="absolute inset-0 bg-[var(--background)]" />
         <div className="ui-site-container relative pb-12 pt-28 sm:pb-16 sm:pt-32">
           <FadeIn duration={0.6}>
             <Link
               href="/#divisions"
-              className="mb-6 inline-flex items-center gap-1.5 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-[var(--muted-foreground)] transition-colors hover:text-[var(--foreground)]"
+              className="mb-6 inline-flex items-center gap-1.5 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
             >
               <ArrowLeft className="h-3 w-3" />
               All divisions
@@ -75,12 +75,12 @@ export default async function DivisionPage({ params }: PageProps) {
               >
                 <division.icon className="h-6 w-6" strokeWidth={1.75} />
               </div>
-              <h1 className="font-display text-[clamp(2.5rem,5.5vw,5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-[var(--foreground)]">{division.name}</h1>
+              <h1 className="font-display text-[clamp(2.5rem,5.5vw,5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-foreground">{division.name}</h1>
             </div>
           </FadeIn>
           <FadeIn delay={0.25} direction="up" distance={20}>
-            <div className="mt-8 border-t border-[var(--border)] pt-8">
-              <p className="max-w-2xl text-base leading-relaxed text-[var(--muted-foreground)] sm:text-[1.05rem]">
+            <div className="mt-8 border-t border-border pt-8">
+              <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-[1.05rem]">
                 {division.description}
               </p>
             </div>
@@ -92,7 +92,7 @@ export default async function DivisionPage({ params }: PageProps) {
       {division.slug === "assemblies" && (
         <div className="ui-site-container py-8 sm:py-16">
           <FadeIn>
-            <p className="mb-8 max-w-2xl text-sm font-medium uppercase tracking-widest text-[var(--muted-foreground)]">
+            <p className="mb-8 max-w-2xl text-sm font-medium uppercase tracking-widest text-muted-foreground">
               Sub-divisions
             </p>
           </FadeIn>
@@ -109,19 +109,19 @@ export default async function DivisionPage({ params }: PageProps) {
                   >
                     <sub.icon className="h-5 w-5" strokeWidth={1.75} />
                   </div>
-                  <h3 className="font-display mb-2 text-lg font-semibold text-[var(--foreground)]">
+                  <h3 className="font-display mb-2 text-lg font-semibold text-foreground">
                     {sub.name}
                   </h3>
-                  <p className="mb-6 text-sm leading-relaxed text-[var(--muted-foreground)]">
+                  <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
                     {sub.description}
                   </p>
                   <Link
                     href={`/divisions/${sub.slug}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide transition-colors duration-200"
+                    className="group inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide transition-colors duration-200"
                     style={{ color: sub.accent }}
                   >
                     Explore
-                    <ArrowRight className="h-3 w-3" />
+                    <ArrowRight className="ui-icon-shift h-3 w-3" />
                   </Link>
                 </div>
               </FadeIn>

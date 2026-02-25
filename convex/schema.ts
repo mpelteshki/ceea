@@ -7,7 +7,7 @@ export default defineSchema({
     summary: v.string(),
     location: v.string(),
     kind: v.union(
-      v.literal("flagship"),
+      v.literal("signature"),
       v.literal("career"),
       v.literal("culture"),
       v.literal("community"),
@@ -69,4 +69,17 @@ export default defineSchema({
     link: v.optional(v.string()),
     createdAt: v.number(),
   }).index("by_createdAt", ["createdAt"]),
+
+  posts: defineTable({
+    slug: v.string(),
+    title: v.string(),
+    excerpt: v.string(),
+    body: v.string(), // markdown
+    publishedAt: v.optional(v.number()), // epoch ms — absent = draft
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    createdBy: v.optional(v.string()),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_publishedAt", ["publishedAt"]),
 });

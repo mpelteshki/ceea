@@ -15,9 +15,9 @@ export const metadata: Metadata = buildPageMetadata({
 export default function JoinUsPage() {
   return (
     <div className="ui-site-container">
-      <div className="flex min-h-[100dvh] flex-col items-center justify-center pt-24 pb-16 text-center sm:items-start sm:pt-28 sm:pb-20 sm:text-left">
+      <div className="flex flex-col items-center pt-28 pb-16 text-center sm:items-start sm:pt-32 sm:pb-24 sm:text-left">
         <FadeIn duration={0.7}>
-          <h1 className="font-display text-[clamp(2.2rem,7vw,7rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-balance text-[var(--foreground)]">
+          <h1 className="font-display text-[clamp(2.2rem,7vw,7rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-balance text-foreground">
             Join CEEA
           </h1>
         </FadeIn>
@@ -27,8 +27,8 @@ export default function JoinUsPage() {
         </FadeIn>
 
         <FadeIn delay={0.2} direction="up" distance={20}>
-          <div className="mt-6 flex flex-col items-center gap-8 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-xl text-base leading-relaxed text-[var(--muted-foreground)] sm:text-[1.05rem]">
+          <div className="mt-8 flex max-w-2xl flex-col items-center gap-8 sm:items-start">
+            <p className="text-base leading-relaxed text-[var(--muted-foreground)] sm:text-[1.05rem]">
               {DESCRIPTION}
             </p>
             <div className="flex shrink-0 flex-wrap justify-center gap-3 sm:justify-start">

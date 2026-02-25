@@ -30,9 +30,9 @@ export function Assemblies() {
                 <Link
                   href={`/divisions/${d.slug}`}
                   className={[
-                    "group flex flex-col items-center gap-5 py-10 text-center transition-colors duration-200 sm:py-12 sm:px-6",
+                    "group flex flex-col items-center gap-5 py-10 text-center rounded-xl transition-colors duration-200 hover:bg-[var(--accents-1)] sm:py-12 sm:px-6",
                     i < assembliesGroup.length - 1
-                      ? "sm:border-r sm:border-[var(--border)]"
+                      ? "sm:border-r sm:border-border"
                       : "",
                   ].join(" ")}
                 >
@@ -45,10 +45,10 @@ export function Assemblies() {
                   >
                     <d.icon className="h-6 w-6" strokeWidth={1.75} />
                   </div>
-                  <h4 className="font-display text-lg font-semibold text-[var(--foreground)] sm:text-xl">
+                  <h4 className="font-display text-lg font-semibold text-foreground sm:text-xl">
                     {d.name}
                   </h4>
-                  <p className="text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
+                  <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
                     {d.description}
                   </p>
                   <span
@@ -56,7 +56,7 @@ export function Assemblies() {
                     style={{ color: d.accent }}
                   >
                     Explore
-                    <ArrowRight className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
+                    <ArrowRight className="ui-icon-shift h-3 w-3" />
                   </span>
                 </Link>
               </div>

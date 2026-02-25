@@ -26,7 +26,7 @@ export default async function TeamPage() {
   if (!hasConvex) {
     return (
       <div className="ui-site-container pt-10 pb-16">
-        <div className="rounded-2xl border border-dashed border-[var(--accents-3)] p-8 text-center text-sm text-[var(--accents-5)]">
+        <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
           Set <code className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</code> to show team members.
         </div>
       </div>

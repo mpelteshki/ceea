@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,24 +20,21 @@ export function ExpandableText({
     readLessLabel = "Read less",
 }: ExpandableTextProps) {
     const [isExpanded, setIsExpanded] = useState(false);
-
-    // Consider it "long" if it's more than ~200 chars or if we want to be safe, just let and CSS handle it if we used line-clamp.
-    // But for a "Click for more details" we usually want a hard toggle.
+    const contentRef = useRef<HTMLDivElement>(null);
 
     if (!text) return null;
+
+    const collapsedLines = `${maxLines * 1.625}em`;
 
     return (
         <div className={cn("space-y-2", className)}>
             <div
-                className={cn(
-                    "text-muted-foreground leading-relaxed transition-[max-height] duration-300",
-                    !isExpanded && "line-clamp-3"
-                )}
+                ref={contentRef}
+                className="text-muted-foreground leading-relaxed overflow-hidden transition-[max-height] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
                 style={{
-                    display: !isExpanded ? '-webkit-box' : 'block',
-                    WebkitLineClamp: !isExpanded ? maxLines : 'unset',
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden'
+                    maxHeight: isExpanded
+                        ? `${contentRef.current?.scrollHeight ?? 2000}px`
+                        : collapsedLines,
                 }}
             >
                 {text}
@@ -45,7 +42,7 @@ export function ExpandableText({
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 aria-expanded={isExpanded}
-                className="inline-flex items-center gap-1 text-sm font-medium text-[var(--foreground)] hover:opacity-70 transition-opacity"
+                className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
             >
                 {isExpanded ? (
                     <>

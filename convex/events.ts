@@ -10,22 +10,26 @@ export const listUpcoming = query({
   handler: async (ctx, args) => {
     const now = Date.now();
     const limit = Math.max(1, Math.min(50, args.limit ?? 6));
-    return await ctx.db
+    const rows = await ctx.db
       .query("events")
       .withIndex("by_startsAt", (q) => q.gte("startsAt", now))
       .order("asc")
       .take(limit);
+    // Strip internal metadata from public response
+    return rows.map(({ createdBy: _, ...rest }) => rest);
   },
 });
 
 export const listAll = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db
+    const rows = await ctx.db
       .query("events")
       .withIndex("by_startsAt", (q) => q)
       .order("desc")
       .take(MAX_EVENTS_RETURNED);
+    // Strip internal metadata from public response
+    return rows.map(({ createdBy: _, ...rest }) => rest);
   },
 });
 
@@ -35,7 +39,7 @@ export const create = mutation({
     summary: v.string(),
     location: v.string(),
     kind: v.union(
-      v.literal("flagship"),
+      v.literal("signature"),
       v.literal("career"),
       v.literal("culture"),
       v.literal("community"),
@@ -65,7 +69,7 @@ export const update = mutation({
     location: v.optional(v.string()),
     kind: v.optional(
       v.union(
-        v.literal("flagship"),
+        v.literal("signature"),
         v.literal("career"),
         v.literal("culture"),
         v.literal("community"),
@@ -81,7 +85,7 @@ export const update = mutation({
       title?: string;
       summary?: string;
       location?: string;
-      kind?: "flagship" | "career" | "culture" | "community";
+      kind?: "signature" | "career" | "culture" | "community";
       startsAt?: number;
       rsvpUrl?: string | undefined;
       moreInfoUrl?: string | undefined;

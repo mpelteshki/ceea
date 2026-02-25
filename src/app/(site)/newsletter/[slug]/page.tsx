@@ -1,10 +1,31 @@
 import type { Metadata } from "next";
 import { NewsletterArticle } from "@/components/site/newsletter-article";
-import { getPostBySlug, getAllPosts } from "@/lib/posts";
+import type { Post } from "@/lib/posts";
 import { buildPageMetadata, SITE_NAME, toMetaDescription } from "@/lib/seo";
+import { hasConvex } from "@/lib/public-env";
+import { getConvexServerClient } from "@/lib/convex-server";
+import { api } from "../../../../../convex/_generated/api";
 
-export function generateStaticParams() {
-  return getAllPosts().map((post) => ({ slug: post.slug }));
+async function resolvePostMeta(slug: string): Promise<Post | null> {
+  if (!hasConvex) return null;
+  const convex = getConvexServerClient();
+  if (!convex) return null;
+
+  const row = await convex.query(api.posts.getBySlug, { slug });
+  if (!row || row.publishedAt == null) return null;
+
+  return {
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt,
+    body: "",
+    publishedAt: row.publishedAt,
+  };
+}
+
+export async function generateStaticParams() {
+  // Newsletter posts are dynamic (Convex-driven); use on-demand rendering
+  return [];
 }
 
 export async function generateMetadata({
@@ -14,7 +35,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const pathname = `/newsletter/${slug}`;
-  const post = getPostBySlug(slug);
+  const post = await resolvePostMeta(slug);
 
   if (!post) {
     return buildPageMetadata({

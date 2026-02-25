@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { FadeInStagger, StaggerItem } from "@/components/ui/fade-in";
+import { FadeIn } from "@/components/ui/fade-in";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/site/page-header";
 import { ProjectCard } from "@/components/site/project-card";
@@ -24,7 +24,7 @@ export default async function ProjectsPage() {
   if (!hasConvex) {
     return (
       <div className="ui-site-container pt-10 pb-16">
-        <div className="rounded-2xl border border-dashed border-[var(--accents-3)] p-8 text-center text-sm text-[var(--accents-5)]">
+        <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
           Set <code className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</code> to show projects.
         </div>
       </div>
@@ -42,13 +42,13 @@ export default async function ProjectsPage() {
         {projects.length === 0 ? (
           <EmptyState title="No projects yet." description="Check back later for updates." />
         ) : (
-          <FadeInStagger className="space-y-20">
+          <div className="grid gap-6 sm:grid-cols-2">
             {projects.map((project, idx) => (
-              <StaggerItem key={project._id}>
-                <ProjectCard project={project} index={idx} />
-              </StaggerItem>
+              <FadeIn key={project._id} delay={Math.min(idx * 0.05, 0.2)}>
+                <ProjectCard project={project} index={idx} featured={idx === 0 && projects.length > 1} />
+              </FadeIn>
             ))}
-          </FadeInStagger>
+          </div>
         )}
       </div>
     </>

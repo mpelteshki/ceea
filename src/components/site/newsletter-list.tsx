@@ -3,10 +3,36 @@ import { ArrowRight } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FadeIn } from "@/components/ui/fade-in";
 import { fmtShortDate } from "@/lib/format-date";
-import { getAllPosts } from "@/lib/posts";
+import type { Post } from "@/lib/posts";
+import { hasConvex } from "@/lib/public-env";
+import { getConvexServerClient } from "@/lib/convex-server";
+import { api } from "../../../convex/_generated/api";
+
+async function getPosts(): Promise<Post[]> {
+  if (!hasConvex) return [];
+  const convex = getConvexServerClient();
+  if (!convex) return [];
+
+  const rows = (await convex.query(api.posts.listPublished, {})) as Array<{
+    slug: string;
+    title: string;
+    excerpt: string;
+    publishedAt?: number | null;
+  }>;
+
+  return rows
+    .filter((r) => r.publishedAt != null)
+    .map((r) => ({
+      slug: r.slug,
+      title: r.title,
+      excerpt: r.excerpt,
+      body: "",
+      publishedAt: r.publishedAt!,
+    }));
+}
 
 export async function NewsletterList() {
-  const posts = getAllPosts();
+  const posts = await getPosts();
 
   if (posts.length === 0) {
     return <EmptyState title="No newsletter posts yet." description="Check back later for updates." className="border-border bg-card" />;
@@ -21,7 +47,7 @@ export async function NewsletterList() {
           <FadeIn key={post.slug} delay={Math.min(idx * 0.04, 0.2)}>
             <Link
               href={`/newsletter/${post.slug}`}
-              className={`group flex flex-col ui-card overflow-hidden bg-card text-center transition-colors hover:bg-[var(--accents-1)] sm:text-left ${isFeatured ? "sm:col-span-2 lg:col-span-2" : ""}`}
+              className={`group flex flex-col ui-card overflow-hidden bg-card sm:text-left ${isFeatured ? (posts.length === 1 ? "sm:col-span-2 lg:col-span-3" : "sm:col-span-2 lg:col-span-2") : ""}`}
             >
               <div className="flex flex-1 flex-col p-6">
                 <div className="mb-4 flex items-center justify-center gap-3 sm:justify-start">

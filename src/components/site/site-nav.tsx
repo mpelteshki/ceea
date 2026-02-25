@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, useCallback } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignedIn } from "@clerk/nextjs";
+import { Logo } from "@/components/ui/logo";
 
 function NavLink({
   href,
@@ -26,7 +27,7 @@ function NavLink({
       data-active={isActive ? "true" : "false"}
       className={cn(
         "ui-nav-link group/nav px-3 py-5 text-[13px] font-medium tracking-wide transition-colors duration-200",
-        isActive ? "text-[var(--primary)]" : "text-[var(--accents-5)] hover:text-[var(--foreground)]",
+        isActive ? "text-[var(--primary)]" : "text-[var(--accents-5)] hover:text-foreground",
       )}
     >
       <span
@@ -55,6 +56,7 @@ export function SiteNav() {
   ];
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const menuId = useId();
   const firstLinkRef = useRef<HTMLAnchorElement | null>(null);
@@ -62,6 +64,19 @@ export function SiteNav() {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const scrollYRef = useRef(0);
   const shouldRestoreScrollRef = useRef(true);
+
+  const openMenu = useCallback(() => {
+    setMenuOpen(true);
+    // rAF ensures the DOM has the element before we flip visibility for CSS transition
+    requestAnimationFrame(() => requestAnimationFrame(() => setMenuVisible(true)));
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    setMenuVisible(false);
+    // Wait for CSS exit transition before unmounting
+    const timer = setTimeout(() => setMenuOpen(false), 250);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -78,6 +93,8 @@ export function SiteNav() {
     const media = window.matchMedia("(min-width: 1024px)");
     const onMediaChange = (e: MediaQueryListEvent) => {
       if (e.matches) {
+        // Instant close on breakpoint change — no exit animation needed
+        setMenuVisible(false);
         setMenuOpen(false);
       }
     };
@@ -102,6 +119,7 @@ export function SiteNav() {
 
     const closeFromHistoryNavigation = () => {
       shouldRestoreScrollRef.current = false;
+      setMenuVisible(false);
       setMenuOpen(false);
     };
 
@@ -114,7 +132,7 @@ export function SiteNav() {
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setMenuOpen(false);
+        closeMenu();
         return;
       }
 
@@ -162,22 +180,21 @@ export function SiteNav() {
         lastFocusedElement.current.focus();
       }
     };
-  }, [menuOpen]);
+  }, [menuOpen, closeMenu]);
 
   return (
     <header
       className={cn(
-        "fixed top-0 z-40 w-full transition-all duration-300",
+        "fixed top-0 z-40 w-full transition-[transform,background-color,border-color,padding] duration-300",
         isScrolled
-          ? "bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--border)]"
+          ? "bg-background/90 backdrop-blur-md border-b border-border"
           : "bg-transparent"
       )}
     >
       <div>
         <div className="mx-auto flex h-16 max-w-[80rem] items-center justify-between px-5 sm:px-6">
           <Link href="/" aria-label="CEEA home">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.svg" alt="CEEA" className="h-11 w-auto" />
+            <Logo className="h-11 w-auto text-foreground" />
           </Link>
 
           <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
@@ -200,11 +217,11 @@ export function SiteNav() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              className="ui-pressable lg:hidden flex items-center justify-center h-10 w-10 rounded-full text-[var(--accents-5)] hover:text-[var(--foreground)] hover:bg-[var(--accents-1)] transition-colors"
+              className="ui-pressable lg:hidden flex items-center justify-center h-10 w-10 rounded-full text-[var(--accents-5)] hover:text-foreground hover:bg-[var(--accents-1)] transition-colors"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
               aria-controls={menuId}
-              onClick={() => setMenuOpen((v) => !v)}
+              onClick={() => (menuOpen ? closeMenu() : openMenu())}
             >
               {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -217,23 +234,30 @@ export function SiteNav() {
           <button
             type="button"
             aria-label="Close mobile menu"
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
-            onClick={() => setMenuOpen(false)}
+            className={cn(
+              "absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-200",
+              menuVisible ? "opacity-100" : "opacity-0",
+            )}
+            onClick={closeMenu}
           />
           <div
-            className="absolute left-0 right-0 top-0 bg-[var(--background)] max-h-[100dvh] overflow-y-auto shadow-2xl animate-in slide-in-from-top-1 fade-in duration-300"
+            className={cn(
+              "absolute left-0 right-0 top-0 bg-background max-h-[100dvh] overflow-y-auto shadow-2xl transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              menuVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 -translate-y-2",
+            )}
             style={{ overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}
           >
             <div className="px-5 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
               <div className="flex items-center justify-between">
                 <div>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logo.svg" alt="CEEA" className="h-11 w-auto" />
+                  <Logo className="h-11 w-auto text-foreground" />
                 </div>
                 <button
                   type="button"
-                  onClick={() => setMenuOpen(false)}
-                  className="ui-pressable p-2.5 -mr-2.5 rounded-full text-[var(--foreground)] transition-colors hover:bg-[var(--accents-1)]"
+                  onClick={closeMenu}
+                  className="ui-pressable p-2.5 -mr-2.5 rounded-full text-foreground transition-colors hover:bg-[var(--accents-1)]"
                   aria-label="Close menu"
                 >
                   <X className="h-5 w-5" />
@@ -252,9 +276,9 @@ export function SiteNav() {
                         "block rounded-lg px-3.5 py-3 text-left font-display text-lg transition-[background-color,color] duration-200",
                         isActive
                           ? "text-[var(--primary)] bg-[color-mix(in_oklch,var(--primary)_8%,var(--background))]"
-                          : "text-[var(--foreground)] hover:bg-[var(--accents-1)]",
+                          : "text-foreground hover:bg-[var(--accents-1)]",
                       )}
-                      onClick={() => setMenuOpen(false)}
+                      onClick={closeMenu}
                     >
                       {l.label}
                     </Link>

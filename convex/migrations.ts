@@ -72,3 +72,20 @@ export const flattenLegacyLocalization = internalMutation({
     };
   },
 });
+
+/** One-time migration: rename kind "flagship" → "signature" */
+export const renameKindFlagshipToSignature = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const events = await ctx.db.query("events").collect();
+    let changed = 0;
+    for (const event of events) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((event as any).kind === "flagship") {
+        await ctx.db.patch(event._id, { kind: "signature" });
+        changed++;
+      }
+    }
+    return { changed };
+  },
+});

@@ -34,7 +34,7 @@ export function absoluteUrl(pathname = "/"): string {
 export function toMetaDescription(input: string, maxLength = 160): string {
   const normalized = input.replace(/\s+/g, " ").trim();
   if (normalized.length <= maxLength) return normalized;
-  return `${normalized.slice(0, maxLength - 1).trimEnd()}...`;
+  return `${normalized.slice(0, maxLength - 1).trimEnd()}…`;
 }
 
 export function buildPageMetadata({

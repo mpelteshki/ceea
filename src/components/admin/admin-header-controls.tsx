@@ -10,7 +10,7 @@ export function AdminHeaderControls() {
   return (
     <div className="flex items-center gap-3">
       <SignedIn>
-        <div className="hidden items-center gap-2 text-sm text-[var(--muted-foreground)] sm:flex">
+        <div className="hidden items-center gap-2 text-sm text-muted-foreground sm:flex">
           <div className="h-6 w-6 overflow-hidden rounded-full bg-[var(--secondary)]">
             <Image
               src={user?.imageUrl ?? "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="}
@@ -21,14 +21,14 @@ export function AdminHeaderControls() {
               unoptimized
             />
           </div>
-          <span className="font-medium text-[var(--foreground)]">
+          <span className="font-medium text-foreground">
             {user?.firstName || user?.username || "Admin"}
           </span>
         </div>
 
         <SignOutButton>
           <button
-            className="group flex items-center gap-2 rounded-md bg-[var(--secondary)]/50 px-3 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--destructive)]/10 hover:text-[var(--destructive)]"
+            className="group flex items-center gap-2 rounded-md bg-[var(--secondary)]/50 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-[var(--destructive)]/10 hover:text-[var(--destructive)]"
             title="Sign Out"
             aria-label="Sign out"
           >

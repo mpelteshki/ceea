@@ -156,6 +156,7 @@ export function StaggerItem({
   scale?: number;
   as?: "div" | "li" | "article" | "section";
 }) {
+  const reduceMotion = useReducedMotion();
   const offset = directionOffset(direction, distance);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -165,12 +166,14 @@ export function StaggerItem({
     <Component
       className={className}
       variants={{
-        hidden: {
-          opacity: 0,
-          ...offset,
-          ...(blur ? { filter: "blur(6px)" } : {}),
-          ...(scale != null ? { scale } : {}),
-        },
+        hidden: reduceMotion
+          ? { opacity: 1 }
+          : {
+              opacity: 0,
+              ...offset,
+              ...(blur ? { filter: "blur(6px)" } : {}),
+              ...(scale != null ? { scale } : {}),
+            },
         visible: {
           opacity: 1,
           x: 0,
@@ -178,7 +181,7 @@ export function StaggerItem({
           ...(blur ? { filter: "blur(0px)" } : {}),
           ...(scale != null ? { scale: 1 } : {}),
           transition: {
-            duration: 0.55,
+            duration: reduceMotion ? 0 : 0.55,
             ease: [0.22, 1, 0.36, 1],
           },
         },

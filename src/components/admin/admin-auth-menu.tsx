@@ -9,13 +9,13 @@ export function AdminAuthMenu() {
       <SignedOut>
         <Link
           href="/sign-in"
-          className="rounded-md border border-[var(--accents-2)] bg-[var(--background)] px-3 py-1.5 font-medium text-[var(--foreground)] hover:bg-[var(--accents-1)]"
+          className="rounded-md border border-[var(--accents-2)] bg-[var(--background)] px-3 py-1.5 font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--accents-1)]"
         >
           Sign in
         </Link>
         <Link
           href="/sign-up"
-          className="rounded-md bg-[var(--foreground)] px-3 py-1.5 font-medium text-[var(--background)] hover:opacity-90"
+          className="rounded-md bg-[var(--foreground)] px-3 py-1.5 font-medium text-[var(--background)] transition-opacity hover:opacity-90"
         >
           Sign up
         </Link>

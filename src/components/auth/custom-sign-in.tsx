@@ -3,6 +3,7 @@
 import { useSignIn } from "@clerk/nextjs";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 
 export function CustomSignIn() {
     const { signIn, isLoaded } = useSignIn();
@@ -49,7 +50,8 @@ export function CustomSignIn() {
     return (
         <div className="w-full max-w-sm mx-auto space-y-6">
             <div className="text-center space-y-2">
-                <h1 className="text-2xl font-bold font-display text-[var(--foreground)]">
+                <Logo className="h-12 w-auto mx-auto mb-4 text-foreground" />
+                <h1 className="text-2xl font-bold font-display text-foreground">
                     Admin Access
                 </h1>
                 <p className="text-sm text-[var(--accents-5)]">
@@ -67,7 +69,7 @@ export function CustomSignIn() {
                 <button
                     onClick={handleGoogleSignIn}
                     disabled={!isLoaded || isLoading}
-                    className="relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--accents-1)] hover:border-[var(--accents-3)] transition-[background-color,border-color,color,box-shadow] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm font-medium"
+                    className="relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-background text-foreground border border-border rounded-lg hover:bg-[var(--accents-1)] hover:border-[var(--accents-3)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm font-medium"
                 >
                     {isLoading ? (
                         <Loader2 className="w-5 h-5 animate-spin text-[var(--accents-4)]" />

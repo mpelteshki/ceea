@@ -12,6 +12,13 @@ import { fmtEventDate } from "@/lib/format-date";
 
 type EventDoc = Doc<"events">;
 
+const KIND_META: Record<string, { label: string; color: string }> = {
+  signature: { label: "Signature", color: "var(--brand-teal)" },
+  career:    { label: "Career",    color: "var(--brand-caramel)" },
+  culture:   { label: "Culture",   color: "var(--brand-crimson)" },
+  community: { label: "Community", color: "var(--muted-foreground)" },
+};
+
 export async function UpcomingEvents() {
     if (!hasConvex) {
         return (
@@ -20,7 +27,7 @@ export async function UpcomingEvents() {
                     title="Moments worth showing up for"
                     accent="var(--brand-crimson)"
                 />
-                <div className="rounded-2xl border border-dashed border-[var(--accents-3)] p-8 text-center text-sm text-[var(--accents-5)]">
+                <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
                     Set <code className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</code> to show events.
                 </div>
             </section>
@@ -61,42 +68,44 @@ export async function UpcomingEvents() {
 
                                 return (
                                     <StaggerItem key={event._id}>
-                                    <Link
-                                        href={event.rsvpUrl || "/events"}
-                                        className="group grid grid-cols-[4rem_1fr] items-center gap-4 py-5 transition-colors duration-200 hover:bg-[var(--accents-1)] sm:grid-cols-[5rem_1fr_auto] sm:gap-8 sm:py-6 -mx-4 px-4 rounded-xl"
-                                    >
-                                        {/* Date block */}
-                                        <div className="text-center">
-                                            <div className="font-mono text-[0.6875rem] font-medium uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-                                                {date.month}
-                                            </div>
-                                            <div className="font-display text-3xl font-semibold leading-none tracking-tight text-[var(--foreground)]">
-                                                {date.day}
-                                            </div>
-                                        </div>
-
-                                        {/* Info */}
-                                        <div className="min-w-0">
-                                            <h3 className="truncate font-display text-lg font-semibold leading-snug text-[var(--foreground)] sm:text-xl">
-                                                {title}
-                                            </h3>
-                                            <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-[var(--muted-foreground)]">
-                                                <span className="flex items-center gap-1.5">
-                                                    <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
-                                                    {date.time}
+                                        <Link
+                                            href={event.rsvpUrl || "/events"}
+                                            className="group relative grid grid-cols-[auto_1fr_auto] items-center gap-6 px-4 py-5 transition-colors duration-200 hover:bg-[var(--accents-1)] sm:gap-8 sm:py-6"
+                                        >
+                                            {/* Date block */}
+                                            <div className="flex flex-col items-center justify-center w-16 sm:w-20">
+                                                <span className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em] text-[var(--color-crimson)]">
+                                                    {date.month}
                                                 </span>
-                                                {event.location && (
-                                                    <span className="flex items-center gap-1.5">
-                                                        <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
-                                                        {event.location}
-                                                    </span>
-                                                )}
+                                                <span className="font-display text-3xl leading-none tracking-tight text-foreground mt-0.5 sm:text-4xl">
+                                                    {date.day}
+                                                </span>
                                             </div>
-                                        </div>
 
-                                        {/* Arrow */}
-                                        <ArrowUpRight className="block h-4 w-4 shrink-0 text-[var(--muted-foreground)]" />
-                                    </Link>
+                                            {/* Info */}
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="truncate font-display text-lg leading-snug text-foreground sm:text-xl">
+                                                    {title}
+                                                </h3>
+                                                <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                                                    <span className="inline-flex items-center gap-1.5">
+                                                        <Calendar className="h-3 w-3" aria-hidden="true" />
+                                                        {date.time}
+                                                    </span>
+                                                    {event.location && (
+                                                        <span className="inline-flex items-center gap-1.5">
+                                                            <MapPin className="h-3 w-3" aria-hidden="true" />
+                                                            {event.location}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Arrow */}
+                                            <div className="hidden sm:flex items-center justify-center h-10 w-10 rounded-full border border-border text-muted-foreground transition-colors duration-200 group-hover:border-transparent group-hover:bg-primary group-hover:text-primary-foreground">
+                                                <ArrowUpRight className="ui-icon-shift h-4 w-4" />
+                                            </div>
+                                        </Link>
                                     </StaggerItem>
                                 );
                             })}

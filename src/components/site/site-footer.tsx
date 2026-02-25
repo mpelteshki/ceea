@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SITE_CONTACT, SITE_EMAIL_HREF } from "@/lib/site-contact";
+import { Logo } from "@/components/ui/logo";
 
 const PRIMARY_LINKS = [
   { href: "/events", label: "Events" },
@@ -22,10 +23,7 @@ export async function SiteFooter() {
         <div className="grid gap-8 border-b border-white/15 pb-8 md:grid-cols-[1.1fr_1fr_1fr]">
           <section>
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-[var(--brand-teal)] text-lg font-bold shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]">
-                C
-              </div>
-              <p className="font-brand text-xl tracking-wide">CEEA</p>
+              <Logo className="h-10 w-auto" variant="white" />
             </div>
             <p className="mt-3 max-w-md text-sm leading-6 text-white/75">
               Central &amp; Eastern European Association at Bocconi University.

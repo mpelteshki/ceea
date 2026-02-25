@@ -26,7 +26,7 @@ export function EmptyState({
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accents-2)]">
                 <Icon className="h-6 w-6 text-muted-foreground" />
             </div>
-            <h3 className="mt-4 font-display text-lg text-[var(--foreground)]">
+            <h3 className="mt-4 font-display text-lg text-foreground">
                 {title}
             </h3>
             {description && (

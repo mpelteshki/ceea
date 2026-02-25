@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { ExpandableText } from "@/components/ui/expandable-text";
 import { toPlainText } from "@/lib/plain-text";
+import { cn } from "@/lib/utils";
 
 type ProjectLike = {
   _id: string;
@@ -12,26 +12,34 @@ type ProjectLike = {
 };
 
 /**
- * Reusable alternating-layout project card.
- * Used on both /projects and /divisions/[slug].
+ * Card-style project card used on /projects and /divisions/[slug].
  */
 export function ProjectCard({
   project,
   index,
+  featured = false,
 }: {
   project: ProjectLike;
   index: number;
+  /** Spanning 2 columns on sm grid */
+  featured?: boolean;
 }) {
-  const isReversed = index % 2 === 1;
   const title = toPlainText(project.title);
   const description = toPlainText(project.description);
 
   return (
     <article
-      className="group grid items-center gap-8 rounded-2xl p-2 lg:grid-cols-2 lg:gap-16"
+      className={cn(
+        "group flex flex-col ui-card overflow-hidden bg-card",
+        featured && "sm:col-span-2 lg:col-span-2",
+      )}
     >
+      {/* Image */}
       <div
-        className={`relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[var(--accents-2)] ${isReversed ? "lg:order-last" : ""}`}
+        className={cn(
+          "relative w-full overflow-hidden bg-[var(--accents-2)]",
+          featured ? "aspect-[21/9]" : "aspect-[16/9]",
+        )}
       >
         {project.imageUrl ? (
           <Image
@@ -39,37 +47,50 @@ export function ProjectCard({
             alt={title}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-            sizes="(max-width: 1024px) 100vw, 50vw"
+            sizes={featured ? "(max-width: 640px) 100vw, 80vw" : "(max-width: 640px) 100vw, 50vw"}
           />
-        ) : null}
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <span className="font-display text-6xl text-[var(--brand-teal)] opacity-10">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+          </div>
+        )}
       </div>
 
-      <div className="space-y-6">
-        <div className="flex items-center justify-center gap-3 lg:justify-start">
-          <span className="font-mono text-xs tabular-nums text-[var(--accents-4)]">
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <span className="ui-tag border-border text-muted-foreground">
             {String(index + 1).padStart(2, "0")}
           </span>
-          <span className="h-px flex-1 bg-[var(--accents-2)]" />
         </div>
-        <h2 className="font-display text-3xl leading-[1.1] text-[var(--foreground)] sm:text-4xl">
+
+        <h2
+          className={cn(
+            "font-display leading-snug text-foreground",
+            featured ? "text-2xl sm:text-3xl" : "text-xl",
+          )}
+        >
           {title}
         </h2>
-        <ExpandableText
-          text={description}
-          readMoreLabel="Read more"
-          readLessLabel="Read less"
-          maxLines={4}
-        />
+
+        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+          {description}
+        </p>
+
         {project.link ? (
-          <a
-            href={project.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 text-sm font-medium text-[var(--brand-teal)] hover:underline"
-          >
-            Learn More
-            <ArrowUpRight className="ui-icon-shift h-4 w-4" />
-          </a>
+          <div className="mt-auto pt-5">
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--brand-teal)] transition-opacity hover:opacity-75"
+            >
+              Learn More
+              <ArrowUpRight className="ui-icon-shift h-3 w-3" />
+            </a>
+          </div>
         ) : null}
       </div>
     </article>

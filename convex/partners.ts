@@ -6,11 +6,13 @@ import { normalizeOptionalUrl } from "./lib/url";
 export const listAll = query({
     args: {},
     handler: async (ctx) => {
-        return await ctx.db
+        const rows = await ctx.db
             .query("partners")
             .withIndex("by_tier_name", (q) => q)
             .order("asc")
             .collect();
+        // Strip internal metadata from public response
+        return rows.map(({ createdBy: _, ...rest }) => rest);
     },
 });
 
