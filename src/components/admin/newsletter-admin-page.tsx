@@ -334,7 +334,7 @@ function NewsletterAdminPageInner() {
                 className="ui-btn"
                 data-variant="secondary"
               >
-                New post
+                Cancel edit
               </button>
             ) : null}
           </div>

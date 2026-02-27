@@ -206,7 +206,7 @@ function TeamAdminPageInner() {
   if (isLoading) return <AdminPanelFallback label="Authenticating…" />;
 
   return (
-      <div className="flex flex-col border-t border-[var(--accents-2)]">
+    <div className="flex flex-col border-t border-[var(--accents-2)]">
       {error && (
         <div className="ui-site-container mt-4">
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300" role="alert">
@@ -256,7 +256,7 @@ function TeamAdminPageInner() {
                 className="ui-btn"
                 data-variant="secondary"
               >
-                New member
+                Cancel edit
               </button>
             ) : null}
           </div>
@@ -510,7 +510,7 @@ function TeamAdminPageInner() {
           )}
         </div>
       </section>
-      </div>
+    </div>
   );
 }
 

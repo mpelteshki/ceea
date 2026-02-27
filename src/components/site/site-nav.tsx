@@ -97,7 +97,7 @@ export function SiteNav() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > window.innerHeight / 2);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });

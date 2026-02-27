@@ -11,6 +11,8 @@ export default defineSchema({
       v.literal("career"),
       v.literal("culture"),
       v.literal("community"),
+      // Legacy value kept temporarily so older prod rows don't block deploys.
+      v.literal("flagship"),
     ),
     startsAt: v.number(), // epoch ms
     rsvpUrl: v.optional(v.string()),

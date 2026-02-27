@@ -307,6 +307,23 @@
   --color-brand-cream: var(--color-cream);
   --color-brand-tan: var(--color-tan);
   --color-brand-caramel: var(--color-caramel);
+
+  --animate-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+
+  *,
+  ::before,
+  ::after {
+    --default-transition-timing-function: var(--animate-ease);
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation-timing-function: var(--animate-ease) !important;
+  }
 }
 
 /* === Base === */

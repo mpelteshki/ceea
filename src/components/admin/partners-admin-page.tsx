@@ -210,325 +210,325 @@ function PartnersAdminPageInner() {
   if (isLoading) return <AdminPanelFallback label="Authenticating…" />;
 
   return (
-      <div className="flex flex-col border-t border-[var(--accents-2)]">
-        {error && (
-          <div className="ui-site-container mt-4">
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300" role="alert">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">Error:</span>
-                {error}
-              </div>
+    <div className="flex flex-col border-t border-[var(--accents-2)]">
+      {error && (
+        <div className="ui-site-container mt-4">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300" role="alert">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">Error:</span>
+              {error}
+            </div>
+            <button
+              type="button"
+              onClick={() => setError(null)}
+              className="mt-2 text-xs underline hover:no-underline"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
+
+      <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--background)] py-12 sm:py-16">
+        <div className="ui-site-container relative">
+          <div className="flex flex-col gap-6 text-center sm:text-left">
+            <div className="space-y-1">
+              <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
+                Partners
+              </h1>
+              <p className="max-w-2xl text-lg leading-relaxed text-[var(--muted-foreground)]">
+                Add organizations and companies that support the CEEA mission.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--accents-1)]/30 py-12 sm:py-16">
+        <div className="ui-site-container relative">
+          <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left mb-8">
+            <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">
+              {editingPartnerId ? "Edit partner" : "Create partner"}
+            </h2>
+            {editingPartnerId ? (
               <button
                 type="button"
-                onClick={() => setError(null)}
-                className="mt-2 text-xs underline hover:no-underline"
+                onClick={() => {
+                  setEditingPartnerId(null);
+                  resetForm();
+                }}
+                className="ui-btn"
+                data-variant="secondary"
               >
-                Dismiss
+                Cancel edit
+              </button>
+            ) : null}
+          </div>
+
+          <form onSubmit={handleSubmit} className="grid gap-6">
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Name">
+                <input
+                  name="partner_name"
+                  autoComplete="off"
+                  placeholder="Partner name…"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="ui-input"
+                  required
+                />
+              </Field>
+              <Field label="Tier">
+                <select
+                  name="partner_tier"
+                  autoComplete="off"
+                  value={form.tier}
+                  onChange={(e) => setForm({ ...form, tier: e.target.value as Tier })}
+                  className="ui-input"
+                >
+                  <option value="lead">Lead</option>
+                  <option value="supporting">Supporting</option>
+                  <option value="community">Community</option>
+                </select>
+              </Field>
+              <Field label="Website URL">
+                <input
+                  type="url"
+                  inputMode="url"
+                  spellCheck={false}
+                  name="partner_website_url"
+                  autoComplete="off"
+                  placeholder="https://company.com…"
+                  value={form.websiteUrl}
+                  onChange={(e) => setForm({ ...form, websiteUrl: e.target.value })}
+                  className="ui-input"
+                />
+              </Field>
+              <Field label="Logo URL">
+                <input
+                  type="url"
+                  inputMode="url"
+                  spellCheck={false}
+                  name="partner_logo_url"
+                  autoComplete="off"
+                  placeholder="https://company.com/logo.png…"
+                  value={form.logoUrl}
+                  onChange={(e) => setForm({ ...form, logoUrl: e.target.value })}
+                  className="ui-input"
+                />
+              </Field>
+            </div>
+
+            <div className="flex justify-center sm:justify-start pt-2">
+              <button type="submit" className={["ui-btn", isSaving ? "opacity-60 cursor-not-allowed" : ""].join(" ")} disabled={isSaving}>
+                {isSaving ? (editingPartnerId ? "Saving…" : "Creating…") : (editingPartnerId ? "Save changes" : "Add partner")} <span className="text-[10px]">{isSaving ? "" : "->"}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden bg-[var(--background)] py-12 sm:py-16">
+        <div className="ui-site-container relative">
+          <div className="mb-8">
+            <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">Current Partners</h2>
+            <div className="mt-1 text-sm text-[var(--accents-5)]">
+              {partners ? `${filteredPartners.length} of ${partners.length} shown` : "Loading…"}
+            </div>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-[1fr_180px_180px_auto] mb-6">
+            <input
+              name="partners_search"
+              autoComplete="off"
+              aria-label="Search partners"
+              value={searchQuery}
+              onChange={(e) => {
+                const nextQuery = e.target.value;
+                setSearchQuery(nextQuery);
+                setPage(1);
+                syncListState({ q: nextQuery, page: 1 });
+              }}
+              placeholder="Search name, website, logo URL…"
+              className="ui-input"
+            />
+            <select
+              name="partners_tier_filter"
+              autoComplete="off"
+              aria-label="Filter partners by tier"
+              value={tierFilter}
+              onChange={(e) => {
+                const nextTier = e.target.value as TierFilter;
+                setTierFilter(nextTier);
+                setPage(1);
+                syncListState({ tier: nextTier, page: 1 });
+              }}
+              className="ui-input"
+            >
+              <option value="all">All tiers</option>
+              <option value="lead">Lead</option>
+              <option value="supporting">Supporting</option>
+              <option value="community">Community</option>
+            </select>
+            <select
+              name="partners_sort"
+              autoComplete="off"
+              aria-label="Sort partners"
+              value={sortBy}
+              onChange={(e) => {
+                const nextSort = e.target.value as PartnerSort;
+                setSortBy(nextSort);
+                setPage(1);
+                syncListState({ sort: nextSort, page: 1 });
+              }}
+              className="ui-input"
+            >
+              <option value="tier">Tier then name</option>
+              <option value="name">Name A-Z</option>
+              <option value="newest">Newest first</option>
+            </select>
+            <div className="flex items-center justify-center gap-2 text-xs text-[var(--muted-foreground)] sm:justify-end">
+              <button
+                type="button"
+                className="ui-btn px-3 py-1.5 min-h-0 text-xs"
+                data-variant="secondary"
+                disabled={pagination.safePage <= 1}
+                onClick={() => {
+                  const nextPage = Math.max(1, pagination.safePage - 1);
+                  setPage(nextPage);
+                  syncListState({ page: nextPage });
+                }}
+              >
+                Prev
+              </button>
+              <span>
+                Page {pagination.safePage}/{pagination.totalPages}
+              </span>
+              <button
+                type="button"
+                className="ui-btn px-3 py-1.5 min-h-0 text-xs"
+                data-variant="secondary"
+                disabled={pagination.safePage >= pagination.totalPages}
+                onClick={() => {
+                  const nextPage = Math.min(pagination.totalPages, pagination.safePage + 1);
+                  setPage(nextPage);
+                  syncListState({ page: nextPage });
+                }}
+              >
+                Next
               </button>
             </div>
           </div>
-        )}
 
-        <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--background)] py-12 sm:py-16">
-          <div className="ui-site-container relative">
-            <div className="flex flex-col gap-6 text-center sm:text-left">
-              <div className="space-y-1">
-                <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
-                  Partners
-                </h1>
-                <p className="max-w-2xl text-lg leading-relaxed text-[var(--muted-foreground)]">
-                  Add organizations and companies that support the CEEA mission.
-                </p>
-              </div>
+          {!partners ? (
+            <div className="py-20 text-center">
+              <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent text-[var(--accents-5)]" />
             </div>
-          </div>
-        </section>
-
-        <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--accents-1)]/30 py-12 sm:py-16">
-          <div className="ui-site-container relative">
-            <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left mb-8">
-              <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">
-                {editingPartnerId ? "Edit partner" : "Create partner"}
-              </h2>
-              {editingPartnerId ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingPartnerId(null);
-                    resetForm();
-                  }}
-                  className="ui-btn"
-                  data-variant="secondary"
-                >
-                  New partner
-                </button>
-              ) : null}
-            </div>
-
-            <form onSubmit={handleSubmit} className="grid gap-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Name">
-                  <input
-                    name="partner_name"
-                    autoComplete="off"
-                    placeholder="Partner name…"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="ui-input"
-                    required
-                  />
-                </Field>
-                <Field label="Tier">
-                  <select
-                    name="partner_tier"
-                    autoComplete="off"
-                    value={form.tier}
-                    onChange={(e) => setForm({ ...form, tier: e.target.value as Tier })}
-                    className="ui-input"
+          ) : filteredPartners.length === 0 ? (
+            <EmptyState
+              title={partners?.length === 0 ? "No partners yet." : "No partners match the current filters."}
+              description={partners?.length === 0 ? "Add your first partner using the form above." : "Try adjusting or clearing your filters."}
+              icon={partners?.length === 0 ? Handshake : SearchX}
+              className="ui-card border-border bg-card/70 py-10"
+            />
+          ) : (
+            <div className="grid gap-3">
+              <AnimatePresence initial={false}>
+                {pagination.items.map((partner) => (
+                  <m.div
+                    key={partner._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="ui-card group grid gap-4 p-4 md:grid-cols-[1fr_auto] md:items-center"
                   >
-                    <option value="lead">Lead</option>
-                    <option value="supporting">Supporting</option>
-                    <option value="community">Community</option>
-                  </select>
-                </Field>
-                <Field label="Website URL">
-                  <input
-                    type="url"
-                    inputMode="url"
-                    spellCheck={false}
-                    name="partner_website_url"
-                    autoComplete="off"
-                    placeholder="https://company.com…"
-                    value={form.websiteUrl}
-                    onChange={(e) => setForm({ ...form, websiteUrl: e.target.value })}
-                    className="ui-input"
-                  />
-                </Field>
-                <Field label="Logo URL">
-                  <input
-                    type="url"
-                    inputMode="url"
-                    spellCheck={false}
-                    name="partner_logo_url"
-                    autoComplete="off"
-                    placeholder="https://company.com/logo.png…"
-                    value={form.logoUrl}
-                    onChange={(e) => setForm({ ...form, logoUrl: e.target.value })}
-                    className="ui-input"
-                  />
-                </Field>
-              </div>
-
-              <div className="flex justify-center sm:justify-start pt-2">
-                <button type="submit" className={["ui-btn", isSaving ? "opacity-60 cursor-not-allowed" : ""].join(" ")} disabled={isSaving}>
-                  {isSaving ? (editingPartnerId ? "Saving…" : "Creating…") : (editingPartnerId ? "Save changes" : "Add partner")} <span className="text-[10px]">{isSaving ? "" : "->"}</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </section>
-
-        <section className="relative overflow-hidden bg-[var(--background)] py-12 sm:py-16">
-          <div className="ui-site-container relative">
-            <div className="mb-8">
-              <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">Current Partners</h2>
-              <div className="mt-1 text-sm text-[var(--accents-5)]">
-                {partners ? `${filteredPartners.length} of ${partners.length} shown` : "Loading…"}
-              </div>
-            </div>
-
-            <div className="grid gap-3 md:grid-cols-[1fr_180px_180px_auto] mb-6">
-              <input
-                name="partners_search"
-                autoComplete="off"
-                aria-label="Search partners"
-                value={searchQuery}
-                onChange={(e) => {
-                  const nextQuery = e.target.value;
-                  setSearchQuery(nextQuery);
-                  setPage(1);
-                  syncListState({ q: nextQuery, page: 1 });
-                }}
-                placeholder="Search name, website, logo URL…"
-                className="ui-input"
-              />
-              <select
-                name="partners_tier_filter"
-                autoComplete="off"
-                aria-label="Filter partners by tier"
-                value={tierFilter}
-                onChange={(e) => {
-                  const nextTier = e.target.value as TierFilter;
-                  setTierFilter(nextTier);
-                  setPage(1);
-                  syncListState({ tier: nextTier, page: 1 });
-                }}
-                className="ui-input"
-              >
-                <option value="all">All tiers</option>
-                <option value="lead">Lead</option>
-                <option value="supporting">Supporting</option>
-                <option value="community">Community</option>
-              </select>
-              <select
-                name="partners_sort"
-                autoComplete="off"
-                aria-label="Sort partners"
-                value={sortBy}
-                onChange={(e) => {
-                  const nextSort = e.target.value as PartnerSort;
-                  setSortBy(nextSort);
-                  setPage(1);
-                  syncListState({ sort: nextSort, page: 1 });
-                }}
-                className="ui-input"
-              >
-                <option value="tier">Tier then name</option>
-                <option value="name">Name A-Z</option>
-                <option value="newest">Newest first</option>
-              </select>
-              <div className="flex items-center justify-center gap-2 text-xs text-[var(--muted-foreground)] sm:justify-end">
-                <button
-                  type="button"
-                  className="ui-btn px-3 py-1.5 min-h-0 text-xs"
-                  data-variant="secondary"
-                  disabled={pagination.safePage <= 1}
-                  onClick={() => {
-                    const nextPage = Math.max(1, pagination.safePage - 1);
-                    setPage(nextPage);
-                    syncListState({ page: nextPage });
-                  }}
-                >
-                  Prev
-                </button>
-                <span>
-                  Page {pagination.safePage}/{pagination.totalPages}
-                </span>
-                <button
-                  type="button"
-                  className="ui-btn px-3 py-1.5 min-h-0 text-xs"
-                  data-variant="secondary"
-                  disabled={pagination.safePage >= pagination.totalPages}
-                  onClick={() => {
-                    const nextPage = Math.min(pagination.totalPages, pagination.safePage + 1);
-                    setPage(nextPage);
-                    syncListState({ page: nextPage });
-                  }}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-
-            {!partners ? (
-              <div className="py-20 text-center">
-                <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent text-[var(--accents-5)]" />
-              </div>
-            ) : filteredPartners.length === 0 ? (
-              <EmptyState
-                title={partners?.length === 0 ? "No partners yet." : "No partners match the current filters."}
-                description={partners?.length === 0 ? "Add your first partner using the form above." : "Try adjusting or clearing your filters."}
-                icon={partners?.length === 0 ? Handshake : SearchX}
-                className="ui-card border-border bg-card/70 py-10"
-              />
-            ) : (
-              <div className="grid gap-3">
-                <AnimatePresence initial={false}>
-                  {pagination.items.map((partner) => (
-                    <m.div
-                      key={partner._id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      className="ui-card group grid gap-4 p-4 md:grid-cols-[1fr_auto] md:items-center"
-                    >
-                      <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
-                        {partner.logoUrl ? (
-                          <div className="relative h-10 w-10 overflow-hidden rounded border border-[var(--accents-2)] bg-[var(--background)] p-1">
-                            <Image
-                              src={partner.logoUrl}
-                              alt={partner.name}
-                              fill
-                              className="object-contain p-1"
-                              sizes="40px"
-                            />
-                          </div>
-                        ) : (
-                          <div className="h-10 w-10 rounded border border-[var(--accents-2)] bg-[var(--accents-1)] flex items-center justify-center text-[10px] font-bold text-[var(--accents-4)]">
-                            LOGO
-                          </div>
-                        )}
-                        <div>
-                          <h4 className="font-display text-lg font-semibold text-[var(--foreground)]">
-                            {partner.name}
-                          </h4>
-                          <div className="mt-1 flex items-center justify-center gap-2 sm:justify-start">
-                            <span className="ui-tag">{partner.tier}</span>
-                            {partner.websiteUrl ? (
-                              <a
-                                href={partner.websiteUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-[var(--accents-5)] hover:text-[var(--foreground)] transition-colors underline decoration-[var(--accents-2)]"
-                              >
-                                {safeHostname(partner.websiteUrl)}
-                              </a>
-                            ) : null}
-                          </div>
+                    <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
+                      {partner.logoUrl ? (
+                        <div className="relative h-10 w-10 overflow-hidden rounded border border-[var(--accents-2)] bg-[var(--background)] p-1">
+                          <Image
+                            src={partner.logoUrl}
+                            alt={partner.name}
+                            fill
+                            className="object-contain p-1"
+                            sizes="40px"
+                          />
+                        </div>
+                      ) : (
+                        <div className="h-10 w-10 rounded border border-[var(--accents-2)] bg-[var(--accents-1)] flex items-center justify-center text-[10px] font-bold text-[var(--accents-4)]">
+                          LOGO
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="font-display text-lg font-semibold text-[var(--foreground)]">
+                          {partner.name}
+                        </h4>
+                        <div className="mt-1 flex items-center justify-center gap-2 sm:justify-start">
+                          <span className="ui-tag">{partner.tier}</span>
+                          {partner.websiteUrl ? (
+                            <a
+                              href={partner.websiteUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-[var(--accents-5)] hover:text-[var(--foreground)] transition-colors underline decoration-[var(--accents-2)]"
+                            >
+                              {safeHostname(partner.websiteUrl)}
+                            </a>
+                          ) : null}
                         </div>
                       </div>
+                    </div>
 
-                      <div className="flex items-center justify-center gap-4 opacity-100 transition-opacity md:justify-end md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingPartnerId(partner._id);
-                            setForm({
-                              name: partner.name,
-                              tier: partner.tier,
-                              websiteUrl: partner.websiteUrl ?? "",
-                              logoUrl: partner.logoUrl ?? "",
-                            });
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                          className="ui-link text-sm"
-                        >
-                          Edit
-                        </button>
-                        <ConfirmButton
-                          pending={deletingPartnerId === partner._id}
-                          onConfirm={async () => {
-                            setDeletingPartnerId(partner._id);
-                            setError(null);
-                            try {
-                              await deletePartner({ id: partner._id });
-                              if (editingPartnerId === partner._id) {
-                                setEditingPartnerId(null);
-                                resetForm();
-                              }
-                            } catch (err) {
-                              setError(err instanceof Error ? err.message : "Failed to delete partner");
-                            } finally {
-                              setDeletingPartnerId(null);
+                    <div className="flex items-center justify-center gap-4 opacity-100 transition-opacity md:justify-end md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingPartnerId(partner._id);
+                          setForm({
+                            name: partner.name,
+                            tier: partner.tier,
+                            websiteUrl: partner.websiteUrl ?? "",
+                            logoUrl: partner.logoUrl ?? "",
+                          });
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        className="ui-link text-sm"
+                      >
+                        Edit
+                      </button>
+                      <ConfirmButton
+                        pending={deletingPartnerId === partner._id}
+                        onConfirm={async () => {
+                          setDeletingPartnerId(partner._id);
+                          setError(null);
+                          try {
+                            await deletePartner({ id: partner._id });
+                            if (editingPartnerId === partner._id) {
+                              setEditingPartnerId(null);
+                              resetForm();
                             }
-                          }}
-                        />
-                      </div>
-                    </m.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            )}
-          </div>
-        </section>
-      </div>
+                          } catch (err) {
+                            setError(err instanceof Error ? err.message : "Failed to delete partner");
+                          } finally {
+                            setDeletingPartnerId(null);
+                          }
+                        }}
+                      />
+                    </div>
+                  </m.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block space-y-2 text-center sm:text-left">
-      <div className="text-xs font-semibold uppercase tracking-wider text-[var(--accents-5)]">
+      <div className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
         {label}
       </div>
       {children}

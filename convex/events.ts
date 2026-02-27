@@ -5,6 +5,10 @@ import { normalizeOptionalUrl } from "./lib/url";
 
 const MAX_EVENTS_RETURNED = 200;
 
+function normalizeKind(kind: "signature" | "career" | "culture" | "community" | "flagship") {
+  return kind === "flagship" ? "signature" : kind;
+}
+
 export const listUpcoming = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
@@ -16,7 +20,14 @@ export const listUpcoming = query({
       .order("asc")
       .take(limit);
     // Strip internal metadata from public response
-    return rows.map(({ createdBy: _, ...rest }) => rest);
+    return rows.map((row) => {
+      const { createdBy, kind, ...rest } = row;
+      void createdBy;
+      return {
+        ...rest,
+        kind: normalizeKind(kind),
+      };
+    });
   },
 });
 
@@ -29,7 +40,14 @@ export const listAll = query({
       .order("desc")
       .take(MAX_EVENTS_RETURNED);
     // Strip internal metadata from public response
-    return rows.map(({ createdBy: _, ...rest }) => rest);
+    return rows.map((row) => {
+      const { createdBy, kind, ...rest } = row;
+      void createdBy;
+      return {
+        ...rest,
+        kind: normalizeKind(kind),
+      };
+    });
   },
 });
 

@@ -3,7 +3,6 @@ import { getAdminState } from "@/lib/admin";
 import Link from "next/link";
 import { AdminAuthMenu } from "@/components/admin/admin-auth-menu";
 import { AdminNav } from "@/components/admin/admin-nav";
-import { AdminHeaderControls } from "@/components/admin/admin-header-controls";
 import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { Logo } from "@/components/ui/logo";
 
@@ -67,26 +66,9 @@ export default async function AdminLayout({
       >
         Skip to content
       </a>
-      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-md transition-colors">
-        <div className="ui-site-container flex flex-col items-center gap-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:text-left">
-          <div className="flex items-center justify-center gap-3">
-            <Link href="/" className="group flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-[var(--ring)] hover:text-foreground">
-              <span className="sr-only">Back to site</span>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 3.5L2 8L6.5 12.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M2.5 8H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            </Link>
-            <Logo className="h-6 w-auto text-foreground" />
-            <h1 className="font-display text-lg font-bold tracking-tight">Admin</h1>
-          </div>
+      <AdminNav />
 
-          <div className="flex items-center gap-4">
-            <AdminNav />
-            <div className="h-6 w-px bg-[var(--border)] hidden sm:block" />
-            <AdminHeaderControls />
-          </div>
-        </div>
-      </header>
-
-      <main id="admin-main" tabIndex={-1} className="min-h-[600px] animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <main id="admin-main" tabIndex={-1} className="pt-16 min-h-[600px] animate-in fade-in slide-in-from-bottom-4 duration-500">
         {children}
       </main>
 
