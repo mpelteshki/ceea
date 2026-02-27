@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import { FadeIn } from "@/components/ui/fade-in";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/site/page-header";
 import { ProjectCard } from "@/components/site/project-card";
@@ -9,6 +8,7 @@ import { getConvexServerClient } from "@/lib/convex-server";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 import { api } from "../../../../convex/_generated/api";
 import type { Doc } from "../../../../convex/_generated/dataModel";
+import { ProjectsAnimated } from "@/components/site/projects-animated";
 
 type ProjectDoc = Doc<"projects">;
 
@@ -42,13 +42,7 @@ export default async function ProjectsPage() {
         {projects.length === 0 ? (
           <EmptyState title="No projects yet." description="Check back later for updates." />
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2">
-            {projects.map((project, idx) => (
-              <FadeIn key={project._id} delay={Math.min(idx * 0.05, 0.2)}>
-                <ProjectCard project={project} index={idx} featured={idx === 0 && projects.length > 1} />
-              </FadeIn>
-            ))}
-          </div>
+          <ProjectsAnimated projects={projects} />
         )}
       </div>
     </>

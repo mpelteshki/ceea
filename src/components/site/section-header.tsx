@@ -77,7 +77,7 @@ export function SectionHeader({
       )}
 
       {subtitle && (
-        <p className="mt-4 max-w-2xl text-center text-base leading-relaxed text-[var(--accents-5)] sm:text-left sm:text-lg sm:leading-relaxed">
+        <p className="mt-4 max-w-2xl text-center text-base leading-relaxed text-muted-foreground sm:text-left sm:text-lg sm:leading-relaxed">
           {subtitle}
         </p>
       )}

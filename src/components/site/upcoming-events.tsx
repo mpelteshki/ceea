@@ -5,10 +5,10 @@ import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
-import { FadeIn, FadeInStagger, StaggerItem } from "@/components/ui/fade-in";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeader } from "@/components/site/section-header";
 import { fmtEventDate } from "@/lib/format-date";
+import { EventRowAnimations } from "@/components/site/event-row-animations";
 
 type EventDoc = Doc<"events">;
 
@@ -41,6 +41,18 @@ export async function UpcomingEvents() {
 
     const events = (await convex.query(api.events.listUpcoming, { limit: 4 })) as EventDoc[];
 
+    // Serialize event data for client component
+    const eventData = events.map((event) => {
+        const date = fmtEventDate(event.startsAt);
+        return {
+            id: event._id,
+            title: String(event.title || ""),
+            rsvpUrl: event.rsvpUrl || "/events",
+            location: event.location || null,
+            date,
+        };
+    });
+
     return (
         <section className="relative overflow-hidden">
             <div
@@ -49,69 +61,7 @@ export async function UpcomingEvents() {
             />
 
             <div className="ui-site-container relative py-12 sm:py-16">
-                <FadeIn>
-                    <SectionHeader
-                        title="Upcoming events"
-                        accent="var(--brand-crimson)"
-                        cta={{ label: "View all events", href: "/events" }}
-                    />
-                </FadeIn>
-
-                {events.length === 0 ? (
-                    <EmptyState title="No upcoming events yet." description="Check back later for updates." className="relative border-none bg-transparent" />
-                ) : (
-                    <FadeInStagger>
-                        <div className="divide-y divide-[var(--border)]">
-                            {events.map((event) => {
-                                const title = String(event.title || "");
-                                const date = fmtEventDate(event.startsAt);
-
-                                return (
-                                    <StaggerItem key={event._id}>
-                                        <Link
-                                            href={event.rsvpUrl || "/events"}
-                                            className="group relative grid grid-cols-[auto_1fr_auto] items-center gap-6 px-4 py-5 transition-colors duration-200 hover:bg-[var(--accents-1)] sm:gap-8 sm:py-6"
-                                        >
-                                            {/* Date block */}
-                                            <div className="flex flex-col items-center justify-center w-16 sm:w-20">
-                                                <span className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em] text-[var(--color-crimson)]">
-                                                    {date.month}
-                                                </span>
-                                                <span className="font-display text-3xl leading-none tracking-tight text-foreground mt-0.5 sm:text-4xl">
-                                                    {date.day}
-                                                </span>
-                                            </div>
-
-                                            {/* Info */}
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="truncate font-display text-lg leading-snug text-foreground sm:text-xl">
-                                                    {title}
-                                                </h3>
-                                                <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                                                    <span className="inline-flex items-center gap-1.5">
-                                                        <Calendar className="h-3 w-3" aria-hidden="true" />
-                                                        {date.time}
-                                                    </span>
-                                                    {event.location && (
-                                                        <span className="inline-flex items-center gap-1.5">
-                                                            <MapPin className="h-3 w-3" aria-hidden="true" />
-                                                            {event.location}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* Arrow */}
-                                            <div className="hidden sm:flex items-center justify-center h-10 w-10 rounded-full border border-border text-muted-foreground transition-colors duration-200 group-hover:border-transparent group-hover:bg-primary group-hover:text-primary-foreground">
-                                                <ArrowUpRight className="ui-icon-shift h-4 w-4" />
-                                            </div>
-                                        </Link>
-                                    </StaggerItem>
-                                );
-                            })}
-                        </div>
-                    </FadeInStagger>
-                )}
+                <EventRowAnimations events={eventData} />
             </div>
         </section>
     );

@@ -1,14 +1,13 @@
 import Link from "next/link";
-import { SITE_CONTACT, SITE_EMAIL_HREF } from "@/lib/site-contact";
+import { SITE_APPLY_FORM_URL, SITE_CONTACT, SITE_EMAIL_HREF } from "@/lib/site-contact";
 import { Logo } from "@/components/ui/logo";
 
 const PRIMARY_LINKS = [
   { href: "/events", label: "Events" },
   { href: "/newsletter", label: "Newsletter" },
-  { href: "/projects", label: "Projects" },
   { href: "/team", label: "Team" },
   { href: "/about", label: "About" },
-  { href: "/join-us", label: "Join Us" },
+  { href: SITE_APPLY_FORM_URL, label: "Join Us" },
   { href: "/contacts", label: "Contacts" },
 ] as const;
 
@@ -35,12 +34,21 @@ export async function SiteFooter() {
             <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1">
               {PRIMARY_LINKS.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="ui-footer-link inline-flex min-h-9 items-center text-sm text-white/78 transition-colors hover:text-white"
-                  >
-                    {link.label}
-                  </Link>
+                  {link.href.startsWith("http") ? (
+                    <a
+                      href={link.href}
+                      className="ui-footer-link inline-flex min-h-9 items-center text-sm text-white/78 transition-colors hover:text-white"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className="ui-footer-link inline-flex min-h-9 items-center text-sm text-white/78 transition-colors hover:text-white"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

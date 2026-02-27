@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignedIn } from "@clerk/nextjs";
 import { Logo } from "@/components/ui/logo";
+import { SITE_APPLY_FORM_URL } from "@/lib/site-contact";
 
 function NavLink({
   href,
@@ -18,26 +19,43 @@ function NavLink({
   onClick?: () => void;
 }) {
   const pathname = usePathname();
-  const isActive = pathname === href || (pathname.startsWith(href) && href !== "/");
+  const isExternal = href.startsWith("http");
+  const isActive = isExternal
+    ? false
+    : pathname === href || (pathname.startsWith(href) && href !== "/");
+
+  const className = cn(
+    "ui-nav-link group/nav px-3 py-5 text-[13px] font-medium tracking-wide transition-colors duration-200",
+    isActive ? "text-[var(--primary)]" : "text-[var(--accents-5)] hover:text-foreground",
+  );
+
+  const content = (
+    <span
+      className={cn(
+        "inline-block transition-transform duration-200",
+        isActive ? "translate-y-0" : "group-hover/nav:-translate-y-0.5",
+      )}
+    >
+      {children}
+    </span>
+  );
+
+  if (isExternal) {
+    return (
+      <a href={href} onClick={onClick} className={className}>
+        {content}
+      </a>
+    );
+  }
 
   return (
     <Link
       href={href}
       onClick={onClick}
       data-active={isActive ? "true" : "false"}
-      className={cn(
-        "ui-nav-link group/nav px-3 py-5 text-[13px] font-medium tracking-wide transition-colors duration-200",
-        isActive ? "text-[var(--primary)]" : "text-[var(--accents-5)] hover:text-foreground",
-      )}
+      className={className}
     >
-      <span
-        className={cn(
-          "inline-block transition-transform duration-200",
-          isActive ? "translate-y-0" : "group-hover/nav:-translate-y-0.5",
-        )}
-      >
-        {children}
-      </span>
+      {content}
     </Link>
   );
 }
@@ -49,8 +67,7 @@ export function SiteNav() {
     { href: "/events", label: "Events" },
     { href: "/newsletter", label: "Newsletter" },
     { href: "/team", label: "Team" },
-    { href: "/projects", label: "Projects" },
-    { href: "/join-us", label: "Join Us" },
+    { href: SITE_APPLY_FORM_URL, label: "Join Us" },
     { href: "/contacts", label: "Contacts" },
     { href: "/admin", label: "Admin", requiredAuth: true },
   ];
@@ -266,22 +283,38 @@ export function SiteNav() {
 
               <div className="mt-5 grid gap-0.5">
                 {links.map((l, idx) => {
-                  const isActive = pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
+                  const isExternal = l.href.startsWith("http");
+                  const isActive = isExternal
+                    ? false
+                    : pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
+                  const className = cn(
+                    "block rounded-lg px-3.5 py-3 text-left font-display text-lg transition-[background-color,color] duration-200",
+                    isActive
+                      ? "text-[var(--primary)] bg-[color-mix(in_oklch,var(--primary)_8%,var(--background))]"
+                      : "text-foreground hover:bg-[var(--accents-1)]",
+                  );
                   const LinkComponent = (
-                    <Link
-                      key={l.href}
-                      href={l.href}
-                      ref={idx === 0 ? firstLinkRef : undefined}
-                      className={cn(
-                        "block rounded-lg px-3.5 py-3 text-left font-display text-lg transition-[background-color,color] duration-200",
-                        isActive
-                          ? "text-[var(--primary)] bg-[color-mix(in_oklch,var(--primary)_8%,var(--background))]"
-                          : "text-foreground hover:bg-[var(--accents-1)]",
-                      )}
-                      onClick={closeMenu}
-                    >
-                      {l.label}
-                    </Link>
+                    isExternal ? (
+                      <a
+                        key={l.href}
+                        href={l.href}
+                        ref={idx === 0 ? firstLinkRef : undefined}
+                        className={className}
+                        onClick={closeMenu}
+                      >
+                        {l.label}
+                      </a>
+                    ) : (
+                      <Link
+                        key={l.href}
+                        href={l.href}
+                        ref={idx === 0 ? firstLinkRef : undefined}
+                        className={className}
+                        onClick={closeMenu}
+                      >
+                        {l.label}
+                      </Link>
+                    )
                   );
 
                   if (l.requiredAuth) {

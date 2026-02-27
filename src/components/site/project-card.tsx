@@ -46,12 +46,12 @@ export function ProjectCard({
             src={project.imageUrl}
             alt={title}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            className="object-cover transition-transform duration-700"
             sizes={featured ? "(max-width: 640px) 100vw, 80vw" : "(max-width: 640px) 100vw, 50vw"}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="font-display text-6xl text-[var(--brand-teal)] opacity-10">
+            <span className="font-display text-4xl text-[var(--brand-teal)] opacity-10">
               {String(index + 1).padStart(2, "0")}
             </span>
           </div>
@@ -60,35 +60,37 @@ export function ProjectCard({
 
       {/* Content */}
       <div className="flex flex-1 flex-col p-6">
-        <div className="mb-4 flex items-center gap-2">
+        <div className="mb-6 flex items-center gap-2">
           <span className="ui-tag border-border text-muted-foreground">
             {String(index + 1).padStart(2, "0")}
           </span>
         </div>
 
-        <h2
-          className={cn(
-            "font-display leading-snug text-foreground",
-            featured ? "text-2xl sm:text-3xl" : "text-xl",
-          )}
-        >
-          {title}
-        </h2>
+        <div className="flex flex-col gap-2">
+          <h2
+            className={cn(
+              "font-display leading-snug text-foreground",
+              featured ? "text-2xl sm:text-3xl font-semibold" : "text-xl font-medium",
+            )}
+          >
+            {title}
+          </h2>
 
-        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
-          {description}
-        </p>
+          <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+            {description}
+          </p>
+        </div>
 
         {project.link ? (
-          <div className="mt-auto pt-5">
+          <div className="mt-auto pt-6 flex items-center gap-2 text-sm font-medium text-[var(--brand-teal)] transition-opacity group-hover:opacity-75">
             <a
               href={project.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--brand-teal)] transition-opacity hover:opacity-75"
+              className="group/link flex items-center gap-2"
             >
-              Learn More
-              <ArrowUpRight className="ui-icon-shift h-3 w-3" />
+              <span>Learn More</span>
+              <ArrowUpRight className="ui-icon-shift h-3.5 w-3.5" />
             </a>
           </div>
         ) : null}

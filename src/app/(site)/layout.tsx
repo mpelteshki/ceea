@@ -1,6 +1,5 @@
 import { SiteNav } from "@/components/site/site-nav";
 import { SiteFooter } from "@/components/site/site-footer";
-
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="site-shell flex min-h-[100dvh] flex-col bg-[var(--background)] overflow-x-hidden">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FadeIn, FadeInStagger, StaggerItem } from "@/components/ui/fade-in";
 import { PageHeader } from "@/components/site/page-header";
+import { AboutAnimatedSections } from "@/components/site/about-animations";
 import { Palette, Scale, TrendingUp, Users, Briefcase, Newspaper } from "lucide-react";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 
@@ -115,89 +116,17 @@ export default async function AboutPage() {
         subtitle={MISSION}
       />
 
-      <div className="ui-site-container space-y-24 pt-10 pb-16 sm:pt-14 sm:pb-24">
-        <FadeInStagger className="space-y-12">
-          <FadeIn>
-            <div className="mb-6">
-              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground">Our Divisions</h2>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                Six verticals across two tracks — Assemblies (Culture, Diplomacy & Politics, Community) and standalone divisions (Projects, Career Services, Newsletter) — each owning its own programming, calendar, and partnerships.
-              </p>
-            </div>
-          </FadeIn>
-
-          <div className="grid gap-5 sm:grid-cols-2">
-            {divisionCards.map((division, i) => (
-              <StaggerItem key={division.name} scale={0.93} blur>
-                <div className="relative flex h-full flex-col rounded-2xl border border-border bg-card p-8 sm:p-10">
-                  <div className="absolute left-8 right-8 top-0 h-[2px] rounded-full" style={{ background: division.accent }} />
-                  <div className="mb-6 flex items-start justify-between gap-4">
-                    <div
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-                      style={{ background: `color-mix(in oklch, ${division.accent} 12%, var(--background))`, color: division.accent }}
-                    >
-                      <division.icon className="h-5 w-5" />
-                    </div>
-                    <span className="font-mono text-xs tabular-nums text-muted-foreground">0{i + 1}</span>
-                  </div>
-                  <h3 className="font-display text-2xl text-foreground">
-                    {division.name}
-                    {division.group && (
-                      <span className="ml-2 text-sm font-normal text-muted-foreground">{division.group}</span>
-                    )}
-                  </h3>
-                  <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">{division.description}</p>
-                </div>
-              </StaggerItem>
-            ))}
-          </div>
-        </FadeInStagger>
-
-        <FadeInStagger className="space-y-12">
-          <FadeIn>
-            <div className="mb-6">
-              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground">The Bocconi association reality</h2>
-            </div>
-          </FadeIn>
-
-          <div className="grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2">
-            {realityItems.map((item) => (
-              <StaggerItem key={item.number} direction="left" distance={30}>
-                <div className="h-full bg-card p-8 sm:p-10">
-                  <span className="mb-4 block font-mono text-xs tabular-nums text-muted-foreground">{item.number}</span>
-                  <h3 className="font-display text-xl text-foreground">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
-                </div>
-              </StaggerItem>
-            ))}
-          </div>
-        </FadeInStagger>
-
-        <FadeInStagger className="space-y-12">
-          <FadeIn>
-            <div className="mb-6">
-              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground">Partners</h2>
-            </div>
-          </FadeIn>
-          <FadeIn>
-            <p className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground sm:mx-0 sm:ml-7">
-              We collaborate with companies, alumni, and other Bocconi associations. If you want a curated audience and a clean execution, we should talk.
-            </p>
-          </FadeIn>
-
-          <div className="grid gap-5 sm:grid-cols-3">
-            {partnerItems.map((item) => (
-              <StaggerItem key={item.number} scale={0.93} blur>
-                <div className="h-full rounded-2xl border border-border p-8">
-                  <span className="mb-4 block font-mono text-xs tabular-nums text-muted-foreground">{item.number}</span>
-                  <h3 className="font-display text-xl text-foreground">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
-                </div>
-              </StaggerItem>
-            ))}
-          </div>
-        </FadeInStagger>
-      </div>
+      <AboutAnimatedSections
+        divisionCards={divisionCards.map(d => ({
+          iconName: d.icon.displayName || d.icon.name || "Palette",
+          accent: d.accent,
+          name: d.name,
+          group: d.group ?? null,
+          description: d.description,
+        }))}
+        realityItems={realityItems.map(r => ({ ...r }))}
+        partnerItems={partnerItems.map(p => ({ ...p }))}
+      />
     </>
   );
 }

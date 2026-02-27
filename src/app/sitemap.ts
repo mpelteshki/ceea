@@ -8,10 +8,8 @@ const PAGE_FREQUENCY: Record<string, NonNullable<MetadataRoute.Sitemap[number]["
   "/": "weekly",
   "/events": "weekly",
   "/newsletter": "weekly",
-  "/projects": "monthly",
   "/team": "monthly",
   "/about": "monthly",
-  "/join-us": "monthly",
   "/contacts": "monthly",
 };
 
@@ -19,10 +17,8 @@ const PAGE_PRIORITY: Record<string, number> = {
   "/": 1,
   "/events": 0.9,
   "/newsletter": 0.9,
-  "/projects": 0.8,
   "/team": 0.8,
   "/about": 0.8,
-  "/join-us": 0.7,
   "/contacts": 0.7,
 };
 

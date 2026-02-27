@@ -8,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function SsoCallbackPage() {
-  return <AuthenticateWithRedirectCallback />;
+  return (
+    <AuthenticateWithRedirectCallback
+      signUpUrl="/sign-in?error=access_denied"
+      signInUrl="/sign-in"
+    />
+  );
 }

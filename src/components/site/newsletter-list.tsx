@@ -50,21 +50,22 @@ export async function NewsletterList() {
               className={`group flex flex-col ui-card overflow-hidden bg-card sm:text-left ${isFeatured ? (posts.length === 1 ? "sm:col-span-2 lg:col-span-3" : "sm:col-span-2 lg:col-span-2") : ""}`}
             >
               <div className="flex flex-1 flex-col p-6">
-                <div className="mb-4 flex items-center justify-center gap-3 sm:justify-start">
+                <div className="mb-6 flex items-center justify-start gap-3">
                   <span className="ui-tag border-border text-muted-foreground">
                     {fmtShortDate(post.publishedAt)}
                   </span>
                 </div>
 
-                <h3 className="font-display text-lg leading-snug text-foreground">
-                  {post.title}
-                </h3>
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-display text-xl font-medium text-foreground">
+                    {post.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
+                </div>
 
-                <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
-
-                <div className="mt-auto pt-6 inline-flex items-center gap-2 text-xs font-medium text-primary">
-                  Read
-                  <ArrowRight className="ui-icon-shift h-3 w-3" />
+                <div className="mt-auto pt-6 flex items-center gap-2 text-sm font-medium text-[var(--brand-teal)] transition-opacity group-hover:opacity-75">
+                  <span>Read</span>
+                  <ArrowRight className="ui-icon-shift h-3.5 w-3.5" />
                 </div>
               </div>
             </Link>

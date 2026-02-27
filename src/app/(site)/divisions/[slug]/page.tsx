@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -55,15 +55,6 @@ export default async function DivisionPage({ params }: PageProps) {
       <div className="relative border-b border-border">
         <div className="absolute inset-0 bg-[var(--background)]" />
         <div className="ui-site-container relative pb-12 pt-28 sm:pb-16 sm:pt-32">
-          <FadeIn duration={0.6}>
-            <Link
-              href="/#divisions"
-              className="mb-6 inline-flex items-center gap-1.5 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <ArrowLeft className="h-3 w-3" />
-              All divisions
-            </Link>
-          </FadeIn>
           <FadeIn duration={0.7} delay={0.1}>
             <div className="flex items-center gap-4">
               <div

@@ -345,12 +345,57 @@ body {
   }
 }
 
+/* === Animations === */
+@keyframes ambient-mesh {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+
+  33% {
+    transform: scale(1.05) translate(2%, 2%);
+  }
+
+  66% {
+    transform: scale(0.95) translate(-2%, 1%);
+  }
+
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+}
+
 /* === Shell & Texture === */
 
 .site-shell {
   position: relative;
   isolation: isolate;
   background: var(--background);
+}
+
+/* Ambient gradient layer below noise */
+.site-shell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 15% 30%, color-mix(in oklch, var(--brand-teal) 7%, transparent) 0%, transparent 45%),
+    radial-gradient(circle at 85% 70%, color-mix(in oklch, var(--brand-tan) 5%, transparent) 0%, transparent 40%);
+  animation: ambient-mesh 30s ease-in-out infinite alternate;
+  will-change: transform;
+  position: fixed;
+  /* Keep it fixed to viewport */
+}
+
+.dark .site-shell::after {
+  background:
+    radial-gradient(circle at 15% 30%, color-mix(in oklch, var(--brand-teal-soft) 4%, transparent) 0%, transparent 50%),
+    radial-gradient(circle at 85% 70%, color-mix(in oklch, var(--brand-tan) 3%, transparent) 0%, transparent 50%),
+    radial-gradient(circle at 50% 10%, color-mix(in oklch, var(--brand-teal) 5%, transparent) 0%, transparent 35%);
 }
 
 .site-shell::before {
@@ -362,6 +407,7 @@ body {
   height: 100%;
   pointer-events: none;
   z-index: 1;
+  /* Above gradient, below content */
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
 }
@@ -391,11 +437,9 @@ body {
 }
 
 .text-gradient {
-  background: linear-gradient(
-    var(--text-gradient-angle, 270deg),
-    var(--text-gradient-from, var(--brand-teal)) 0%,
-    var(--text-gradient-to, var(--brand-caramel)) 100%
-  );
+  background: linear-gradient(var(--text-gradient-angle, 270deg),
+      var(--text-gradient-from, var(--brand-teal)) 0%,
+      var(--text-gradient-to, var(--brand-caramel)) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -403,11 +447,9 @@ body {
 }
 
 .text-gradient-context {
-  background: linear-gradient(
-    var(--text-gradient-angle, 270deg),
-    var(--text-gradient-from, var(--brand-teal)) 0%,
-    var(--text-gradient-to, var(--brand-caramel)) 60%
-  );
+  background: linear-gradient(var(--text-gradient-angle, 270deg),
+      var(--text-gradient-from, var(--brand-teal)) 0%,
+      var(--text-gradient-to, var(--brand-caramel)) 60%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -432,7 +474,7 @@ body {
 
 .band-teal {
   background: linear-gradient(135deg, var(--brand-teal), var(--brand-teal-dark));
-  color: var(--primary-foreground);
+  color: var(--color-white);
 }
 
 /* === Animations === */
@@ -659,6 +701,10 @@ body {
     border-radius: 999px;
     overflow: hidden;
     will-change: transform;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      0 2px 4px rgba(0, 0, 0, 0.05);
+    /* Initial subtle 3d effect */
   }
 
   .ui-btn::before {
@@ -666,7 +712,7 @@ body {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.12));
+    background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.15));
     opacity: 0;
     transition: opacity 240ms ease;
   }
@@ -676,7 +722,7 @@ body {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.2), transparent 65%);
+    background: linear-gradient(105deg, transparent 33%, rgba(255, 255, 255, 0.25), transparent 67%);
     transform: translateX(-130%);
     opacity: 0;
   }
@@ -684,8 +730,10 @@ body {
   .ui-btn:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 8px 24px color-mix(in oklch, var(--brand-teal) 20%, transparent),
-      0 2px 8px color-mix(in oklch, var(--brand-teal) 10%, transparent);
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 12px 24px -4px color-mix(in oklch, var(--brand-teal) 30%, transparent),
+      0 4px 8px -2px color-mix(in oklch, var(--brand-teal) 15%, transparent);
+    border-color: color-mix(in oklch, var(--color-white) 15%, transparent);
   }
 
   .ui-btn:hover::before {
@@ -699,6 +747,7 @@ body {
 
   .ui-btn:active {
     transform: translateY(0) scale(0.98);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .ui-btn[data-variant="secondary"] {
@@ -765,25 +814,48 @@ body {
   /* Card */
   .ui-card {
     position: relative;
-    border: 1px solid var(--border);
+    border: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+    /* Subtler border for glass */
     border-radius: 16px;
-    background: var(--card);
+    background: color-mix(in oklch, var(--card) 40%, transparent);
+    /* Transparent background */
+    backdrop-filter: blur(16px);
+    /* Strong glass blur */
+    -webkit-backdrop-filter: blur(16px);
     overflow: hidden;
     transition: border-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Inner rim highlight */
   }
 
   .ui-card:hover {
-    border-color: var(--ring);
+    border-color: color-mix(in oklch, var(--ring) 50%, var(--border));
+    background: color-mix(in oklch, var(--card) 60%, transparent);
     box-shadow:
-      0 8px 24px color-mix(in oklch, var(--brand-tan) 10%, transparent),
-      0 2px 8px rgba(0, 0, 0, 0.04);
+      0 12px 30px -4px color-mix(in oklch, var(--brand-tan) 6%, transparent),
+      0 4px 6px -2px rgba(0, 0, 0, 0.03),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .ui-card {
+    background: color-mix(in oklch, var(--card) 30%, transparent);
+    border-color: color-mix(in oklch, var(--border) 40%, transparent);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .dark .ui-card:hover {
+    border-color: color-mix(in oklch, var(--ring) 40%, var(--border));
+    background: color-mix(in oklch, var(--card) 45%, transparent);
     box-shadow:
-      0 8px 24px color-mix(in oklch, var(--brand-teal) 10%, transparent),
-      0 2px 8px rgba(255, 255, 255, 0.01);
+      0 12px 30px -4px color-mix(in oklch, var(--brand-teal) 8%, transparent),
+      0 4px 6px -2px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   /* Shared alignment for site page titles and section titles */
@@ -832,10 +904,10 @@ body {
   }
 
   /* Section separator — gradient fade only where background tone actually changes */
-  .ui-home-scroll-section[data-tone="teal"] + .ui-home-scroll-section[data-tone="warm"]::before,
-  .ui-home-scroll-section[data-tone="warm"] + .ui-home-scroll-section[data-tone="soft"]::before,
-  .ui-home-scroll-section[data-tone="soft"] + .ui-home-scroll-section[data-tone="crimson"]::before,
-  .ui-home-scroll-section[data-tone="crimson"] + .ui-home-scroll-section[data-tone="teal"]::before {
+  .ui-home-scroll-section[data-tone="teal"]+.ui-home-scroll-section[data-tone="warm"]::before,
+  .ui-home-scroll-section[data-tone="warm"]+.ui-home-scroll-section[data-tone="soft"]::before,
+  .ui-home-scroll-section[data-tone="soft"]+.ui-home-scroll-section[data-tone="crimson"]::before,
+  .ui-home-scroll-section[data-tone="crimson"]+.ui-home-scroll-section[data-tone="teal"]::before {
     content: "";
     position: absolute;
     inset-inline: 0;
@@ -940,6 +1012,30 @@ body {
     background: color-mix(in oklch, var(--brand-teal) 40%, var(--accents-3));
     border: 0;
   }
+
+  /* ── Adaptive prose colours ──
+     Override typography-plugin defaults so every prose element
+     follows the light/dark semantic tokens automatically.
+     This eliminates the need for prose-zinc / dark:prose-invert. */
+  .prose {
+    --tw-prose-body: var(--muted-foreground);
+    --tw-prose-headings: var(--foreground);
+    --tw-prose-lead: var(--muted-foreground);
+    --tw-prose-links: var(--foreground);
+    --tw-prose-bold: var(--foreground);
+    --tw-prose-counters: var(--muted-foreground);
+    --tw-prose-bullets: var(--accents-4);
+    --tw-prose-hr: var(--border);
+    --tw-prose-quotes: var(--muted-foreground);
+    --tw-prose-quote-borders: var(--brand-teal);
+    --tw-prose-captions: var(--muted-foreground);
+    --tw-prose-kbd: var(--foreground);
+    --tw-prose-code: var(--foreground);
+    --tw-prose-pre-code: var(--foreground);
+    --tw-prose-pre-bg: var(--accents-1);
+    --tw-prose-th-borders: var(--border);
+    --tw-prose-td-borders: var(--border);
+  }
 }
 
 /* === Base layer === */
@@ -949,7 +1045,22 @@ body {
     @apply border-border outline-ring/50;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Smooth scroll-snap on homepage for section-by-section feel */
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+    .site-shell:has(.ui-home-scroll-section) {
+      scroll-snap-type: y proximity;
+    }
+
+    .ui-home-scroll-section {
+      scroll-snap-align: start;
+    }
   }
 }

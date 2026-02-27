@@ -1,14 +1,25 @@
 "use client";
 
 import { useSignIn } from "@clerk/nextjs";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 
 export function CustomSignIn() {
     const { signIn, isLoaded } = useSignIn();
+    const searchParams = useSearchParams();
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        const urlError = searchParams.get("error");
+        if (urlError === "access_denied") {
+            setError("Access denied. You must be an invited admin to sign in.");
+            // Clean up the URL
+            window.history.replaceState({}, "", "/sign-in");
+        }
+    }, [searchParams]);
 
     const handleGoogleSignIn = async () => {
         if (!isLoaded) return;
