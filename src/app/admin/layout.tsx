@@ -59,7 +59,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="site-shell min-h-dvh bg-[var(--background)]">
+    <div className="site-shell min-h-dvh">
       <a
         href="#admin-main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:border focus:border-[var(--accents-2)] focus:bg-[var(--background)] focus:px-4 focus:py-2 focus:font-mono focus:text-xs focus:uppercase focus:tracking-wider focus:text-[var(--foreground)]"

@@ -24,7 +24,7 @@ export function EventRowAnimations({ events }: { events: EventData[] }) {
       <SlideIn from="right" distance={60} blur>
         <SectionHeader
           title="Upcoming events"
-          accent="var(--brand-crimson)"
+          accent="var(--brand-red)"
           cta={{ label: "View all events", href: "/events" }}
         />
       </SlideIn>
@@ -52,7 +52,7 @@ export function EventRowAnimations({ events }: { events: EventData[] }) {
                 >
                   {/* Date block */}
                   <div className="flex flex-col items-center justify-center w-16 sm:w-20">
-                    <span className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em] text-[var(--color-crimson)]">
+                    <span className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em] text-[var(--color-red)]">
                       {event.date.month}
                     </span>
                     <span className="font-display text-3xl leading-none tracking-tight text-foreground mt-0.5 sm:text-4xl">

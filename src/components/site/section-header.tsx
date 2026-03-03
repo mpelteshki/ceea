@@ -21,7 +21,7 @@ export function SectionHeader({
   kicker,
   title,
   subtitle,
-  accent = "var(--brand-teal)",
+  accent = "var(--brand-blue)",
   cta,
   className,
 }: SectionHeaderProps) {

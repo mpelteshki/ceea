@@ -38,16 +38,7 @@ function NavLink({
     isActive ? "text-[var(--primary)]" : "text-[var(--accents-5)] hover:text-foreground",
   );
 
-  const content = (
-    <span
-      className={cn(
-        "inline-block transition-transform duration-200",
-        isActive ? "translate-y-0" : "group-hover/nav:-translate-y-0.5",
-      )}
-    >
-      {children}
-    </span>
-  );
+  const content = <>{children}</>;
 
   return (
     <Link

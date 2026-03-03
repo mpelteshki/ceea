@@ -10,7 +10,7 @@ export function EventsSkeleton() {
             <div className="ui-site-container relative py-12 sm:py-16">
                 <SectionHeader
                     title="Moments worth showing up for"
-                    accent="var(--brand-crimson)"
+                    accent="var(--brand-red)"
                 />
                 <div className="mt-12 flex flex-col gap-4">
                     {[1, 2, 3].map((i) => (
@@ -35,7 +35,7 @@ export function DispatchSkeleton() {
             <div className="ui-site-container relative py-12 sm:py-16">
                 <SectionHeader
                     title="The Latest Dispatch"
-                    accent="var(--brand-caramel)"
+                    accent="var(--brand-pink)"
                 />
                 <div className="mt-12 flex flex-col gap-4">
                     {[1, 2, 3].map((i) => (

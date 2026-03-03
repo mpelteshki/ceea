@@ -30,7 +30,7 @@ export function ProjectCard({
   return (
     <article
       className={cn(
-        "group flex flex-col ui-card overflow-hidden bg-card",
+        "group flex flex-col h-full ui-card overflow-hidden bg-card",
         featured && "sm:col-span-2 lg:col-span-2",
       )}
     >
@@ -51,7 +51,7 @@ export function ProjectCard({
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="font-display text-4xl text-[var(--brand-teal)] opacity-10">
+            <span className="font-display text-4xl text-[var(--brand-blue)] opacity-10">
               {String(index + 1).padStart(2, "0")}
             </span>
           </div>
@@ -82,7 +82,7 @@ export function ProjectCard({
         </div>
 
         {project.link ? (
-          <div className="mt-auto pt-6 flex items-center gap-2 text-sm font-medium text-[var(--brand-teal)] transition-opacity group-hover:opacity-75">
+          <div className="mt-auto pt-6 flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] transition-opacity group-hover:opacity-75">
             <a
               href={project.link}
               target="_blank"

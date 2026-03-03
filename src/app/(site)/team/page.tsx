@@ -97,7 +97,7 @@ function MemberCard({ member }: { member: TeamDoc }) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="text-4xl font-display text-[var(--brand-teal)] opacity-20">
+            <span className="text-4xl font-display text-[var(--brand-blue)] opacity-20">
               {member.firstName[0]}
               {member.lastName[0]}
             </span>
@@ -113,7 +113,7 @@ function MemberCard({ member }: { member: TeamDoc }) {
           href={member.linkedinUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-[var(--brand-teal)]"
+          className="group mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-[var(--brand-blue)]"
         >
           <Linkedin className="ui-icon-shift h-3 w-3" />
           Connect

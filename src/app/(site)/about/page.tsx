@@ -9,7 +9,7 @@ const divisionCards = [
   // ── Assemblies sub-divisions ─────────────────────────────────────────────
   {
     icon: Palette,
-    accent: "var(--brand-caramel)",
+    accent: "var(--brand-pink)",
     name: "Culture",
     group: "Assemblies",
     description:
@@ -17,7 +17,7 @@ const divisionCards = [
   },
   {
     icon: Scale,
-    accent: "var(--brand-crimson)",
+    accent: "var(--brand-red)",
     name: "Diplomacy & Politics",
     group: "Assemblies",
     description:
@@ -25,7 +25,7 @@ const divisionCards = [
   },
   {
     icon: Users,
-    accent: "var(--brand-teal-soft)",
+    accent: "var(--brand-pink)",
     name: "Community",
     group: "Assemblies",
     description:
@@ -34,7 +34,7 @@ const divisionCards = [
   // ── Standalone divisions ──────────────────────────────────────────────────
   {
     icon: TrendingUp,
-    accent: "var(--brand-teal)",
+    accent: "var(--brand-blue)",
     name: "Projects",
     group: undefined,
     description:
@@ -42,7 +42,7 @@ const divisionCards = [
   },
   {
     icon: Briefcase,
-    accent: "var(--brand-crimson)",
+    accent: "var(--brand-red)",
     name: "Career Services",
     group: undefined,
     description:
@@ -50,7 +50,7 @@ const divisionCards = [
   },
   {
     icon: Newspaper,
-    accent: "var(--brand-caramel)",
+    accent: "var(--brand-pink)",
     name: "Newsletter",
     group: undefined,
     description:

@@ -1,5 +1,7 @@
 "use client";
 
+import { HomeScrollSection } from "@/components/site/home-scroll-effects";
+
 import { useMutation, useQuery, useConvexAuth } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Suspense, useMemo, useState } from "react";
@@ -301,11 +303,11 @@ function NewsletterAdminPageInner() {
       )}
 
       {/* Header */}
-      <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--background)] py-12 sm:py-16">
+      <HomeScrollSection className="border-b border-[var(--accents-2)] py-12 sm:py-16" tone="blue">
         <div className="ui-site-container relative">
           <div className="flex flex-col gap-6 text-center sm:text-left">
             <div className="space-y-1">
-              <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
+              <h1 className="ui-section-heading text-gradient">
                 Newsletter
               </h1>
               <p className="max-w-2xl text-lg leading-relaxed text-[var(--muted-foreground)]">
@@ -315,10 +317,10 @@ function NewsletterAdminPageInner() {
             </div>
           </div>
         </div>
-      </section>
+      </HomeScrollSection>
 
       {/* Form */}
-      <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--accents-1)]/30 py-12 sm:py-16">
+      <HomeScrollSection className="border-b border-[var(--accents-2)] py-12 sm:py-16" tone="pink">
         <div className="ui-site-container relative">
           <div className="mb-8 flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
             <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">
@@ -422,7 +424,7 @@ function NewsletterAdminPageInner() {
                     <div className="relative overflow-hidden border-b border-border/40">
                       <div className="absolute inset-0 bg-[var(--background)]" />
                       {/* Glow Effects */}
-                      <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[800px] h-[400px] bg-[var(--brand-tan)]/10 blur-[100px] rounded-full pointer-events-none" />
+                      <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[800px] h-[400px] bg-[var(--grey-200)]/10 blur-[100px] rounded-full pointer-events-none" />
 
                       <div className="relative mx-auto max-w-5xl px-5 pb-16 pt-24 sm:px-6 sm:pb-24 sm:pt-32">
                         <div className="inline-flex items-center text-sm font-medium text-muted-foreground mb-10 sm:mb-14">
@@ -453,11 +455,11 @@ function NewsletterAdminPageInner() {
                     {/* Main Content Area */}
                     <div className="relative bg-[var(--background)]">
                       {/* Subtle bottom glow */}
-                      <div className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[800px] h-[500px] bg-[var(--brand-teal)]/5 blur-[120px] rounded-full pointer-events-none" />
+                      <div className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[800px] h-[500px] bg-[var(--brand-blue)]/5 blur-[120px] rounded-full pointer-events-none" />
 
                       <div className="relative mx-auto max-w-5xl px-5 py-12 sm:px-6 sm:py-20">
                         <div className="rounded-3xl border border-border/60 bg-white/40 dark:bg-black/20 p-6 sm:p-12 md:p-16 backdrop-blur-md shadow-sm">
-                          <div className="prose prose-lg md:prose-xl max-w-none text-left prose-headings:font-display prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[var(--foreground)] prose-p:leading-relaxed prose-p:text-muted-foreground prose-p:text-[1.125rem] md:prose-p:text-[1.25rem] prose-a:font-medium prose-a:text-[var(--foreground)] prose-a:underline prose-a:decoration-[var(--brand-tan)] prose-a:underline-offset-4 hover:prose-a:decoration-[var(--brand-teal)] prose-code:bg-[var(--accents-1)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[0.9em] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-blockquote:border-l-4 prose-blockquote:border-l-[var(--brand-teal)] prose-blockquote:pl-6 prose-blockquote:text-lg prose-blockquote:italic prose-blockquote:text-muted-foreground prose-strong:text-[var(--foreground)] prose-li:text-muted-foreground prose-li:text-[1.125rem] md:prose-li:text-[1.25rem]">
+                          <div className="prose prose-lg md:prose-xl max-w-none text-left prose-headings:font-display prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[var(--foreground)] prose-p:leading-relaxed prose-p:text-muted-foreground prose-p:text-[1.125rem] md:prose-p:text-[1.25rem] prose-a:font-medium prose-a:text-[var(--foreground)] prose-a:underline prose-a:decoration-[var(--grey-200)] prose-a:underline-offset-4 hover:prose-a:decoration-[var(--brand-blue)] prose-code:bg-[var(--accents-1)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[0.9em] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-blockquote:border-l-4 prose-blockquote:border-l-[var(--brand-blue)] prose-blockquote:pl-6 prose-blockquote:text-lg prose-blockquote:italic prose-blockquote:text-muted-foreground prose-strong:text-[var(--foreground)] prose-li:text-muted-foreground prose-li:text-[1.125rem] md:prose-li:text-[1.25rem]">
                             <AdminMarkdownRenderer value={value} />
                           </div>
                         </div>
@@ -524,13 +526,13 @@ function NewsletterAdminPageInner() {
             </div>
           </form>
         </div>
-      </section>
+      </HomeScrollSection>
 
       {/* List */}
-      <section className="relative overflow-hidden bg-[var(--background)] py-12 sm:py-16">
+      <HomeScrollSection className="py-12 sm:py-16" tone="red">
         <div className="ui-site-container relative">
           <div className="mb-8">
-            <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">
+            <h2 className="ui-section-heading text-gradient text-3xl sm:text-4xl">
               All Posts
             </h2>
             <div className="mt-1 text-sm text-[var(--accents-5)]">
@@ -654,8 +656,8 @@ function NewsletterAdminPageInner() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     className={[
-                      "ui-card group grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center",
-                      editingPostId === post._id ? "ring-2 ring-[var(--brand-teal)] border-transparent" : "",
+                      "ui-card ui-hover-lift group grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center",
+                      editingPostId === post._id ? "ring-2 ring-[var(--brand-blue)] border-transparent" : "",
                     ].join(" ")}
                   >
                     <div className="text-center sm:text-left">
@@ -748,7 +750,7 @@ function NewsletterAdminPageInner() {
             </div>
           )}
         </div>
-      </section>
+      </HomeScrollSection>
     </div>
   );
 }

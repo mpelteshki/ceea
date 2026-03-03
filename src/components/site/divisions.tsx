@@ -19,15 +19,15 @@ export function Divisions() {
         <SlideIn from="left" distance={60} blur>
           <SectionHeader
             title="Our divisions"
-            accent="var(--brand-teal)"
+            accent="var(--brand-blue)"
             className="mb-6 sm:mb-8"
           />
         </SlideIn>
 
         <FadeIn delay={0.2} direction="up" distance={40} blur>
-          <div className="flex flex-wrap justify-center gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ui-card-grid">
             {standaloneDivisions.map((d) => (
-              <ScrollScale key={d.name} from={0.95} to={1} className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+              <ScrollScale key={d.name} from={0.95} to={1} className="h-full">
                 <Link
                   href={`/divisions/${d.slug}`}
                   className="group ui-card flex h-full flex-col items-start gap-5 p-8"

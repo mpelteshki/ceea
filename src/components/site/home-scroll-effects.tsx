@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { m, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-type HomeScrollTone = "teal" | "warm" | "crimson" | "soft";
+type HomeScrollTone = "blue" | "green" | "red" | "pink";
 
 type HomeScrollSectionProps = {
   children: React.ReactNode;

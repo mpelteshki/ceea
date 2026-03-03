@@ -14,7 +14,7 @@ export function Hero() {
         <ParallaxLayer speed={0.15} className="absolute inset-0 overflow-hidden">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] max-w-6xl max-h-[800px] opacity-60 dark:opacity-40"
             style={{
-              background: "radial-gradient(circle at center, color-mix(in oklch, var(--brand-teal) 15%, transparent) 0%, transparent 60%)",
+              background: "radial-gradient(circle at center, color-mix(in oklch, var(--brand-blue) 15%, transparent) 0%, transparent 60%)",
               filter: "blur(60px)"
             }} />
         </ParallaxLayer>
@@ -26,7 +26,7 @@ export function Hero() {
           {/* Heading — word-by-word text reveal with glow */}
           <div className="flex flex-col items-center gap-6 relative">
             {/* Ambient subtle glow behind text */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-[var(--brand-teal)]/10 blur-3xl -z-10 rounded-full mix-blend-screen" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-[var(--brand-blue)]/10 blur-3xl -z-10 rounded-full mix-blend-screen" />
 
             <h1 className="font-display text-[clamp(2.5rem,7vw,6rem)] font-bold leading-[1.05] tracking-[-0.03em] text-balance text-foreground sm:leading-[1.02] sm:tracking-[-0.04em] max-w-5xl mx-auto drop-shadow-sm">
               <TextReveal

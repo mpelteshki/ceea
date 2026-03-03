@@ -18,7 +18,7 @@ export function Assemblies() {
         <FadeIn>
           <SectionHeader
             title="Assemblies"
-            accent="var(--brand-caramel)"
+            accent="var(--brand-pink)"
             className="mb-6 sm:mb-8"
           />
         </FadeIn>

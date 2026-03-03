@@ -1,13 +1,13 @@
 "use client";
 
 import { ArrowUpRight, Calendar, MapPin } from "lucide-react";
-import { SlideIn, ScrollRevealMask, DrawLine } from "@/components/ui/scroll-animations";
+import { SlideIn, ScrollRevealMask } from "@/components/ui/scroll-animations";
 import { InlineMarkdown } from "@/components/ui/inline-markdown";
 
 const KIND_META: Record<string, { label: string; color: string }> = {
-  signature: { label: "Signature", color: "var(--brand-teal)" },
-  career:    { label: "Career",    color: "var(--brand-caramel)" },
-  culture:   { label: "Culture",   color: "var(--brand-crimson)" },
+  signature: { label: "Signature", color: "var(--brand-blue)" },
+  career: { label: "Career", color: "var(--brand-pink)" },
+  culture: { label: "Culture", color: "var(--brand-red)" },
   community: { label: "Community", color: "var(--muted-foreground)" },
 };
 
@@ -113,8 +113,6 @@ export function EventsListAnimated({ events }: { events: EventData[] }) {
           </SlideIn>
         ))}
       </div>
-
-      <DrawLine color="var(--brand-crimson)" width={1} />
     </div>
   );
 }

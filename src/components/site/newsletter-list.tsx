@@ -39,15 +39,15 @@ export async function NewsletterList() {
   }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ui-card-grid">
       {posts.map((post, idx) => {
         const isFeatured = idx === 0;
 
         return (
-          <FadeIn key={post.slug} delay={Math.min(idx * 0.04, 0.2)}>
+          <FadeIn key={post.slug} delay={Math.min(idx * 0.04, 0.2)} className="h-full">
             <Link
               href={`/newsletter/${post.slug}`}
-              className={`group flex flex-col ui-card overflow-hidden bg-card sm:text-left ${isFeatured ? (posts.length === 1 ? "sm:col-span-2 lg:col-span-3" : "sm:col-span-2 lg:col-span-2") : ""}`}
+              className={`group flex flex-col h-full ui-card overflow-hidden bg-card sm:text-left ${isFeatured ? (posts.length === 1 ? "sm:col-span-2 lg:col-span-3" : "sm:col-span-2 lg:col-span-2") : ""}`}
             >
               <div className="flex flex-1 flex-col p-6">
                 <div className="mb-6 flex items-center justify-start gap-3">
@@ -63,7 +63,7 @@ export async function NewsletterList() {
                   <p className="text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
                 </div>
 
-                <div className="mt-auto pt-6 flex items-center gap-2 text-sm font-medium text-[var(--brand-teal)] transition-opacity group-hover:opacity-75">
+                <div className="mt-auto pt-6 flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] transition-opacity group-hover:opacity-75">
                   <span>Read</span>
                   <ArrowRight className="ui-icon-shift h-3.5 w-3.5" />
                 </div>

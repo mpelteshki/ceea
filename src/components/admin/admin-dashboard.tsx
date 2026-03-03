@@ -1,5 +1,7 @@
 "use client";
 
+import { HomeScrollSection } from "@/components/site/home-scroll-effects";
+
 import { Suspense, useMemo, useState } from "react";
 import { useMutation, useQuery, useConvexAuth } from "convex/react";
 import { AnimatePresence, m } from "framer-motion";
@@ -220,11 +222,11 @@ function AdminDashboardInner() {
       )}
 
       {/* Header Section */}
-      <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--background)] py-12 sm:py-16">
+      <HomeScrollSection className="border-b border-[var(--accents-2)] py-12 sm:py-16" tone="blue">
         <div className="ui-site-container relative">
           <div className="flex flex-col gap-6 text-center sm:text-left">
             <div className="space-y-1">
-              <h2 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+              <h2 className="ui-section-heading text-gradient">
                 Dashboard
               </h2>
               <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
@@ -239,7 +241,7 @@ function AdminDashboardInner() {
                 { label: "Projects", value: projects?.length ?? "…" },
                 { label: "Partners", value: partners?.length ?? "…" },
               ].map((stat) => (
-                <div key={stat.label} className="ui-card p-4">
+                <div key={stat.label} className="ui-card ui-hover-lift-sm p-4">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{stat.label}</div>
                   <div className="mt-1 text-2xl font-bold font-display text-foreground">{stat.value}</div>
                 </div>
@@ -249,9 +251,9 @@ function AdminDashboardInner() {
 
           </div>
         </div>
-      </section>
+      </HomeScrollSection>
 
-      <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--accents-1)]/30 py-12 sm:py-16">
+      <HomeScrollSection className="border-b border-[var(--accents-2)] py-12 sm:py-16" tone="pink">
         <div className="ui-site-container relative">
           <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left mb-8">
             <div>
@@ -428,13 +430,13 @@ function AdminDashboardInner() {
             </div>
           </div>
         </div>
-      </section>
+      </HomeScrollSection>
 
-      <section className="relative overflow-hidden bg-[var(--background)] py-12 sm:py-16">
+      <HomeScrollSection className="py-12 sm:py-16" tone="red">
         <div className="ui-site-container relative">
           <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left mb-8">
             <div>
-              <h2 className="font-display text-2xl font-semibold text-foreground">Events</h2>
+              <h2 className="ui-section-heading text-gradient">Events</h2>
               <div className="mt-1 text-sm text-[var(--accents-5)]">
                 {events ? `${filteredEvents.length} of ${events.length} shown` : "Loading…"}
               </div>
@@ -543,7 +545,7 @@ function AdminDashboardInner() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="ui-card group grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-start"
+                    className="ui-card ui-hover-lift group grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-start"
                   >
                     <div className="min-w-0 space-y-3">
                       <div className="flex flex-wrap items-center justify-center gap-2 md:block">
@@ -603,7 +605,7 @@ function AdminDashboardInner() {
             </div>
           )}
         </div>
-      </section>
+      </HomeScrollSection>
     </div>
   );
 }

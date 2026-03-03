@@ -13,9 +13,9 @@ import { EventRowAnimations } from "@/components/site/event-row-animations";
 type EventDoc = Doc<"events">;
 
 const KIND_META: Record<string, { label: string; color: string }> = {
-  signature: { label: "Signature", color: "var(--brand-teal)" },
-  career:    { label: "Career",    color: "var(--brand-caramel)" },
-  culture:   { label: "Culture",   color: "var(--brand-crimson)" },
+  signature: { label: "Signature", color: "var(--brand-blue)" },
+  career:    { label: "Career",    color: "var(--brand-pink)" },
+  culture:   { label: "Culture",   color: "var(--brand-red)" },
   community: { label: "Community", color: "var(--muted-foreground)" },
 };
 
@@ -25,7 +25,7 @@ export async function UpcomingEvents() {
             <section className="space-y-12">
                 <SectionHeader
                     title="Moments worth showing up for"
-                    accent="var(--brand-crimson)"
+                    accent="var(--brand-red)"
                 />
                 <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
                     Set <code className="font-mono text-[var(--foreground)]">NEXT_PUBLIC_CONVEX_URL</code> to show events.

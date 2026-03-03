@@ -1,5 +1,7 @@
 "use client";
 
+import { HomeScrollSection } from "@/components/site/home-scroll-effects";
+
 import { useMutation, useQuery, useConvexAuth } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Suspense, useMemo, useState } from "react";
@@ -225,11 +227,11 @@ function TeamAdminPageInner() {
         </div>
       )}
 
-      <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--background)] py-12 sm:py-16">
+      <HomeScrollSection className="border-b border-[var(--accents-2)] py-12 sm:py-16" tone="blue">
         <div className="ui-site-container relative">
           <div className="flex flex-col gap-6 text-center sm:text-left">
             <div className="space-y-1">
-              <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
+              <h1 className="ui-section-heading text-gradient">
                 Team
               </h1>
               <p className="max-w-2xl text-lg leading-relaxed text-[var(--muted-foreground)]">
@@ -238,9 +240,9 @@ function TeamAdminPageInner() {
             </div>
           </div>
         </div>
-      </section>
+      </HomeScrollSection>
 
-      <section className="relative overflow-hidden border-b border-[var(--accents-2)] bg-[var(--accents-1)]/30 py-12 sm:py-16">
+      <HomeScrollSection className="border-b border-[var(--accents-2)] py-12 sm:py-16" tone="pink">
         <div className="ui-site-container relative">
           <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left mb-8">
             <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">
@@ -340,12 +342,12 @@ function TeamAdminPageInner() {
             </div>
           </form>
         </div>
-      </section>
+      </HomeScrollSection>
 
-      <section className="relative overflow-hidden bg-[var(--background)] py-12 sm:py-16">
+      <HomeScrollSection className="py-12 sm:py-16" tone="red">
         <div className="ui-site-container relative">
           <div className="mb-8">
-            <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">Current Roster</h2>
+            <h2 className="ui-section-heading text-gradient text-3xl sm:text-4xl">Current Roster</h2>
             <div className="mt-1 text-sm text-[var(--accents-5)]">
               {team ? `${filteredTeam.length} of ${team.length} shown` : "Loading…"}
             </div>
@@ -453,7 +455,7 @@ function TeamAdminPageInner() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="ui-card group grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center"
+                    className="ui-card ui-hover-lift group grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center"
                   >
                     <div className="text-center sm:text-left">
                       <h4 className="font-display text-lg font-semibold text-[var(--foreground)]">
@@ -509,7 +511,7 @@ function TeamAdminPageInner() {
             </div>
           )}
         </div>
-      </section>
+      </HomeScrollSection>
     </div>
   );
 }

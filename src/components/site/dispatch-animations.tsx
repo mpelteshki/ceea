@@ -19,7 +19,7 @@ export function DispatchAnimations({ posts }: { posts: PostData[] }) {
       <SlideIn from="left" distance={60} blur>
         <SectionHeader
           title="Latest dispatches"
-          accent="var(--brand-teal)"
+          accent="var(--brand-blue)"
           cta={{ label: "View all dispatches", href: "/newsletter" }}
         />
       </SlideIn>
@@ -69,7 +69,7 @@ export function DispatchAnimations({ posts }: { posts: PostData[] }) {
                     </p>
                   )}
 
-                  <div className="mt-auto flex items-center gap-1.5 pt-2 text-xs font-medium uppercase tracking-wide text-[var(--brand-teal)]">
+                  <div className="mt-auto flex items-center gap-1.5 pt-2 text-xs font-medium uppercase tracking-wide text-[var(--brand-blue)]">
                     Read
                     <ArrowRight className="ui-icon-shift h-3 w-3" />
                   </div>

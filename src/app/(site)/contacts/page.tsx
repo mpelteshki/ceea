@@ -11,21 +11,21 @@ const channels = [
     label: "Email",
     value: SITE_CONTACT.email,
     href: SITE_EMAIL_HREF,
-    accent: "var(--brand-teal)",
+    accent: "var(--brand-blue)",
   },
   {
     icon: Instagram,
     label: "Instagram",
     value: SITE_CONTACT.instagram.handle,
     href: SITE_CONTACT.instagram.url,
-    accent: "var(--brand-caramel)",
+    accent: "var(--brand-pink)",
   },
   {
     icon: Linkedin,
     label: "LinkedIn",
     value: SITE_CONTACT.linkedin.label,
     href: SITE_CONTACT.linkedin.url,
-    accent: "var(--brand-teal-soft)",
+    accent: "var(--brand-pink)",
   },
 ] as const;
 

@@ -28,7 +28,7 @@ export function InlineMarkdown({
         "prose-strong:text-[var(--foreground)]",
         "prose-ul:my-1 prose-ol:my-1 prose-li:text-[var(--muted-foreground)]",
         "prose-code:bg-[var(--accents-1)] prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-[0.85em] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none",
-        "prose-blockquote:border-l-[var(--brand-teal)] prose-blockquote:text-[var(--muted-foreground)]",
+        "prose-blockquote:border-l-[var(--brand-blue)] prose-blockquote:text-[var(--muted-foreground)]",
         // Strip large top/bottom margins from the first/last block elements
         "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
         className,

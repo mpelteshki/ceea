@@ -19,21 +19,21 @@ export const metadata: Metadata = buildPageMetadata({
 export default function HomePage() {
   return (
     <>
-      <HomeScrollSection tone="teal">
+      <HomeScrollSection tone="blue">
         <Hero />
       </HomeScrollSection>
 
-      <HomeScrollSection tone="warm">
+      <HomeScrollSection tone="green">
         <Divisions />
       </HomeScrollSection>
 
-      <HomeScrollSection tone="teal">
+      <HomeScrollSection tone="blue">
         <Suspense fallback={<EventsSkeleton />}>
           <UpcomingEvents />
         </Suspense>
       </HomeScrollSection>
 
-      <HomeScrollSection tone="warm">
+      <HomeScrollSection tone="green">
         <Suspense fallback={<DispatchSkeleton />}>
           <LatestDispatch />
         </Suspense>

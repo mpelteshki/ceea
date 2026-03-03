@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 
 export function ScrollProgress({
   className,
-  color = "var(--brand-teal)",
+  color = "var(--brand-blue)",
   height = 3,
 }: {
   className?: string;
@@ -387,7 +387,7 @@ export function CountUp({
 
 export function DrawLine({
   className,
-  color = "var(--brand-teal)",
+  color = "var(--brand-blue)",
   width = 2,
   orientation = "horizontal",
 }: {
