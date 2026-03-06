@@ -72,7 +72,7 @@ export function AboutAnimatedSections({
           </div>
         </SlideIn>
 
-        <DrawLine className="mb-6" color="var(--brand-blue)" width={1} />
+        <DrawLine className="mb-6" color="var(--brand-teal)" width={1} />
 
         <div className="grid gap-5 sm:grid-cols-2">
           {divisionCards.map((division, i) => {

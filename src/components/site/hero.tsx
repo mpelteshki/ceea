@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { TextReveal } from "@/components/ui/scroll-animations";
+import { m } from "framer-motion";
 import { FadeIn } from "@/components/ui/fade-in";
 import { SITE_APPLY_FORM_URL } from "@/lib/site-contact";
 
@@ -15,7 +15,7 @@ export function Hero() {
           className="absolute left-1/2 top-1/2 h-[140%] max-h-[800px] w-[140%] max-w-6xl -translate-x-1/2 -translate-y-1/2 opacity-60 dark:opacity-40"
           style={{
             background:
-              "radial-gradient(circle at center, color-mix(in oklch, var(--brand-blue) 15%, transparent) 0%, transparent 60%)",
+              "radial-gradient(circle at center, color-mix(in oklch, var(--brand-teal) 15%, transparent) 0%, transparent 60%)",
             filter: "blur(60px)",
           }}
         />
@@ -26,29 +26,10 @@ export function Hero() {
         <div className="flex flex-col items-center pt-32 pb-24 text-center sm:pt-40 sm:pb-32">
           {/* Heading — word-by-word text reveal with glow */}
           <div className="flex flex-col items-center gap-6 relative">
-            {/* Ambient subtle glow behind text */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-[var(--brand-blue)]/10 blur-3xl -z-10 rounded-full mix-blend-screen" />
-
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-[var(--brand-teal)]/10 blur-3xl -z-10 rounded-full mix-blend-screen" />
             <h1 className="font-display text-[clamp(2.5rem,7vw,6rem)] font-bold leading-[1.05] tracking-[-0.03em] text-balance text-foreground sm:leading-[1.02] sm:tracking-[-0.04em] max-w-5xl mx-auto drop-shadow-sm">
-              <TextReveal
-                as="span"
-                className="justify-center"
-                mode="word"
-                stagger={0.06}
-              >
-                Central &amp; Eastern European
-              </TextReveal>
-              <span className="block text-gradient pb-2 relative">
-                <TextReveal
-                  as="span"
-                  className="justify-center"
-                  mode="word"
-                  stagger={0.06}
-                  blur={false}
-                >
-                  Association
-                </TextReveal>
-              </span>
+              <span className="block">Central &amp; Eastern European</span>
+              <span className="block text-gradient pb-2 relative">Association</span>
             </h1>
           </div>
 

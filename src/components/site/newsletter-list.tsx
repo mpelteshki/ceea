@@ -43,7 +43,7 @@ export async function NewsletterList() {
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ui-card-grid">
       {posts.map((post, idx) => {
         const isFeatured = idx === 0;
-        const ctaColor = getReadableAccentText("var(--brand-blue)");
+        const ctaColor = getReadableAccentText("var(--brand-teal)");
 
         return (
           <FadeIn key={post.slug} delay={Math.min(idx * 0.04, 0.2)} className="h-full">

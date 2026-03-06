@@ -6,7 +6,7 @@ import { InlineMarkdown } from "@/components/ui/inline-markdown";
 import { getReadableAccentText } from "@/lib/accent-colors";
 
 const KIND_META: Record<string, { label: string; color: string }> = {
-  signature: { label: "Signature", color: getReadableAccentText("var(--brand-blue)") },
+  signature: { label: "Signature", color: getReadableAccentText("var(--brand-teal)") },
   career: { label: "Career", color: getReadableAccentText("var(--brand-pink)") },
   culture: { label: "Culture", color: getReadableAccentText("var(--brand-red)") },
   community: { label: "Community", color: "var(--muted-foreground)" },

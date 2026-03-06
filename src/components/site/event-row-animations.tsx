@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { Calendar, MapPin, ArrowUpRight } from "lucide-react";
-import { SlideIn, ScrollRevealMask } from "@/components/ui/scroll-animations";
 import { SectionHeader } from "@/components/site/section-header";
 import { EmptyState } from "@/components/ui/empty-state";
+import { FadeIn } from "@/components/ui/fade-in";
 import { getReadableAccentText } from "@/lib/accent-colors";
 
 type EventData = {
@@ -24,13 +24,13 @@ export function EventRowAnimations({ events }: { events: EventData[] }) {
 
   return (
     <>
-      <SlideIn from="right" distance={60} blur>
+      <FadeIn>
         <SectionHeader
           title="Upcoming events"
           accent="var(--brand-red)"
           cta={{ label: "View all events", href: "/events" }}
         />
-      </SlideIn>
+      </FadeIn>
 
       {events.length === 0 ? (
         <EmptyState
@@ -41,14 +41,11 @@ export function EventRowAnimations({ events }: { events: EventData[] }) {
       ) : (
         <div className="divide-y divide-[var(--border)]">
           {events.map((event, idx) => (
-            <SlideIn
+            <FadeIn
               key={event.id}
-              from="bottom"
-              distance={80}
-              delay={idx * 0.1}
-              blur
+              delay={idx * 0.06}
+              direction="up"
             >
-              <ScrollRevealMask direction="up">
                 <Link
                   href={event.rsvpUrl}
                   className="group relative grid grid-cols-[auto_1fr_auto] items-center gap-6 px-4 py-5 transition-colors duration-200 hover:bg-[var(--accents-1)] sm:gap-8 sm:py-6"
@@ -90,8 +87,7 @@ export function EventRowAnimations({ events }: { events: EventData[] }) {
                     <ArrowUpRight className="ui-icon-shift h-4 w-4" />
                   </div>
                 </Link>
-              </ScrollRevealMask>
-            </SlideIn>
+            </FadeIn>
           ))}
         </div>
       )}

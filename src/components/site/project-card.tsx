@@ -27,7 +27,7 @@ export function ProjectCard({
 }) {
   const title = toPlainText(project.title);
   const description = toPlainText(project.description);
-  const accentText = getReadableAccentText("var(--brand-blue)");
+  const accentText = getReadableAccentText("var(--brand-teal)");
 
   return (
     <article

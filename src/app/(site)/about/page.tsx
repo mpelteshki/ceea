@@ -33,7 +33,7 @@ const divisionCards = [
   // ── Standalone divisions ──────────────────────────────────────────────────
   {
     icon: TrendingUp,
-    accent: "var(--brand-blue)",
+    accent: "var(--brand-teal)",
     name: "Projects",
     group: undefined,
     description:

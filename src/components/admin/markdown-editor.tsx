@@ -95,7 +95,7 @@ export function MarkdownEditor({
           onChange={(e) => onChange(e.target.value)}
           required={required}
           rows={rows}
-          className="w-full resize-y border-0 bg-transparent px-4 py-4 text-[15px] leading-relaxed text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/20"
+          className="w-full resize-y border-0 bg-transparent px-4 py-4 text-[15px] leading-relaxed text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal)]/20"
         />
       )}
 
@@ -113,7 +113,7 @@ export function MarkdownEditor({
           ) : (
             <div className="px-5 py-8 md:px-8">
               <div className="mx-auto max-w-5xl rounded-3xl border border-border/60 bg-white/40 dark:bg-black/20 p-6 sm:p-12 md:p-16 backdrop-blur-md shadow-sm">
-                <div className="prose prose-lg md:prose-xl max-w-none text-left prose-headings:font-display prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[var(--foreground)] prose-p:leading-relaxed prose-p:text-muted-foreground prose-p:text-[1.125rem] md:prose-p:text-[1.25rem] prose-a:font-medium prose-a:text-[var(--foreground)] prose-a:underline prose-a:decoration-[var(--grey-200)] prose-a:underline-offset-4 hover:prose-a:decoration-[var(--brand-blue)] prose-code:bg-[var(--accents-1)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[0.9em] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-blockquote:border-l-4 prose-blockquote:border-l-[var(--brand-blue)] prose-blockquote:pl-6 prose-blockquote:text-lg prose-blockquote:italic prose-blockquote:text-muted-foreground prose-strong:text-[var(--foreground)] prose-li:text-muted-foreground prose-li:text-[1.125rem] md:prose-li:text-[1.25rem]">
+                <div className="prose prose-lg md:prose-xl max-w-none text-left prose-headings:font-display prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[var(--foreground)] prose-p:leading-relaxed prose-p:text-muted-foreground prose-p:text-[1.125rem] md:prose-p:text-[1.25rem] prose-a:font-medium prose-a:text-[var(--foreground)] prose-a:underline prose-a:decoration-[var(--grey-200)] prose-a:underline-offset-4 hover:prose-a:decoration-[var(--brand-teal)] prose-code:bg-[var(--accents-1)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[0.9em] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-blockquote:border-l-4 prose-blockquote:border-l-[var(--brand-teal)] prose-blockquote:pl-6 prose-blockquote:text-lg prose-blockquote:italic prose-blockquote:text-muted-foreground prose-strong:text-[var(--foreground)] prose-li:text-muted-foreground prose-li:text-[1.125rem] md:prose-li:text-[1.25rem]">
                   <AdminMarkdownRenderer value={value} />
                 </div>
               </div>
@@ -248,7 +248,7 @@ function ImageUploadButton({ onUpload }: { onUpload: (url: string) => void }) {
         {isUploading ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
-          <ImageIcon className="h-3.5 w-3.5 text-[var(--brand-blue)]" />
+          <ImageIcon className="h-3.5 w-3.5 text-[var(--brand-teal)]" />
         )}
         <span>{isUploading ? "Uploading…" : "Upload Image"}</span>
       </button>

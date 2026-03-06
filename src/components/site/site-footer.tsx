@@ -15,7 +15,7 @@ export async function SiteFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden bg-[var(--brand-blue)] text-white">
+    <footer className="relative overflow-hidden bg-[var(--brand-teal)] text-white">
       <div className="ui-site-container relative z-10 py-9 sm:py-10">
         <h2 className="sr-only">Footer</h2>
 

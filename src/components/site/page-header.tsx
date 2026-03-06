@@ -36,7 +36,7 @@ export function PageHeader({
 
         <div className="relative">
           {/* Subtle text glow behind header */}
-          <div className="absolute top-1/2 left-0 -translate-y-1/2 w-3/4 h-[120%] bg-[var(--brand-blue)]/5 blur-3xl -z-10 rounded-full hidden sm:block pointer-events-none mix-blend-screen" />
+          <div className="absolute top-1/2 left-0 -translate-y-1/2 w-3/4 h-[120%] bg-[var(--brand-teal)]/5 blur-3xl -z-10 rounded-full hidden sm:block pointer-events-none mix-blend-screen" />
 
           <h1 className="font-display text-[clamp(2.5rem,5.5vw,5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-balance text-foreground drop-shadow-sm">
             <TextReveal as="span" mode="word" stagger={0.04} className="justify-start">
@@ -47,7 +47,7 @@ export function PageHeader({
 
         <DrawLine
           className="mt-3 max-w-[40px]"
-          color="var(--brand-blue)"
+          color="var(--brand-teal)"
           width={2}
         />
 

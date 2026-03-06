@@ -15,14 +15,14 @@ type PostData = {
 };
 
 export function DispatchAnimations({ posts }: { posts: PostData[] }) {
-  const ctaColor = getReadableAccentText("var(--brand-blue)");
+  const ctaColor = getReadableAccentText("var(--brand-teal)");
 
   return (
     <>
       <SlideIn from="left" distance={60} blur>
         <SectionHeader
           title="Latest dispatches"
-          accent="var(--brand-blue)"
+          accent="var(--brand-teal)"
           cta={{ label: "View all dispatches", href: "/newsletter" }}
         />
       </SlideIn>

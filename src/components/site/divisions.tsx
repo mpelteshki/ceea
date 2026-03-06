@@ -20,7 +20,7 @@ export function Divisions() {
         <SlideIn from="left" distance={60} blur>
           <SectionHeader
             title="Our divisions"
-            accent="var(--brand-blue)"
+            accent="var(--brand-teal)"
             className="mb-6 sm:mb-8"
           />
         </SlideIn>

@@ -84,7 +84,7 @@ export default async function TeamPage() {
 
 function MemberCard({ member }: { member: TeamDoc }) {
   const role = toPlainText(member.role);
-  const accentText = getReadableAccentText("var(--brand-blue)");
+  const accentText = getReadableAccentText("var(--brand-teal)");
 
   return (
     <div className="group rounded-2xl p-1">

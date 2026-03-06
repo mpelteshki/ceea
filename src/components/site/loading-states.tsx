@@ -40,7 +40,7 @@ export function DispatchLoadingState() {
       <div className="ui-site-container relative py-12 sm:py-16">
         <SectionHeader
           title="Latest dispatches"
-          accent="var(--brand-blue)"
+          accent="var(--brand-teal)"
           cta={{ label: "View all dispatches", href: "/newsletter" }}
         />
         <TinySpinner label="Loading latest dispatches" />

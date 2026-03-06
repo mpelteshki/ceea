@@ -12,7 +12,7 @@ const channels = [
     label: "Email",
     value: SITE_CONTACT.email,
     href: SITE_EMAIL_HREF,
-    accent: "var(--brand-blue)",
+    accent: "var(--brand-teal)",
   },
   {
     icon: Instagram,
