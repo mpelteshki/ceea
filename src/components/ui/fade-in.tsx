@@ -58,6 +58,7 @@ export function FadeIn({
   as?: "div" | "section" | "article" | "li" | "span" | "p" | "h1" | "h2" | "h3";
 }) {
   const reduceMotion = useReducedMotion();
+  void blur;
 
   const dist = distance ?? (direction === "up" ? 18 : 24);
   const offset = directionOffset(direction, dist);
@@ -67,7 +68,6 @@ export function FadeIn({
     : {
         opacity: 0,
         ...offset,
-        ...(blur ? { filter: "blur(6px)" } : {}),
         ...(scale != null ? { scale } : {}),
       };
 
@@ -75,7 +75,6 @@ export function FadeIn({
     opacity: 1,
     x: 0,
     y: 0,
-    ...(blur ? { filter: "blur(0px)" } : {}),
     ...(scale != null ? { scale: 1 } : {}),
   };
 
@@ -157,6 +156,7 @@ export function StaggerItem({
   as?: "div" | "li" | "article" | "section";
 }) {
   const reduceMotion = useReducedMotion();
+  void blur;
   const offset = directionOffset(direction, distance);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -171,14 +171,12 @@ export function StaggerItem({
           : {
               opacity: 0,
               ...offset,
-              ...(blur ? { filter: "blur(6px)" } : {}),
               ...(scale != null ? { scale } : {}),
             },
         visible: {
           opacity: 1,
           x: 0,
           y: 0,
-          ...(blur ? { filter: "blur(0px)" } : {}),
           ...(scale != null ? { scale: 1 } : {}),
           transition: {
             duration: reduceMotion ? 0 : 0.55,

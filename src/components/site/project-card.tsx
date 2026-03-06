@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { toPlainText } from "@/lib/plain-text";
 import { cn } from "@/lib/utils";
+import { getReadableAccentText } from "@/lib/accent-colors";
 
 type ProjectLike = {
   _id: string;
@@ -26,6 +27,7 @@ export function ProjectCard({
 }) {
   const title = toPlainText(project.title);
   const description = toPlainText(project.description);
+  const accentText = getReadableAccentText("var(--brand-blue)");
 
   return (
     <article
@@ -46,12 +48,12 @@ export function ProjectCard({
             src={project.imageUrl}
             alt={title}
             fill
-            className="object-cover transition-transform duration-700"
+            className="ui-hover-media object-cover"
             sizes={featured ? "(max-width: 640px) 100vw, 80vw" : "(max-width: 640px) 100vw, 50vw"}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="font-display text-4xl text-[var(--brand-blue)] opacity-10">
+            <span className="font-display text-4xl opacity-20" style={{ color: accentText }}>
               {String(index + 1).padStart(2, "0")}
             </span>
           </div>
@@ -82,7 +84,10 @@ export function ProjectCard({
         </div>
 
         {project.link ? (
-          <div className="mt-auto pt-6 flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] transition-opacity group-hover:opacity-75">
+          <div
+            className="ui-hover-cta mt-auto flex items-center gap-2 pt-6 text-sm font-medium"
+            style={{ color: accentText }}
+          >
             <a
               href={project.link}
               target="_blank"

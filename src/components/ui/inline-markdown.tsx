@@ -38,7 +38,7 @@ export function InlineMarkdown({
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSanitize]}
         components={{
-          img: ({ node, ...props }) => {
+          img: ({ ...props }) => {
             const caption = props.title || (props.alt && props.alt !== "Image" ? props.alt : "");
             return (
               <span className="my-6 block overflow-hidden rounded-xl border border-border/60 shadow-md bg-[var(--accents-1)]/30 backdrop-blur-sm">

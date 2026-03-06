@@ -131,7 +131,7 @@ export function AdminMarkdownRenderer({ value }: { value: string }) {
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeSanitize]}
       components={{
-        a: ({ node, href, children, ...props }) => {
+        a: ({ href, children, ...props }) => {
           const url = href ?? "";
           const external = /^https?:\/\//.test(url);
           return (
@@ -140,7 +140,7 @@ export function AdminMarkdownRenderer({ value }: { value: string }) {
             </a>
           );
         },
-        img: ({ node, ...props }) => {
+        img: ({ ...props }) => {
           const caption = props.title || (props.alt && props.alt !== "Image" ? props.alt : "");
           return (
             <span className="my-8 block overflow-hidden rounded-2xl border border-border/60 shadow-lg bg-[var(--accents-1)]/30 backdrop-blur-sm">

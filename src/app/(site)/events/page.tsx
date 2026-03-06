@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { EventsList } from "@/components/site/events-list";
 import { Suspense } from "react";
-import { EventsListSkeleton } from "@/components/site/list-skeletons";
+import { ListLoadingState } from "@/components/site/loading-states";
 import { PageHeader } from "@/components/site/page-header";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 
@@ -20,7 +20,7 @@ export default async function EventsPage() {
       <PageHeader title="Events" subtitle={DESCRIPTION} />
 
       <div className="ui-site-container pt-8 pb-12 sm:pt-10 sm:pb-16">
-        <Suspense fallback={<EventsListSkeleton />}>
+        <Suspense fallback={<ListLoadingState label="Loading events" />}>
           <EventsList />
         </Suspense>
       </div>

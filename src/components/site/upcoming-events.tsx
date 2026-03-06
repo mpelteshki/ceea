@@ -1,6 +1,3 @@
-
-import Link from "next/link";
-import { Calendar, MapPin, ArrowUpRight } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { hasConvex } from "@/lib/public-env";
@@ -11,13 +8,6 @@ import { fmtEventDate } from "@/lib/format-date";
 import { EventRowAnimations } from "@/components/site/event-row-animations";
 
 type EventDoc = Doc<"events">;
-
-const KIND_META: Record<string, { label: string; color: string }> = {
-  signature: { label: "Signature", color: "var(--brand-blue)" },
-  career:    { label: "Career",    color: "var(--brand-pink)" },
-  culture:   { label: "Culture",   color: "var(--brand-red)" },
-  community: { label: "Community", color: "var(--muted-foreground)" },
-};
 
 export async function UpcomingEvents() {
     if (!hasConvex) {

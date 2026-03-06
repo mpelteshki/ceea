@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { FadeIn, FadeInStagger, StaggerItem } from "@/components/ui/fade-in";
 import { PageHeader } from "@/components/site/page-header";
 import { AboutAnimatedSections } from "@/components/site/about-animations";
 import { Palette, Scale, TrendingUp, Users, Briefcase, Newspaper } from "lucide-react";

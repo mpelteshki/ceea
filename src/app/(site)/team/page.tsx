@@ -9,6 +9,7 @@ import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 import { toPlainText } from "@/lib/plain-text";
+import { getReadableAccentText } from "@/lib/accent-colors";
 import { api } from "../../../../convex/_generated/api";
 import type { Doc } from "../../../../convex/_generated/dataModel";
 
@@ -83,6 +84,7 @@ export default async function TeamPage() {
 
 function MemberCard({ member }: { member: TeamDoc }) {
   const role = toPlainText(member.role);
+  const accentText = getReadableAccentText("var(--brand-blue)");
 
   return (
     <div className="group rounded-2xl p-1">
@@ -92,12 +94,12 @@ function MemberCard({ member }: { member: TeamDoc }) {
             src={member.photoId}
             alt={`${member.firstName} ${member.lastName}`}
             fill
-            className="object-cover transition duration-500 group-hover:scale-[1.02]"
+            className="ui-hover-media object-cover"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="text-4xl font-display text-[var(--brand-blue)] opacity-20">
+            <span className="text-4xl font-display opacity-20" style={{ color: accentText }}>
               {member.firstName[0]}
               {member.lastName[0]}
             </span>
@@ -113,7 +115,8 @@ function MemberCard({ member }: { member: TeamDoc }) {
           href={member.linkedinUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-[var(--brand-blue)]"
+          className="group mt-2 inline-flex items-center gap-1.5 text-xs transition-colors"
+          style={{ color: accentText }}
         >
           <Linkedin className="ui-icon-shift h-3 w-3" />
           Connect

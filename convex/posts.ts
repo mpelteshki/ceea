@@ -4,6 +4,18 @@ import { requireAdmin } from "./lib/admin";
 
 const MAX_POSTS_RETURNED = 200;
 
+function stripPostMetadata<T extends { createdBy?: string; body?: string }>(
+  row: T,
+  options?: { removeBody?: boolean },
+) {
+  const cleanRow = { ...row };
+  delete cleanRow.createdBy;
+  if (options?.removeBody) {
+    delete cleanRow.body;
+  }
+  return cleanRow;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Public queries                                                     */
 /* ------------------------------------------------------------------ */
@@ -21,7 +33,7 @@ export const listPublished = query({
     // Only return posts that have a publishedAt value (i.e. not drafts)
     return rows
       .filter((r) => r.publishedAt != null)
-      .map(({ createdBy: _, body: _b, ...rest }) => rest);
+      .map((row) => stripPostMetadata(row, { removeBody: true }));
   },
 });
 
@@ -34,8 +46,7 @@ export const getBySlug = query({
       .withIndex("by_slug", (q) => q.eq("slug", slug))
       .unique();
     if (!row || row.publishedAt == null) return null;
-    const { createdBy: _, ...rest } = row;
-    return rest;
+    return stripPostMetadata(row);
   },
 });
 
@@ -53,7 +64,7 @@ export const listRecent = query({
     return rows
       .filter((r) => r.publishedAt != null)
       .slice(0, n)
-      .map(({ createdBy: _, body: _b, ...rest }) => rest);
+      .map((row) => stripPostMetadata(row, { removeBody: true }));
   },
 });
 
@@ -65,13 +76,14 @@ export const listRecent = query({
 export const listAll = query({
   args: {},
   handler: async (ctx) => {
+    await requireAdmin(ctx);
     const rows = await ctx.db
       .query("posts")
       .withIndex("by_publishedAt")
       .order("desc")
       .take(MAX_POSTS_RETURNED);
     // Admin sees everything — strip only sensitive metadata
-    return rows.map(({ createdBy: _, ...rest }) => rest);
+    return rows.map((row) => stripPostMetadata(row));
   },
 });
 

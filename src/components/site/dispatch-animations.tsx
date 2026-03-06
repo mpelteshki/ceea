@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { SlideIn, ScrollScale } from "@/components/ui/scroll-animations";
 import { SectionHeader } from "@/components/site/section-header";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getReadableAccentText } from "@/lib/accent-colors";
 
 type PostData = {
   slug: string;
@@ -14,6 +15,8 @@ type PostData = {
 };
 
 export function DispatchAnimations({ posts }: { posts: PostData[] }) {
+  const ctaColor = getReadableAccentText("var(--brand-blue)");
+
   return (
     <>
       <SlideIn from="left" distance={60} blur>
@@ -69,7 +72,10 @@ export function DispatchAnimations({ posts }: { posts: PostData[] }) {
                     </p>
                   )}
 
-                  <div className="mt-auto flex items-center gap-1.5 pt-2 text-xs font-medium uppercase tracking-wide text-[var(--brand-blue)]">
+                  <div
+                    className="ui-hover-cta mt-auto flex items-center gap-1.5 pt-2 text-xs font-medium uppercase tracking-wide"
+                    style={{ color: ctaColor }}
+                  >
                     Read
                     <ArrowRight className="ui-icon-shift h-3 w-3" />
                   </div>

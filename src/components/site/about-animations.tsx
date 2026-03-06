@@ -15,10 +15,9 @@ import {
   DrawLine,
   TextReveal,
   ScrollRevealMask,
-  StaggerReveal,
-  StaggerRevealItem,
 } from "@/components/ui/scroll-animations";
 import { FadeIn } from "@/components/ui/fade-in";
+import { getAccentSurface, getReadableAccentText } from "@/lib/accent-colors";
 
 /* Icon map to resolve from serialized props */
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -78,6 +77,7 @@ export function AboutAnimatedSections({
         <div className="grid gap-5 sm:grid-cols-2">
           {divisionCards.map((division, i) => {
             const IconComp = ICON_MAP[division.iconName] || Palette;
+            const accentText = getReadableAccentText(division.accent);
             return (
               <SlideIn
                 key={division.name}
@@ -89,17 +89,17 @@ export function AboutAnimatedSections({
                 blur
               >
                 <ScrollScale from={0.95} to={1}>
-                  <div className="relative flex h-full flex-col rounded-2xl border border-border bg-card p-8 sm:p-10">
+                  <div className="ui-card group relative flex h-full flex-col p-8 sm:p-10">
                     <div
                       className="absolute left-8 right-8 top-0 h-[2px] rounded-full"
                       style={{ background: division.accent }}
                     />
                     <div className="mb-6 flex items-start justify-between gap-4">
                       <div
-                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-opacity duration-300 hover:opacity-80"
+                        className="ui-hover-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
                         style={{
-                          background: `color-mix(in oklch, ${division.accent} 12%, var(--background))`,
-                          color: division.accent,
+                          background: getAccentSurface(division.accent),
+                          color: accentText,
                         }}
                       >
                         <IconComp className="h-5 w-5" />
@@ -111,9 +111,12 @@ export function AboutAnimatedSections({
                     <h3 className="font-display text-2xl text-foreground">
                       {division.name}
                       {division.group && (
-                        <span className="ml-2 text-sm font-normal text-muted-foreground">
-                          {division.group}
-                        </span>
+                        <>
+                          {" "}
+                          <span className="text-sm font-normal text-muted-foreground">
+                            {division.group}
+                          </span>
+                        </>
                       )}
                     </h3>
                     <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
@@ -202,7 +205,7 @@ export function AboutAnimatedSections({
               blur
             >
               <ScrollScale from={0.93} to={1}>
-                <div className="h-full rounded-2xl border border-border p-8">
+                <div className="ui-card h-full p-8">
                   <span className="mb-4 block font-mono text-xs tabular-nums text-muted-foreground">
                     {item.number}
                   </span>

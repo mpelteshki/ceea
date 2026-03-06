@@ -1,7 +1,3 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { EmptyState } from "@/components/ui/empty-state";
-import { SectionHeader } from "@/components/site/section-header";
 import { fmtPostDate } from "@/lib/format-date";
 import type { Post } from "@/lib/posts";
 import { hasConvex } from "@/lib/public-env";

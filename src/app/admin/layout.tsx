@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { getAdminState } from "@/lib/admin";
-import Link from "next/link";
 import { AdminAuthMenu } from "@/components/admin/admin-auth-menu";
 import { AdminNav } from "@/components/admin/admin-nav";
 import { NO_INDEX_ROBOTS } from "@/lib/seo";

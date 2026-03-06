@@ -10,9 +10,11 @@
 
   /* User-defined New Division Colors */
   --color-pink: #d3968c;
+  --color-teal: #19656b;
+  --color-teal-deep: #073f47;
   --color-green: #416441;
   --color-red: #481827;
-  --color-blue: #111e67;
+  --color-blue: var(--color-teal);
 
   /* --- Neutrals (OKLCH) --- */
   --color-white: oklch(1 0 0);
@@ -47,8 +49,10 @@
   --popover-foreground: var(--grey-900);
 
   /* Primary (Action/Brand) */
-  --primary: var(--color-blue);
+  --primary: var(--brand-blue);
   --primary-foreground: var(--color-white);
+  --nav-active: var(--brand-blue);
+  --nav-active-surface: color-mix(in oklch, var(--brand-blue) 8%, var(--background));
 
   /* Secondary */
   --secondary: var(--grey-100);
@@ -69,7 +73,7 @@
   /* Borders & Inputs */
   --border: var(--grey-200);
   --input: var(--grey-200);
-  --ring: var(--color-pink);
+  --ring: var(--brand-blue);
 
   /* Radius */
   --radius: 0.625rem;
@@ -77,12 +81,12 @@
   /* Sidebar */
   --sidebar: var(--color-white);
   --sidebar-foreground: var(--grey-900);
-  --sidebar-primary: var(--color-blue);
+  --sidebar-primary: var(--brand-blue);
   --sidebar-primary-foreground: var(--color-white);
   --sidebar-accent: var(--grey-100);
   --sidebar-accent-foreground: var(--grey-900);
   --sidebar-border: var(--grey-200);
-  --sidebar-ring: var(--color-pink);
+  --sidebar-ring: var(--brand-blue);
 
   /* Charts (Keep as is for now, but ensure OKLCH) */
   --chart-1: oklch(0.646 0.222 41.116);
@@ -108,8 +112,8 @@
   --accents-1: var(--grey-100);
   --accents-2: var(--grey-200);
   --accents-3: var(--grey-300);
-  --accents-4: var(--grey-400);
-  --accents-5: var(--grey-500);
+  --accents-4: var(--grey-600);
+  --accents-5: var(--grey-600);
   --accents-6: var(--grey-600);
   --accents-7: var(--grey-700);
   --accents-8: var(--grey-800);
@@ -132,8 +136,10 @@
     --popover-foreground: var(--grey-100);
 
     /* Primary */
-    --primary: var(--color-pink);
-    --primary-foreground: var(--grey-950);
+    --primary: var(--brand-blue);
+    --primary-foreground: var(--color-white);
+    --nav-active: color-mix(in oklch, var(--brand-blue) 72%, var(--color-white));
+    --nav-active-surface: color-mix(in oklch, var(--brand-blue) 24%, var(--background));
 
     /* Secondary */
     --secondary: var(--grey-800);
@@ -154,17 +160,17 @@
     /* Borders */
     --border: var(--grey-800);
     --input: var(--grey-800);
-    --ring: var(--color-pink);
+    --ring: var(--brand-blue);
 
     /* Sidebar */
     --sidebar: var(--grey-900);
     --sidebar-foreground: var(--grey-100);
-    --sidebar-primary: var(--color-pink);
-    --sidebar-primary-foreground: var(--grey-950);
+    --sidebar-primary: var(--brand-blue);
+    --sidebar-primary-foreground: var(--color-white);
     --sidebar-accent: var(--grey-800);
     --sidebar-accent-foreground: var(--grey-100);
     --sidebar-border: var(--grey-800);
-    --sidebar-ring: var(--color-pink);
+    --sidebar-ring: var(--brand-blue);
 
     /* Accents Mapping Dark */
     --accents-1: var(--grey-800);
@@ -193,8 +199,10 @@
   --popover-foreground: var(--grey-100);
 
   /* Primary */
-  --primary: var(--color-pink);
-  --primary-foreground: var(--grey-950);
+  --primary: var(--brand-blue);
+  --primary-foreground: var(--color-white);
+  --nav-active: color-mix(in oklch, var(--brand-blue) 72%, var(--color-white));
+  --nav-active-surface: color-mix(in oklch, var(--brand-blue) 24%, var(--background));
 
   /* Secondary */
   --secondary: var(--grey-800);
@@ -215,17 +223,17 @@
   /* Borders */
   --border: var(--grey-800);
   --input: var(--grey-800);
-  --ring: var(--color-pink);
+  --ring: var(--brand-blue);
 
   /* Sidebar */
   --sidebar: var(--grey-900);
   --sidebar-foreground: var(--grey-100);
-  --sidebar-primary: var(--color-pink);
-  --sidebar-primary-foreground: var(--grey-950);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: var(--color-white);
   --sidebar-accent: var(--grey-800);
   --sidebar-accent-foreground: var(--grey-100);
   --sidebar-border: var(--grey-800);
-  --sidebar-ring: var(--color-pink);
+  --sidebar-ring: var(--brand-blue);
 
   /* Accents Mapping Dark */
   --accents-1: var(--grey-800);
@@ -314,7 +322,7 @@ body {
 }
 
 ::selection {
-  background: var(--brand-pink);
+  background: var(--brand-blue);
   color: var(--grey-950);
 }
 
@@ -388,9 +396,9 @@ body {
 
 .dark .site-shell::after {
   background:
-    radial-gradient(circle at 15% 30%, color-mix(in oklch, var(--brand-pink) 4%, transparent) 0%, transparent 50%),
+    radial-gradient(circle at 15% 30%, color-mix(in oklch, var(--brand-blue) 7%, transparent) 0%, transparent 50%),
     radial-gradient(circle at 85% 70%, color-mix(in oklch, var(--grey-200) 3%, transparent) 0%, transparent 50%),
-    radial-gradient(circle at 50% 10%, color-mix(in oklch, var(--brand-blue) 5%, transparent) 0%, transparent 35%);
+    radial-gradient(circle at 50% 10%, color-mix(in oklch, var(--color-teal-deep) 10%, transparent) 0%, transparent 35%);
 }
 
 .site-shell::before {
@@ -434,7 +442,7 @@ body {
 .text-gradient {
   background: linear-gradient(var(--text-gradient-angle, 270deg),
       var(--text-gradient-from, var(--brand-blue)) 0%,
-      var(--text-gradient-to, var(--brand-pink)) 100%);
+      var(--text-gradient-to, var(--color-teal-deep)) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -444,7 +452,7 @@ body {
 .text-gradient-context {
   background: linear-gradient(var(--text-gradient-angle, 270deg),
       var(--text-gradient-from, var(--brand-blue)) 0%,
-      var(--text-gradient-to, var(--brand-pink)) 60%);
+      var(--text-gradient-to, var(--color-teal-deep)) 60%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -536,33 +544,33 @@ body {
 
 @layer components {
   .ui-hover-lift-sm {
-    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 220ms ease;
-    will-change: transform;
+    transition: box-shadow 200ms ease,
+      border-color 220ms ease,
+      background-color 220ms ease;
   }
 
-  .ui-hover-lift-sm:hover {
-    transform: translateY(-2px);
+  .ui-hover-lift-sm:hover,
+  .ui-hover-lift-sm:focus-visible {
+    transform: none;
   }
 
   .ui-hover-lift {
-    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 220ms ease;
-    will-change: transform;
+    transition: box-shadow 220ms ease,
+      border-color 220ms ease,
+      background-color 220ms ease;
   }
 
-  .ui-hover-lift:hover {
-    transform: translateY(-3px);
+  .ui-hover-lift:hover,
+  .ui-hover-lift:focus-visible {
+    transform: none;
   }
 
   .ui-pressable {
-    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 140ms ease;
   }
 
   .ui-pressable:active {
-    transform: scale(0.98);
+    transform: scale(0.99);
   }
 
   .ui-nav-link {
@@ -579,19 +587,18 @@ body {
     height: 2px;
     border-radius: 999px;
     background: color-mix(in oklch, var(--foreground) 60%, transparent);
-    transform: scaleX(0);
-    transform-origin: center;
-    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), background-color 200ms ease;
+    opacity: 0;
+    transition: opacity 180ms ease, background-color 180ms ease;
   }
 
   .ui-nav-link:hover::after,
   .ui-nav-link:focus-visible::after {
-    transform: scaleX(1);
+    opacity: 0.55;
   }
 
   .ui-nav-link[data-active="true"]::after {
-    transform: scaleX(1);
-    background: var(--brand-blue);
+    opacity: 1;
+    background: var(--nav-active);
   }
 
   .ui-footer-link {
@@ -780,7 +787,8 @@ body {
     transition: background-color 200ms ease;
   }
 
-  .ui-rowlink:hover {
+  .ui-rowlink:hover,
+  .ui-rowlink:focus-visible {
     background: var(--secondary);
   }
 
@@ -808,65 +816,116 @@ body {
 
   /* Card Grid Interaction */
   .ui-card-grid {
-    /* Container for grouped card hover states */
+    --ui-card-grid-idle-opacity: 1;
   }
 
   /* When hovering the grid, dim cards that are not being hovered */
   .ui-card-grid:hover .ui-card:not(:hover) {
-    opacity: 0.65;
-    transform: scale(0.98);
-    transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: var(--ui-card-grid-idle-opacity);
   }
 
   /* Card */
   .ui-card {
+    --ui-card-hover-bg: color-mix(in oklch, var(--card) 96%, var(--background));
+    --ui-card-hover-border: color-mix(in oklch, var(--brand-blue) 10%, var(--border));
+    --ui-card-hover-shadow: 0 16px 30px -24px rgba(15, 23, 42, 0.16);
     position: relative;
     border: 1px solid color-mix(in oklch, var(--border) 80%, transparent);
-    /* Subtler border for glass */
     border-radius: 16px;
-    background: color-mix(in oklch, var(--card) 60%, transparent);
-    /* Transparent background */
-    backdrop-filter: blur(16px);
-    /* Strong glass blur */
-    -webkit-backdrop-filter: blur(16px);
+    background: color-mix(in oklch, var(--card) 94%, var(--background));
+    transform: translate3d(0, 0, 0) scale(1);
     overflow: hidden;
-    transition: border-color 400ms cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 400ms cubic-bezier(0.22, 1, 0.36, 1),
-      background-color 400ms cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 400ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
-    box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.05),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    /* Inner rim highlight */
+    isolation: isolate;
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 220ms ease,
+      box-shadow 220ms ease,
+      background-color 220ms ease,
+      opacity 220ms ease;
+    box-shadow: 0 6px 18px -18px rgba(15, 23, 42, 0.12);
     will-change: transform, opacity;
   }
 
-  .ui-card:hover {
-    border-color: color-mix(in oklch, var(--ring) 60%, var(--border));
-    background: color-mix(in oklch, var(--card) 85%, transparent);
-    box-shadow:
-      0 12px 30px -4px color-mix(in oklch, var(--grey-200) 8%, transparent),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05),
-      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  .ui-card::before {
+    content: none;
+  }
+
+  .ui-card>* {
+    position: relative;
+    z-index: 1;
+  }
+
+  .ui-card:hover,
+  .ui-card:focus-within {
+    transform: translate3d(0, -4px, 0) scale(1.008);
+    border-color: var(--ui-card-hover-border);
+    background: var(--ui-card-hover-bg);
+    box-shadow: var(--ui-card-hover-shadow);
   }
 
   .dark .ui-card {
-    background: color-mix(in oklch, var(--card) 40%, transparent);
+    --ui-card-hover-bg: color-mix(in oklch, var(--card) 92%, var(--background));
+    --ui-card-hover-border: color-mix(in oklch, var(--brand-blue) 16%, var(--border));
+    --ui-card-hover-shadow: 0 18px 34px -24px rgba(0, 0, 0, 0.4);
+    background: color-mix(in oklch, var(--card) 86%, var(--background));
     border-color: color-mix(in oklch, var(--border) 60%, transparent);
-    box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 24px -22px rgba(0, 0, 0, 0.38);
   }
 
-  .dark .ui-card:hover {
-    border-color: color-mix(in oklch, var(--ring) 50%, var(--border));
-    background: color-mix(in oklch, var(--card) 60%, transparent);
-    box-shadow:
-      0 12px 30px -4px color-mix(in oklch, var(--brand-blue) 12%, transparent),
-      0 4px 6px -2px rgba(0, 0, 0, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  .ui-hover-panel {
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    background: transparent;
+    overflow: hidden;
+    transform: translate3d(0, 0, 0) scale(1);
+    transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      background-color 180ms ease,
+      color 200ms ease;
+    will-change: transform;
+  }
+
+  .ui-hover-panel:hover,
+  .ui-hover-panel:focus-visible,
+  .ui-hover-panel:focus-within {
+    transform: translate3d(0, -3px, 0) scale(1.006);
+    background: color-mix(in oklch, var(--card) 94%, var(--background));
+    border-color: color-mix(in oklch, var(--brand-blue) 10%, var(--border));
+    box-shadow: 0 14px 26px -22px rgba(15, 23, 42, 0.12);
+  }
+
+  .ui-hover-icon {
+    transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+  }
+
+  :where(.group:hover, .group:focus-within, a:hover, a:focus-visible, button:hover, button:focus-visible) .ui-hover-icon {
+    box-shadow: 0 6px 14px -14px rgba(15, 23, 42, 0.16);
+  }
+
+  .ui-hover-media {
+    transition: opacity 180ms ease;
+  }
+
+  :where(.group:hover, .group:focus-within, a:hover, a:focus-visible, button:hover, button:focus-visible) .ui-hover-media {
+    opacity: 0.98;
+  }
+
+  .ui-hover-cta {
+    transition: opacity 180ms ease, color 180ms ease;
+  }
+
+  :where(.group:hover, .group:focus-within, a:hover, a:focus-visible, button:hover, button:focus-visible) .ui-hover-cta {
+    opacity: 0.96;
+  }
+
+  .ui-icon-shift {
+    transform: translateX(0);
+    transition: transform 180ms ease;
+  }
+
+  :where(.group:hover, .group:focus-within, a:hover, a:focus-visible, button:hover, button:focus-visible) .ui-icon-shift {
+    transform: none;
   }
 
   /* Shared alignment for site page titles and section titles */
@@ -997,7 +1056,8 @@ body {
     white-space: nowrap;
   }
 
-  .ui-section-cta:hover {
+  .ui-section-cta:hover,
+  .ui-section-cta:focus-visible {
     color: var(--foreground);
     gap: 0.625rem;
   }

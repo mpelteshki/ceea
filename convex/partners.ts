@@ -3,6 +3,12 @@ import { v } from "convex/values";
 import { requireAdmin } from "./lib/admin";
 import { normalizeOptionalUrl } from "./lib/url";
 
+function stripPartnerMetadata<T extends { createdBy?: string }>(row: T) {
+    const cleanRow = { ...row };
+    delete cleanRow.createdBy;
+    return cleanRow;
+}
+
 export const listAll = query({
     args: {},
     handler: async (ctx) => {
@@ -12,7 +18,7 @@ export const listAll = query({
             .order("asc")
             .collect();
         // Strip internal metadata from public response
-        return rows.map(({ createdBy: _, ...rest }) => rest);
+        return rows.map(stripPartnerMetadata);
     },
 });
 

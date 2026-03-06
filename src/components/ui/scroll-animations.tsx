@@ -67,25 +67,13 @@ export function ParallaxLayer({
   speed?: number;
   direction?: "up" | "down";
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const reduceMotion = useReducedMotion();
-
-  const range = direction === "up" ? [100 * speed, -100 * speed] : [-100 * speed, 100 * speed];
-  const y = useTransform(scrollYProgress, [0, 1], range);
-  const smoothY = useSpring(y, { stiffness: 120, damping: 30 });
+  void speed;
+  void direction;
 
   return (
-    <m.div
-      ref={ref}
-      className={className}
-      style={reduceMotion ? {} : { y: smoothY }}
-    >
+    <div className={className}>
       {children}
-    </m.div>
+    </div>
   );
 }
 
@@ -115,34 +103,38 @@ export function TextReveal({
   const isInView = useInView(ref, { once: true, margin: "0px 0px -50px 0px" });
   const reduceMotion = useReducedMotion();
   const items = mode === "word" ? children.split(" ") : children.split("");
+  void blur;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Component = (m as any)[Tag] as typeof m.p;
 
   return (
-    <Component ref={ref} className={cn("flex flex-wrap", className)}>
-      {items.map((item, i) => (
-        <m.span
-          key={`${item}-${i}`}
-          initial={reduceMotion ? {} : { opacity: 0, y: 20, ...(blur ? { filter: "blur(4px)" } : {}) }}
-          animate={
-            isInView
-              ? { opacity: 1, y: 0, ...(blur ? { filter: "blur(0px)" } : {}) }
-              : reduceMotion
-                ? {}
-                : { opacity: 0, y: 20, ...(blur ? { filter: "blur(4px)" } : {}) }
-          }
-          transition={{
-            duration: 0.5,
-            delay: i * stagger,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="inline-block"
-          style={{ marginRight: mode === "word" ? "0.3em" : undefined }}
-        >
-          {item}
-        </m.span>
-      ))}
+    <Component ref={ref}>
+      <span className="sr-only">{children}</span>
+      <span aria-hidden="true" className={cn("flex flex-wrap", className)}>
+        {items.map((item, i) => (
+          <m.span
+            key={`${item}-${i}`}
+            initial={reduceMotion ? {} : { opacity: 0, y: 20 }}
+            animate={
+              isInView
+                ? { opacity: 1, y: 0 }
+                : reduceMotion
+                  ? {}
+                  : { opacity: 0, y: 20 }
+            }
+            transition={{
+              duration: 0.5,
+              delay: i * stagger,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="inline-block"
+            style={{ marginRight: mode === "word" ? "0.3em" : undefined }}
+          >
+            {item}
+          </m.span>
+        ))}
+      </span>
     </Component>
   );
 }
@@ -177,6 +169,7 @@ export function SlideIn({
   blur?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
+  void blur;
 
   const offsets = {
     left: { x: -distance, y: 0 },
@@ -192,7 +185,6 @@ export function SlideIn({
       ...offsets[from],
       rotate,
       scale,
-      ...(blur ? { filter: "blur(8px)" } : {}),
     };
 
   const visible = {
@@ -201,7 +193,6 @@ export function SlideIn({
     y: 0,
     rotate: 0,
     scale: 1,
-    ...(blur ? { filter: "blur(0px)" } : {}),
   };
 
   return (
@@ -240,25 +231,18 @@ export function ScrollScale({
   rotateFrom?: number;
   rotateTo?: number;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "center center"],
-  });
   const reduceMotion = useReducedMotion();
-
-  const scale = useTransform(scrollYProgress, [0, 1], [from, to]);
-  const rotate = useTransform(scrollYProgress, [0, 1], [rotateFrom, rotateTo]);
 
   return (
     <m.div
-      ref={ref}
       className={className}
-      style={
-        reduceMotion
-          ? {}
-          : { scale, rotate }
-      }
+      initial={reduceMotion ? { opacity: 1, scale: 1, rotate: rotateTo } : { opacity: 0, scale: from, rotate: rotateFrom }}
+      whileInView={{ opacity: 1, scale: to, rotate: rotateTo }}
+      viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+      transition={{
+        duration: reduceMotion ? 0 : 0.55,
+        ease: [0.22, 1, 0.36, 1],
+      }}
     >
       {children}
     </m.div>
@@ -396,22 +380,11 @@ export function DrawLine({
   width?: number;
   orientation?: "horizontal" | "vertical";
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 0.8", "start 0.4"],
-  });
   const reduceMotion = useReducedMotion();
-
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-  });
 
   if (reduceMotion) {
     return (
       <div
-        ref={ref}
         className={cn(
           orientation === "horizontal" ? "h-px w-full" : "h-full w-px",
           className,
@@ -423,15 +396,20 @@ export function DrawLine({
 
   return (
     <m.div
-      ref={ref}
       className={cn(
         orientation === "horizontal" ? "w-full origin-left" : "h-full origin-top",
         className,
       )}
+      initial={orientation === "horizontal" ? { scaleX: 0 } : { scaleY: 0 }}
+      whileInView={orientation === "horizontal" ? { scaleX: 1 } : { scaleY: 1 }}
+      viewport={{ once: true, margin: "0px 0px -60px 0px" }}
+      transition={{
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1],
+      }}
       style={{
         [orientation === "horizontal" ? "height" : "width"]: width,
         background: color,
-        [orientation === "horizontal" ? "scaleX" : "scaleY"]: scaleX,
       }}
     />
   );
@@ -530,13 +508,10 @@ export function StaggerReveal({
   children,
   className,
   staggerDelay = 0.1,
-  alternateDirection = false,
 }: {
   children: ReactNode;
   className?: string;
   staggerDelay?: number;
-  /** Alternate children sliding from left/right */
-  alternateDirection?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
 
@@ -584,13 +559,11 @@ export function StaggerRevealItem({
             opacity: 0,
             x: fromLeft ? -60 : 60,
             scale: 0.95,
-            filter: "blur(4px)",
           },
         visible: {
           opacity: 1,
           x: 0,
           scale: 1,
-          filter: "blur(0px)",
           transition: {
             duration: 0.65,
             ease: [0.22, 1, 0.36, 1],

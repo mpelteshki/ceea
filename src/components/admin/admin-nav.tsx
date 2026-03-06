@@ -35,7 +35,7 @@ function NavLink({
 
   const className = cn(
     "ui-nav-link group/nav px-3 py-5 text-[13px] font-medium tracking-wide transition-colors duration-200",
-    isActive ? "text-[var(--primary)]" : "text-[var(--accents-5)] hover:text-foreground",
+    isActive ? "text-[var(--nav-active)]" : "text-[var(--accents-5)] hover:text-foreground",
   );
 
   const content = <>{children}</>;
@@ -45,6 +45,7 @@ function NavLink({
       href={href}
       onClick={onClick}
       data-active={isActive ? "true" : "false"}
+      aria-current={isActive ? "page" : undefined}
       className={className}
     >
       {content}
@@ -187,7 +188,7 @@ export function AdminNav() {
       className={cn(
         "fixed top-0 z-40 w-full transition-[transform,background-color,border-color,padding] duration-300",
         isScrolled
-          ? "bg-background/90 backdrop-blur-md border-b border-border"
+          ? "bg-background/95 border-b border-border"
           : "bg-transparent"
       )}
     >
@@ -227,22 +228,29 @@ export function AdminNav() {
       </div>
 
       {menuOpen ? (
-        <div ref={menuRef} id={menuId} role="dialog" aria-modal="true" className="fixed inset-0 z-50 lg:hidden">
+        <div
+          ref={menuRef}
+          id={menuId}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Admin navigation"
+          className="fixed inset-0 z-50 lg:hidden"
+        >
           <button
             type="button"
             aria-label="Close mobile menu"
             className={cn(
-              "absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-200",
+              "absolute inset-0 bg-black/32 transition-opacity duration-200",
               menuVisible ? "opacity-100" : "opacity-0",
             )}
             onClick={closeMenu}
           />
           <div
             className={cn(
-              "absolute left-0 right-0 top-0 bg-background max-h-[100dvh] overflow-y-auto shadow-2xl transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              "absolute left-0 right-0 top-0 bg-background max-h-[100dvh] overflow-y-auto border-b border-border shadow-xl transition-[opacity,transform] duration-200 ease-out",
               menuVisible
                 ? "opacity-100 translate-y-0"
-                : "opacity-0 -translate-y-2",
+                : "opacity-0 -translate-y-1",
             )}
             style={{ overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}
           >
@@ -273,7 +281,7 @@ export function AdminNav() {
                   const className = cn(
                     "block rounded-lg px-3.5 py-3 text-left font-display text-lg transition-[background-color,color] duration-200",
                     isActive
-                      ? "text-[var(--primary)] bg-[color-mix(in_oklch,var(--primary)_8%,var(--background))]"
+                      ? "text-[var(--nav-active)] bg-[var(--nav-active-surface)]"
                       : "text-foreground hover:bg-[var(--accents-1)]",
                   );
                   return (
@@ -282,6 +290,7 @@ export function AdminNav() {
                       href={l.href}
                       ref={idx === 0 ? firstLinkRef : undefined}
                       className={className}
+                      aria-current={isActive ? "page" : undefined}
                       onClick={closeMenu}
                     >
                       {l.label}

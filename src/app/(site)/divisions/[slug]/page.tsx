@@ -12,6 +12,7 @@ import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 import { api } from "../../../../../convex/_generated/api";
 import type { Doc } from "../../../../../convex/_generated/dataModel";
 import { divisions, assembliesGroup } from "@/lib/divisions-data";
+import { getAccentSurface, getReadableAccentText } from "@/lib/accent-colors";
 
 type ProjectDoc = Doc<"projects">;
 
@@ -41,6 +42,7 @@ export default async function DivisionPage({ params }: PageProps) {
   const { slug } = await params;
   const division = divisionBySlug[slug];
   if (!division) notFound();
+  const divisionAccentText = getReadableAccentText(division.accent);
 
   let projects: ProjectDoc[] = [];
 
@@ -60,8 +62,8 @@ export default async function DivisionPage({ params }: PageProps) {
               <div
                 className="flex h-12 w-12 items-center justify-center rounded-xl"
                 style={{
-                  color: division.accent,
-                  background: `color-mix(in oklch, ${division.accent} 10%, var(--background))`,
+                  color: divisionAccentText,
+                  background: getAccentSurface(division.accent, 10),
                 }}
               >
                 <division.icon className="h-6 w-6" strokeWidth={1.75} />
@@ -88,35 +90,39 @@ export default async function DivisionPage({ params }: PageProps) {
             </p>
           </FadeIn>
           <FadeInStagger className="grid gap-px bg-[var(--border)] sm:grid-cols-3">
-            {assembliesGroup.map((sub) => (
-              <FadeIn key={sub.slug}>
-                <div className="bg-[var(--background)] p-8">
-                  <div
-                    className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl"
-                    style={{
-                      color: sub.accent,
-                      background: `color-mix(in oklch, ${sub.accent} 10%, var(--background))`,
-                    }}
-                  >
-                    <sub.icon className="h-5 w-5" strokeWidth={1.75} />
+            {assembliesGroup.map((sub) => {
+              const subAccentText = getReadableAccentText(sub.accent);
+
+              return (
+                <FadeIn key={sub.slug}>
+                  <div className="ui-hover-panel group bg-[var(--background)] p-8">
+                    <div
+                      className="ui-hover-icon mb-5 flex h-11 w-11 items-center justify-center rounded-xl"
+                      style={{
+                        color: subAccentText,
+                        background: getAccentSurface(sub.accent, 10),
+                      }}
+                    >
+                      <sub.icon className="h-5 w-5" strokeWidth={1.75} />
+                    </div>
+                    <h3 className="font-display mb-2 text-lg font-semibold text-foreground">
+                      {sub.name}
+                    </h3>
+                    <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
+                      {sub.description}
+                    </p>
+                    <Link
+                      href={`/divisions/${sub.slug}`}
+                      className="ui-hover-cta group inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide transition-colors duration-200"
+                      style={{ color: subAccentText }}
+                    >
+                      Explore
+                      <ArrowRight className="ui-icon-shift h-3 w-3" />
+                    </Link>
                   </div>
-                  <h3 className="font-display mb-2 text-lg font-semibold text-foreground">
-                    {sub.name}
-                  </h3>
-                  <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
-                    {sub.description}
-                  </p>
-                  <Link
-                    href={`/divisions/${sub.slug}`}
-                    className="group inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide transition-colors duration-200"
-                    style={{ color: sub.accent }}
-                  >
-                    Explore
-                    <ArrowRight className="ui-icon-shift h-3 w-3" />
-                  </Link>
-                </div>
-              </FadeIn>
-            ))}
+                </FadeIn>
+              );
+            })}
           </FadeInStagger>
         </div>
       )}

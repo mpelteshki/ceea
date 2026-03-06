@@ -6,6 +6,7 @@ import { fmtShortDate } from "@/lib/format-date";
 import type { Post } from "@/lib/posts";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
+import { getReadableAccentText } from "@/lib/accent-colors";
 import { api } from "../../../convex/_generated/api";
 
 async function getPosts(): Promise<Post[]> {
@@ -42,6 +43,7 @@ export async function NewsletterList() {
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ui-card-grid">
       {posts.map((post, idx) => {
         const isFeatured = idx === 0;
+        const ctaColor = getReadableAccentText("var(--brand-blue)");
 
         return (
           <FadeIn key={post.slug} delay={Math.min(idx * 0.04, 0.2)} className="h-full">
@@ -63,7 +65,10 @@ export async function NewsletterList() {
                   <p className="text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
                 </div>
 
-                <div className="mt-auto pt-6 flex items-center gap-2 text-sm font-medium text-[var(--brand-blue)] transition-opacity group-hover:opacity-75">
+                <div
+                  className="ui-hover-cta mt-auto flex items-center gap-2 pt-6 text-sm font-medium"
+                  style={{ color: ctaColor }}
+                >
                   <span>Read</span>
                   <ArrowRight className="ui-icon-shift h-3.5 w-3.5" />
                 </div>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { TextReveal, ParallaxLayer } from "@/components/ui/scroll-animations";
+import { TextReveal } from "@/components/ui/scroll-animations";
 import { FadeIn } from "@/components/ui/fade-in";
 import { SITE_APPLY_FORM_URL } from "@/lib/site-contact";
 
@@ -11,13 +11,14 @@ export function Hero() {
     <section className="relative overflow-hidden">
       {/* Ambient gradient — dynamic premium mesh */}
       <div className="absolute inset-0 -z-10 bg-[var(--background)]">
-        <ParallaxLayer speed={0.15} className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] max-w-6xl max-h-[800px] opacity-60 dark:opacity-40"
-            style={{
-              background: "radial-gradient(circle at center, color-mix(in oklch, var(--brand-blue) 15%, transparent) 0%, transparent 60%)",
-              filter: "blur(60px)"
-            }} />
-        </ParallaxLayer>
+        <div
+          className="absolute left-1/2 top-1/2 h-[140%] max-h-[800px] w-[140%] max-w-6xl -translate-x-1/2 -translate-y-1/2 opacity-60 dark:opacity-40"
+          style={{
+            background:
+              "radial-gradient(circle at center, color-mix(in oklch, var(--brand-blue) 15%, transparent) 0%, transparent 60%)",
+            filter: "blur(60px)",
+          }}
+        />
         <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[var(--background)] to-transparent" />
       </div>
 
@@ -41,8 +42,8 @@ export function Hero() {
                 <TextReveal
                   as="span"
                   className="justify-center"
-                  mode="char"
-                  stagger={0.04}
+                  mode="word"
+                  stagger={0.06}
                   blur={false}
                 >
                   Association

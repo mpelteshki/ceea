@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InlineMarkdown } from "@/components/ui/inline-markdown";
@@ -25,12 +25,31 @@ export function ExpandableMarkdown({
   readLessLabel = "Read less",
 }: ExpandableMarkdownProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedHeight, setExpandedHeight] = useState<number | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+
+    const measure = () => {
+      setExpandedHeight(contentRef.current?.scrollHeight ?? null);
+    };
+
+    measure();
+
+    const observer =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    if (observer) observer.observe(contentRef.current);
+    window.addEventListener("resize", measure);
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [text]);
 
   if (!text) return null;
 
-  /* Collapsed height = line-height × maxLines. We use a CSS custom property
-     so the grid-rows transition can animate from 0→1fr smoothly. */
   const collapsedLines = `${maxLines * 1.625}em`;
 
   return (
@@ -40,7 +59,7 @@ export function ExpandableMarkdown({
         className="overflow-hidden transition-[max-height] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{
           maxHeight: isExpanded
-            ? `${contentRef.current?.scrollHeight ?? 2000}px`
+            ? `${expandedHeight ?? 2000}px`
             : collapsedLines,
         }}
       >
@@ -49,7 +68,7 @@ export function ExpandableMarkdown({
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         aria-expanded={isExpanded}
-        className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
+        className="inline-flex items-center gap-1 text-sm font-medium text-foreground transition-colors hover:text-muted-foreground"
       >
         {isExpanded ? (
           <>

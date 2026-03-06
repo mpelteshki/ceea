@@ -5,7 +5,7 @@ import { UpcomingEvents } from "@/components/site/upcoming-events";
 import { Suspense } from "react";
 import { LatestDispatch } from "@/components/site/latest-dispatch";
 import { HomeScrollSection } from "@/components/site/home-scroll-effects";
-import { EventsSkeleton, DispatchSkeleton } from "@/components/site/home-skeletons";
+import { DispatchLoadingState, EventsLoadingState } from "@/components/site/loading-states";
 import { buildPageMetadata, SITE_NAME, toMetaDescription } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -28,13 +28,13 @@ export default function HomePage() {
       </HomeScrollSection>
 
       <HomeScrollSection tone="blue">
-        <Suspense fallback={<EventsSkeleton />}>
+        <Suspense fallback={<EventsLoadingState />}>
           <UpcomingEvents />
         </Suspense>
       </HomeScrollSection>
 
       <HomeScrollSection tone="green">
-        <Suspense fallback={<DispatchSkeleton />}>
+        <Suspense fallback={<DispatchLoadingState />}>
           <LatestDispatch />
         </Suspense>
       </HomeScrollSection>
