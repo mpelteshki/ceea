@@ -13,41 +13,41 @@ import { paginate, readSearchParam, parsePage, parseEnum, AdminPanelFallback } f
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { MarkdownEditor } from "@/components/admin/markdown-editor";
 
-const PROJECT_SORTS = ["newest", "oldest", "title"] as const;
-type ProjectSort = typeof PROJECT_SORTS[number];
-type ProjectForm = {
+const FINTECH_SORTS = ["newest", "oldest", "title"] as const;
+type FintechSort = typeof FINTECH_SORTS[number];
+type FintechForm = {
   title: string;
   description: string;
   imageUrl: string;
   link: string;
 };
 
-const PROJECTS_PAGE_SIZE = 9;
+const FINTECH_PAGE_SIZE = 9;
 
-function useProjectsAdminState() {
-  const [form, setForm] = useState<ProjectForm>({
+function useFintechAdminState() {
+  const [form, setForm] = useState<FintechForm>({
     title: "",
     description: "",
     imageUrl: "",
     link: "",
   });
-  const [editingProjectId, setEditingProjectId] = useState<Id<"projects"> | null>(null);
+  const [editingFintechId, setEditingFintechId] = useState<Id<"fintech"> | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [deletingProjectId, setDeletingProjectId] = useState<Id<"projects"> | null>(null);
+  const [deletingFintechId, setDeletingFintechId] = useState<Id<"fintech"> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState(() => readSearchParam("q") ?? "");
-  const [sortBy, setSortBy] = useState<ProjectSort>(() => parseEnum(readSearchParam("sort"), PROJECT_SORTS, "newest"));
+  const [sortBy, setSortBy] = useState<FintechSort>(() => parseEnum(readSearchParam("sort"), FINTECH_SORTS, "newest"));
   const [page, setPage] = useState(() => parsePage(readSearchParam("page")));
 
   return {
     form,
     setForm,
-    editingProjectId,
-    setEditingProjectId,
+    editingFintechId,
+    setEditingFintechId,
     isSaving,
     setIsSaving,
-    deletingProjectId,
-    setDeletingProjectId,
+    deletingFintechId,
+    setDeletingFintechId,
     error,
     setError,
     searchQuery,
@@ -59,31 +59,31 @@ function useProjectsAdminState() {
   };
 }
 
-export default function ProjectsAdminPage() {
+export default function FintechAdminPage() {
   return (
-    <Suspense fallback={<AdminPanelFallback label="Loading projects…" />}>
-      <ProjectsAdminPageInner />
+    <Suspense fallback={<AdminPanelFallback label="Loading fintech…" />}>
+      <FintechAdminPageInner />
     </Suspense>
   );
 }
 
-function ProjectsAdminPageInner() {
+function FintechAdminPageInner() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useConvexAuth();
-  const projects = useQuery(api.projects.get, isAuthenticated ? {} : "skip");
-  const createProject = useMutation(api.projects.create);
-  const updateProject = useMutation(api.projects.update);
-  const deleteProject = useMutation(api.projects.remove);
+  const fintech = useQuery(api.fintech.get, isAuthenticated ? {} : "skip");
+  const createFintech = useMutation(api.fintech.create);
+  const updateFintech = useMutation(api.fintech.update);
+  const deleteFintech = useMutation(api.fintech.remove);
 
   const {
     form,
     setForm,
-    editingProjectId,
-    setEditingProjectId,
+    editingFintechId,
+    setEditingFintechId,
     isSaving,
     setIsSaving,
-    deletingProjectId,
-    setDeletingProjectId,
+    deletingFintechId,
+    setDeletingFintechId,
     error,
     setError,
     searchQuery,
@@ -92,9 +92,9 @@ function ProjectsAdminPageInner() {
     setSortBy,
     page,
     setPage,
-  } = useProjectsAdminState();
+  } = useFintechAdminState();
 
-  const syncListState = (updates: { q?: string; sort?: ProjectSort; page?: number }) => {
+  const syncListState = (updates: { q?: string; sort?: FintechSort; page?: number }) => {
     const nextQuery = updates.q ?? searchQuery;
     const nextSort = updates.sort ?? sortBy;
     const nextPage = updates.page ?? page;
@@ -110,7 +110,7 @@ function ProjectsAdminPageInner() {
     else params.delete("page");
 
     const queryString = params.toString();
-    router.replace(queryString ? `/admin/projects?${queryString}` : "/admin/projects", { scroll: false });
+    router.replace(queryString ? `/admin/fintech?${queryString}` : "/admin/fintech", { scroll: false });
   };
 
   const resetForm = () => {
@@ -129,40 +129,40 @@ function ProjectsAdminPageInner() {
     setError(null);
 
     try {
-      if (editingProjectId) {
-        await updateProject({
-          id: editingProjectId,
+      if (editingFintechId) {
+        await updateFintech({
+          id: editingFintechId,
           title: form.title.trim(),
           description: form.description.trim(),
           imageUrl: form.imageUrl.trim(),
           link: form.link.trim(),
         });
       } else {
-        await createProject({
+        await createFintech({
           title: form.title.trim(),
           description: form.description.trim(),
           imageUrl: form.imageUrl.trim() || undefined,
           link: form.link.trim() || undefined,
         });
       }
-      setEditingProjectId(null);
+      setEditingFintechId(null);
       resetForm();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save project");
+      setError(err instanceof Error ? err.message : "Failed to save fintech");
     } finally {
       setIsSaving(false);
     }
   };
 
-  const filteredProjects = useMemo(() => {
-    const listSource = projects ?? [];
+  const filteredFintech = useMemo(() => {
+    const listSource = fintech ?? [];
     const q = searchQuery.trim().toLowerCase();
-    const list = listSource.filter((project) => {
+    const list = listSource.filter((fintech) => {
       if (q.length === 0) return true;
       return [
-        toPlainText(project.title),
-        toPlainText(project.description),
-        project.link,
+        toPlainText(fintech.title),
+        toPlainText(fintech.description),
+        fintech.link,
       ]
         .filter(Boolean)
         .some((value) => String(value).toLowerCase().includes(q));
@@ -175,11 +175,11 @@ function ProjectsAdminPageInner() {
     }
 
     return list;
-  }, [projects, searchQuery, sortBy]);
+  }, [fintech, searchQuery, sortBy]);
 
   const pagination = useMemo(
-    () => paginate(filteredProjects, page, PROJECTS_PAGE_SIZE),
-    [filteredProjects, page],
+    () => paginate(filteredFintech, page, FINTECH_PAGE_SIZE),
+    [filteredFintech, page],
   );
 
   if (isLoading) return <AdminPanelFallback label="Authenticating…" />;
@@ -209,7 +209,7 @@ function ProjectsAdminPageInner() {
             <div className="flex flex-col gap-6 text-center sm:text-left">
               <div className="space-y-1">
                 <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
-                  Projects
+                  Fintech
                 </h1>
                 <p className="max-w-2xl text-lg leading-relaxed text-[var(--muted-foreground)]">
                   Showcase the initiatives and impact of CEEA.
@@ -223,19 +223,19 @@ function ProjectsAdminPageInner() {
           <div className="ui-site-container relative">
             <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left mb-8">
               <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">
-                {editingProjectId ? "Edit project" : "Create project"}
+                {editingFintechId ? "Edit fintech" : "Create fintech"}
               </h2>
-              {editingProjectId ? (
+              {editingFintechId ? (
                 <button
                   type="button"
                   onClick={() => {
-                    setEditingProjectId(null);
+                    setEditingFintechId(null);
                     resetForm();
                   }}
                   className="ui-btn"
                   data-variant="secondary"
                 >
-                  New project
+                  New fintech
                 </button>
               ) : null}
             </div>
@@ -243,9 +243,9 @@ function ProjectsAdminPageInner() {
             <form onSubmit={handleSubmit} className="grid gap-6">
               <Field label="Title">
                 <input
-                  name="project_title"
+                  name="fintech_title"
                   autoComplete="off"
-                  placeholder="Project title…"
+                  placeholder="Fintech title…"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   className="ui-input"
@@ -258,9 +258,9 @@ function ProjectsAdminPageInner() {
                   value={form.description}
                   onChange={(v) => setForm({ ...form, description: v })}
                   rows={5}
-                  placeholder="Project description…"
-                  name="project_description"
-                  ariaLabel="Project description (markdown)"
+                  placeholder="Fintech description…"
+                  name="fintech_description"
+                  ariaLabel="Fintech description (markdown)"
                   required
                 />
               </Field>
@@ -271,7 +271,7 @@ function ProjectsAdminPageInner() {
                     type="url"
                     inputMode="url"
                     spellCheck={false}
-                    name="project_image_url"
+                    name="fintech_image_url"
                     autoComplete="off"
                     placeholder="https://…"
                     value={form.imageUrl}
@@ -279,12 +279,12 @@ function ProjectsAdminPageInner() {
                     className="ui-input"
                   />
                 </Field>
-                <Field label="Project Link">
+                <Field label="Fintech Link">
                   <input
                     type="url"
                     inputMode="url"
                     spellCheck={false}
-                    name="project_link"
+                    name="fintech_link"
                     autoComplete="off"
                     placeholder="https://…"
                     value={form.link}
@@ -296,7 +296,7 @@ function ProjectsAdminPageInner() {
 
               <div className="flex justify-center sm:justify-start pt-2">
                 <button type="submit" className={["ui-btn", isSaving ? "opacity-60 cursor-not-allowed" : ""].join(" ")} disabled={isSaving}>
-                  {isSaving ? (editingProjectId ? "Saving…" : "Creating…") : (editingProjectId ? "Save changes" : "Add project")} <span className="text-[10px]">{isSaving ? "" : "->"}</span>
+                  {isSaving ? (editingFintechId ? "Saving…" : "Creating…") : (editingFintechId ? "Save changes" : "Add fintech")} <span className="text-[10px]">{isSaving ? "" : "->"}</span>
                 </button>
               </div>
             </form>
@@ -306,17 +306,17 @@ function ProjectsAdminPageInner() {
         <section className="relative overflow-hidden bg-[var(--background)] py-12 sm:py-16">
           <div className="ui-site-container relative">
             <div className="mb-8">
-              <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">Current Projects</h2>
+              <h2 className="font-display text-2xl font-semibold text-[var(--foreground)]">Current Fintech</h2>
               <div className="mt-1 text-sm text-[var(--accents-5)]">
-                {projects ? `${filteredProjects.length} of ${projects.length} shown` : "Loading…"}
+                {fintech ? `${filteredFintech.length} of ${fintech.length} shown` : "Loading…"}
               </div>
             </div>
 
             <div className="grid gap-3 md:grid-cols-[1fr_180px_auto] mb-6">
               <input
-                name="projects_search"
+                name="fintech_search"
                 autoComplete="off"
-                aria-label="Search projects"
+                aria-label="Search fintech"
                 value={searchQuery}
                 onChange={(e) => {
                   const nextQuery = e.target.value;
@@ -328,12 +328,12 @@ function ProjectsAdminPageInner() {
                 className="ui-input"
               />
               <select
-                name="projects_sort"
+                name="fintech_sort"
                 autoComplete="off"
-                aria-label="Sort projects"
+                aria-label="Sort fintech"
                 value={sortBy}
                 onChange={(e) => {
-                  const nextSort = e.target.value as ProjectSort;
+                  const nextSort = e.target.value as FintechSort;
                   setSortBy(nextSort);
                   setPage(1);
                   syncListState({ sort: nextSort, page: 1 });
@@ -377,23 +377,23 @@ function ProjectsAdminPageInner() {
               </div>
             </div>
 
-            {!projects ? (
+            {!fintech ? (
               <div className="py-20 text-center">
                 <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent text-[var(--accents-5)]" />
               </div>
-            ) : filteredProjects.length === 0 ? (
+            ) : filteredFintech.length === 0 ? (
               <EmptyState
-                title={projects?.length === 0 ? "No projects yet." : "No projects match the current filters."}
-                description={projects?.length === 0 ? "Add your first project using the form above." : "Try adjusting or clearing your filters."}
-                icon={projects?.length === 0 ? FolderOpen : SearchX}
+                title={fintech?.length === 0 ? "No fintech yet." : "No fintech match the current filters."}
+                description={fintech?.length === 0 ? "Add your first fintech using the form above." : "Try adjusting or clearing your filters."}
+                icon={fintech?.length === 0 ? FolderOpen : SearchX}
                 className="ui-card border-border bg-card/70 py-10"
               />
             ) : (
               <div className="grid gap-3">
                 <AnimatePresence initial={false}>
-                  {pagination.items.map((project) => (
+                  {pagination.items.map((fintech) => (
                     <m.div
-                      key={project._id}
+                      key={fintech._id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, x: -20 }}
@@ -401,8 +401,8 @@ function ProjectsAdminPageInner() {
                     >
                       <div className="text-center sm:text-left">
                         {(() => {
-                          const title = toPlainText(project.title);
-                          const description = toPlainText(project.description);
+                          const title = toPlainText(fintech.title);
+                          const description = toPlainText(fintech.description);
                           return (
                             <>
                               <h3 className="font-display text-lg font-semibold text-[var(--foreground)]">
@@ -418,14 +418,14 @@ function ProjectsAdminPageInner() {
                         <button
                           type="button"
                           onClick={() => {
-                            setEditingProjectId(project._id);
-                            const title = toPlainText(project.title);
-                            const description = toPlainText(project.description);
+                            setEditingFintechId(fintech._id);
+                            const title = toPlainText(fintech.title);
+                            const description = toPlainText(fintech.description);
                             setForm({
                               title,
                               description,
-                              imageUrl: project.imageUrl ?? "",
-                              link: project.link ?? "",
+                              imageUrl: fintech.imageUrl ?? "",
+                              link: fintech.link ?? "",
                             });
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }}
@@ -434,20 +434,20 @@ function ProjectsAdminPageInner() {
                           Edit
                         </button>
                         <ConfirmButton
-                          pending={deletingProjectId === project._id}
+                          pending={deletingFintechId === fintech._id}
                           onConfirm={async () => {
-                            setDeletingProjectId(project._id);
+                            setDeletingFintechId(fintech._id);
                             setError(null);
                             try {
-                              await deleteProject({ id: project._id });
-                              if (editingProjectId === project._id) {
-                                setEditingProjectId(null);
+                              await deleteFintech({ id: fintech._id });
+                              if (editingFintechId === fintech._id) {
+                                setEditingFintechId(null);
                                 resetForm();
                               }
                             } catch (err) {
-                              setError(err instanceof Error ? err.message : "Failed to delete project");
+                              setError(err instanceof Error ? err.message : "Failed to delete fintech");
                             } finally {
-                              setDeletingProjectId(null);
+                              setDeletingFintechId(null);
                             }
                           }}
                         />

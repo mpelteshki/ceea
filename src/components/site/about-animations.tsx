@@ -65,7 +65,7 @@ export function AboutAnimatedSections({
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
               Six verticals across two tracks — Assemblies (Culture, Diplomacy &
-              Politics, Community) and standalone divisions (Projects, Career
+              Politics, Community) and standalone divisions (Fintech, Career
               Services, Newsletter) — each owning its own programming, calendar,
               and partnerships.
             </p>

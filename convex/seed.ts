@@ -8,7 +8,7 @@ export const run = internalMutation({
   args: {},
   handler: async (ctx) => {
     const now = Date.now();
-    const counts = { events: 0, team: 0, projects: 0, partners: 0 };
+    const counts = { events: 0, team: 0, fintech: 0, partners: 0 };
 
     // ── Events ──────────────────────────────────────────────────
     const existingEvents = await ctx.db.query("events").first();
@@ -91,15 +91,15 @@ export const run = internalMutation({
       }
     }
 
-    // ── Projects ────────────────────────────────────────────────
-    const existingProjects = await ctx.db.query("projects").first();
-    if (!existingProjects) {
-      const projectData = [
+    // ── Fintech ────────────────────────────────────────────────
+    const existingFintech = await ctx.db.query("fintech").first();
+    if (!existingFintech) {
+      const fintechData = [
         {
           title: "CEE Policy Brief Series",
           description:
             "A student-led publication series covering EU policy impacting Central and Eastern Europe — from energy security to digital markets.",
-          link: "https://ceea-bocconi.org/projects",
+          link: "https://ceea-bocconi.org/fintech",
         },
         {
           title: "Bocconi–CEE Mentorship Programme",
@@ -113,9 +113,9 @@ export const run = internalMutation({
         },
       ];
 
-      for (const proj of projectData) {
-        await ctx.db.insert("projects", { ...proj, createdAt: now });
-        counts.projects++;
+      for (const proj of fintechData) {
+        await ctx.db.insert("fintech", { ...proj, createdAt: now });
+        counts.fintech++;
       }
     }
 

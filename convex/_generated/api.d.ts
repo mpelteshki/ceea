@@ -9,12 +9,12 @@
  */
 
 import type * as events from "../events.js";
+import type * as fintech from "../fintech.js";
 import type * as lib_admin from "../lib/admin.js";
 import type * as lib_url from "../lib/url.js";
 import type * as migrations from "../migrations.js";
 import type * as partners from "../partners.js";
 import type * as posts from "../posts.js";
-import type * as projects from "../projects.js";
 import type * as seed from "../seed.js";
 import type * as team from "../team.js";
 
@@ -26,12 +26,12 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   events: typeof events;
+  fintech: typeof fintech;
   "lib/admin": typeof lib_admin;
   "lib/url": typeof lib_url;
   migrations: typeof migrations;
   partners: typeof partners;
   posts: typeof posts;
-  projects: typeof projects;
   seed: typeof seed;
   team: typeof team;
 }>;

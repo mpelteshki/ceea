@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 import { FadeIn, FadeInStagger } from "@/components/ui/fade-in";
 import { EmptyState } from "@/components/ui/empty-state";
-import { ProjectCard } from "@/components/site/project-card";
+import { FintechCard } from "@/components/site/fintech-card";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
@@ -14,7 +14,7 @@ import type { Doc } from "../../../../../convex/_generated/dataModel";
 import { divisions, assembliesGroup } from "@/lib/divisions-data";
 import { getAccentSurface, getReadableAccentText } from "@/lib/accent-colors";
 
-type ProjectDoc = Doc<"projects">;
+type FintechDoc = Doc<"fintech">;
 
 const divisionBySlug = Object.fromEntries(
   divisions.map((d) => [d.slug, d])
@@ -44,11 +44,11 @@ export default async function DivisionPage({ params }: PageProps) {
   if (!division) notFound();
   const divisionAccentText = getReadableAccentText(division.accent);
 
-  let projects: ProjectDoc[] = [];
+  let fintech: FintechDoc[] = [];
 
   if (hasConvex) {
     const convex = getConvexServerClient();
-    projects = convex ? ((await convex.query(api.projects.get, {})) as ProjectDoc[]) : [];
+    fintech = convex ? ((await convex.query(api.fintech.get, {})) as FintechDoc[]) : [];
   }
 
   return (
@@ -127,19 +127,19 @@ export default async function DivisionPage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Projects */}
+      {/* Fintech */}
       {division.slug !== "assemblies" && (
         <div className="ui-site-container py-8 sm:py-16">
-          {projects.length === 0 ? (
+          {fintech.length === 0 ? (
             <EmptyState
-              title="No projects yet."
-              description={`Check back later for ${division.name.toLowerCase()} projects and initiatives.`}
+              title="No fintech yet."
+              description={`Check back later for ${division.name.toLowerCase()} fintech and initiatives.`}
             />
           ) : (
             <FadeInStagger className="space-y-20">
-              {projects.map((project, idx) => (
-                <FadeIn key={project._id}>
-                  <ProjectCard project={project} index={idx} />
+              {fintech.map((fintech, idx) => (
+                <FadeIn key={fintech._id}>
+                  <FintechCard fintech={fintech} index={idx} />
                 </FadeIn>
               ))}
             </FadeInStagger>

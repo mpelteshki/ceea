@@ -4,7 +4,7 @@ import { toPlainText } from "@/lib/plain-text";
 import { cn } from "@/lib/utils";
 import { getReadableAccentText } from "@/lib/accent-colors";
 
-type ProjectLike = {
+type FintechLike = {
   _id: string;
   title: string | Record<string, unknown>;
   description: string | Record<string, unknown>;
@@ -13,20 +13,20 @@ type ProjectLike = {
 };
 
 /**
- * Card-style project card used on /projects and /divisions/[slug].
+ * Card-style fintech card used on /fintech and /divisions/[slug].
  */
-export function ProjectCard({
-  project,
+export function FintechCard({
+  fintech,
   index,
   featured = false,
 }: {
-  project: ProjectLike;
+  fintech: FintechLike;
   index: number;
   /** Spanning 2 columns on sm grid */
   featured?: boolean;
 }) {
-  const title = toPlainText(project.title);
-  const description = toPlainText(project.description);
+  const title = toPlainText(fintech.title);
+  const description = toPlainText(fintech.description);
   const accentText = getReadableAccentText("var(--brand-teal)");
 
   return (
@@ -43,9 +43,9 @@ export function ProjectCard({
           featured ? "aspect-[21/9]" : "aspect-[16/9]",
         )}
       >
-        {project.imageUrl ? (
+        {fintech.imageUrl ? (
           <Image
-            src={project.imageUrl}
+            src={fintech.imageUrl}
             alt={title}
             fill
             className="ui-hover-media object-cover"
@@ -83,13 +83,13 @@ export function ProjectCard({
           </p>
         </div>
 
-        {project.link ? (
+        {fintech.link ? (
           <div
             className="ui-hover-cta mt-auto flex items-center gap-2 pt-6 text-sm font-medium"
             style={{ color: accentText }}
           >
             <a
-              href={project.link}
+              href={fintech.link}
               target="_blank"
               rel="noopener noreferrer"
               className="group/link flex items-center gap-2"

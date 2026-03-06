@@ -11,7 +11,7 @@ import { AdminHeaderControls } from "./admin-header-controls";
 const ITEMS = [
   { label: "Dashboard", href: "/admin" },
   { label: "Team", href: "/admin/team" },
-  { label: "Projects", href: "/admin/projects" },
+  { label: "Fintech", href: "/admin/fintech" },
   { label: "Partners", href: "/admin/partners" },
   { label: "Newsletter", href: "/admin/newsletter" },
 ] as const;

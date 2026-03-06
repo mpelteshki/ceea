@@ -34,7 +34,7 @@ const divisionCards = [
   {
     icon: TrendingUp,
     accent: "var(--brand-teal)",
-    name: "Projects",
+    name: "Fintech",
     group: undefined,
     description:
       "Curates events and learning opportunities focused on fintech and innovation in the region, connecting students with industry trends, professionals, and practical insights in finance and tech.",

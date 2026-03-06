@@ -50,7 +50,7 @@ export default defineSchema({
     createdAt: v.number(),
   }).index("by_type", ["type"]),
 
-  projects: defineTable({
+  fintech: defineTable({
     title: v.union(
       v.string(),
       v.object({

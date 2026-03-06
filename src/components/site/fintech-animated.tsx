@@ -1,17 +1,17 @@
 "use client";
 
 import { SlideIn, ScrollScale, MagneticHover } from "@/components/ui/scroll-animations";
-import { ProjectCard } from "@/components/site/project-card";
+import { FintechCard } from "@/components/site/fintech-card";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
-type ProjectDoc = Doc<"projects">;
+type FintechDoc = Doc<"fintech">;
 
-export function ProjectsAnimated({ projects }: { projects: ProjectDoc[] }) {
+export function FintechAnimated({ fintech }: { fintech: FintechDoc[] }) {
   return (
     <div className="grid gap-6 sm:grid-cols-2">
-      {projects.map((project, idx) => (
+      {fintech.map((item, idx) => (
         <SlideIn
-          key={project._id}
+          key={item._id}
           from={idx % 2 === 0 ? "left" : "right"}
           distance={60}
           delay={Math.min(idx * 0.08, 0.3)}
@@ -21,10 +21,10 @@ export function ProjectsAnimated({ projects }: { projects: ProjectDoc[] }) {
         >
           <ScrollScale from={0.95} to={1}>
             <MagneticHover strength={0.1}>
-              <ProjectCard
-                project={project}
+              <FintechCard
+                fintech={item}
                 index={idx}
-                featured={idx === 0 && projects.length > 1}
+                featured={idx === 0 && fintech.length > 1}
               />
             </MagneticHover>
           </ScrollScale>

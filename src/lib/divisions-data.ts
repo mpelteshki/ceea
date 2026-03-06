@@ -14,7 +14,7 @@ export type Division = {
  * Shared between the home-page component and the divisions/[slug] pages.
  *
  * First 3 entries are the Assemblies sub-divisions (Culture, Diplomacy & Politics, Community).
- * The remaining entries are standalone divisions (Assemblies, Projects, Career Services, Newsletter).
+ * The remaining entries are standalone divisions (Assemblies, Fintech, Career Services, Newsletter).
  */
 export const divisions: readonly Division[] = [
   // ── Assemblies sub-divisions ──────────────────────────────────────────────
@@ -44,8 +44,8 @@ export const divisions: readonly Division[] = [
   },
   {
     icon: TrendingUp,
-    name: "Projects",
-    slug: "projects",
+    name: "Fintech",
+    slug: "fintech",
     description:
       "Events and learning opportunities in fintech, innovation, and emerging finance trends across the region.",
     accent: "var(--brand-teal)",
@@ -56,7 +56,7 @@ export const divisions: readonly Division[] = [
     name: "Assemblies",
     slug: "assemblies",
     description:
-      "Our flagship gatherings where culture, diplomacy, community, and projects converge — bringing Central & Eastern European students together through four specialised sub-divisions.",
+      "Our flagship gatherings where culture, diplomacy, community, and fintech converge — bringing Central & Eastern European students together through four specialised sub-divisions.",
     accent: "var(--brand-green)",
   },
   {
@@ -85,7 +85,7 @@ export const divisions: readonly Division[] = [
   },
 ] as const;
 
-/** Culture, Diplomacy & Politics, Community, Projects — shown on the Assemblies detail page */
+/** Culture, Diplomacy & Politics, Community, Fintech — shown on the Assemblies detail page */
 export const assembliesGroup = divisions.slice(0, 4);
 
 /** Assemblies, Career Services, PR & Marketing, Newsletter — each gets a standalone card on the home page */

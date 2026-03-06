@@ -120,7 +120,7 @@ function AdminDashboardInner() {
   const removeEvent = useMutation(api.events.remove);
 
   const team = useQuery(api.team.get, isAuthenticated ? {} : "skip");
-  const projects = useQuery(api.projects.get, isAuthenticated ? {} : "skip");
+  const fintech = useQuery(api.fintech.get, isAuthenticated ? {} : "skip");
   const partners = useQuery(api.partners.listAll, isAuthenticated ? {} : "skip");
 
   const {
@@ -238,7 +238,7 @@ function AdminDashboardInner() {
               {[
                 { label: "Events", value: events?.length ?? "…" },
                 { label: "Team", value: team?.length ?? "…" },
-                { label: "Projects", value: projects?.length ?? "…" },
+                { label: "Fintech", value: fintech?.length ?? "…" },
                 { label: "Partners", value: partners?.length ?? "…" },
               ].map((stat) => (
                 <div key={stat.label} className="ui-card ui-hover-lift-sm p-4">
