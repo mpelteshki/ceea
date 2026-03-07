@@ -4,6 +4,8 @@ import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { api } from "../../convex/_generated/api";
 
+export const dynamic = "force-dynamic";
+
 const PAGE_FREQUENCY: Record<string, NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>> = {
   "/": "weekly",
   "/events": "weekly",

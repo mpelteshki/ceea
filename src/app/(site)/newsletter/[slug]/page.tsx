@@ -6,6 +6,8 @@ import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { api } from "../../../../../convex/_generated/api";
 
+export const dynamic = "force-dynamic";
+
 async function resolvePostMeta(slug: string): Promise<Post | null> {
   if (!hasConvex) return null;
   const convex = getConvexServerClient();
@@ -21,11 +23,6 @@ async function resolvePostMeta(slug: string): Promise<Post | null> {
     body: "",
     publishedAt: row.publishedAt,
   };
-}
-
-export async function generateStaticParams() {
-  // Newsletter posts are dynamic (Convex-driven); use on-demand rendering
-  return [];
 }
 
 export async function generateMetadata({

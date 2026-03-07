@@ -8,6 +8,8 @@ import { HomeScrollSection } from "@/components/site/home-scroll-effects";
 import { DispatchLoadingState, EventsLoadingState } from "@/components/site/loading-states";
 import { buildPageMetadata, SITE_NAME, toMetaDescription } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = buildPageMetadata({
   pathname: "/",
   title: SITE_NAME,

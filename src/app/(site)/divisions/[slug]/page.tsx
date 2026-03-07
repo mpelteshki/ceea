@@ -16,6 +16,8 @@ import { getAccentSurface, getReadableAccentText } from "@/lib/accent-colors";
 
 type FintechDoc = Doc<"fintech">;
 
+export const dynamic = "force-dynamic";
+
 const divisionBySlug = Object.fromEntries(
   divisions.map((d) => [d.slug, d])
 );

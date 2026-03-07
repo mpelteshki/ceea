@@ -15,6 +15,8 @@ import type { Doc } from "../../../../convex/_generated/dataModel";
 
 type TeamDoc = Doc<"team">;
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = buildPageMetadata({
   pathname: "/team",
   title: "Our Team",

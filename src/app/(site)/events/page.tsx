@@ -8,6 +8,8 @@ import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 const DESCRIPTION =
   "From flagship speaker nights to small, high-trust formats. If it feels like something you would tell a friend about the next day, we do it.";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = buildPageMetadata({
   pathname: "/events",
   title: "Events",

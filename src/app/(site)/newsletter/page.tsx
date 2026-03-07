@@ -8,6 +8,8 @@ import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 const DESCRIPTION =
   "Short, high-signal updates: what we hosted, what's next, and the people and ideas we're bringing to campus.";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = buildPageMetadata({
   pathname: "/newsletter",
   title: "Newsletter",
