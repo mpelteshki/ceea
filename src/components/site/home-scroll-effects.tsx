@@ -1,8 +1,6 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 
-type HomeScrollTone = "blue" | "green" | "red" | "pink";
+type HomeScrollTone = "teal" | "warm" | "crimson" | "soft" | "blue" | "pink" | "red";
 
 type HomeScrollSectionProps = {
   children: React.ReactNode;
@@ -12,7 +10,7 @@ type HomeScrollSectionProps = {
 };
 
 /* ------------------------------------------------------------------ */
-/*  Scroll section — parallax wrapper with scroll-linked transforms     */
+/*  Scroll section — CSS-only fade at section edges (no JS overhead)   */
 /* ------------------------------------------------------------------ */
 
 export function HomeScrollSection({
@@ -29,7 +27,9 @@ export function HomeScrollSection({
       )}
       data-tone={tone}
     >
-      {children}
+      <div className="ui-home-scroll-content">
+        {children}
+      </div>
     </section>
   );
 }

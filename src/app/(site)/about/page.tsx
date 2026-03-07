@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FadeIn, FadeInStagger, StaggerItem } from "@/components/ui/fade-in";
 import { PageHeader } from "@/components/site/page-header";
 import { AboutAnimatedSections } from "@/components/site/about-animations";
 import { Palette, Scale, TrendingUp, Users, Briefcase, Newspaper } from "lucide-react";
@@ -8,7 +9,7 @@ const divisionCards = [
   // ── Assemblies sub-divisions ─────────────────────────────────────────────
   {
     icon: Palette,
-    accent: "var(--brand-pink)",
+    accent: "var(--brand-caramel)",
     name: "Culture",
     group: "Assemblies",
     description:
@@ -16,7 +17,7 @@ const divisionCards = [
   },
   {
     icon: Scale,
-    accent: "var(--brand-red)",
+    accent: "var(--brand-crimson)",
     name: "Diplomacy & Politics",
     group: "Assemblies",
     description:
@@ -24,7 +25,7 @@ const divisionCards = [
   },
   {
     icon: Users,
-    accent: "var(--brand-pink)",
+    accent: "var(--brand-teal-soft)",
     name: "Community",
     group: "Assemblies",
     description:
@@ -34,14 +35,14 @@ const divisionCards = [
   {
     icon: TrendingUp,
     accent: "var(--brand-teal)",
-    name: "Fintech",
+    name: "Projects",
     group: undefined,
     description:
       "Curates events and learning opportunities focused on fintech and innovation in the region, connecting students with industry trends, professionals, and practical insights in finance and tech.",
   },
   {
     icon: Briefcase,
-    accent: "var(--brand-red)",
+    accent: "var(--brand-crimson)",
     name: "Career Services",
     group: undefined,
     description:
@@ -49,7 +50,7 @@ const divisionCards = [
   },
   {
     icon: Newspaper,
-    accent: "var(--brand-pink)",
+    accent: "var(--brand-caramel)",
     name: "Newsletter",
     group: undefined,
     description:

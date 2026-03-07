@@ -6,28 +6,6 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 
-function getSignInErrorMessage(err: unknown) {
-  let msg = "An error occurred during sign in.";
-
-  if (
-    typeof err === "object" &&
-    err !== null &&
-    "errors" in err &&
-    Array.isArray((err as { errors?: unknown[] }).errors) &&
-    (err as { errors?: Array<{ message?: string }> }).errors?.[0]?.message
-  ) {
-    msg = (err as { errors: Array<{ message?: string }> }).errors[0]?.message ?? msg;
-  } else if (err instanceof Error && err.message) {
-    msg = err.message;
-  }
-
-  if (msg.includes("access_denied")) {
-    return "Access denied. You must be an invited admin to sign in.";
-  }
-
-  return msg;
-}
-
 export function CustomSignIn() {
   const { signIn, isLoaded } = useSignIn();
   const searchParams = useSearchParams();
@@ -38,7 +16,6 @@ export function CustomSignIn() {
       : null,
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [pendingSignIn, setPendingSignIn] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("error") === "access_denied") {
@@ -46,42 +23,41 @@ export function CustomSignIn() {
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    if (!pendingSignIn || !isLoaded || !signIn || isLoading) return;
-
-    let cancelled = false;
-
-    const run = async () => {
-      setIsLoading(true);
-
-      try {
-        await signIn.authenticateWithRedirect({
-          strategy: "oauth_google",
-          redirectUrl: "/sso-callback",
-          redirectUrlComplete: "/admin",
-        });
-      } catch (err: unknown) {
-        if (cancelled) return;
-        console.error("Login error:", err);
-        setError(getSignInErrorMessage(err));
-        setIsLoading(false);
-        setPendingSignIn(false);
-      }
-    };
-
-    void run();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isLoaded, isLoading, pendingSignIn, signIn]);
-
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
+    if (!isLoaded) return;
+    setIsLoading(true);
     setError(null);
-    setPendingSignIn(true);
-  };
 
-  const isPreparingSignIn = pendingSignIn && !isLoading;
+    try {
+      await signIn.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: "/admin",
+      });
+    } catch (err: unknown) {
+      console.error("Login error:", err);
+      let msg = "An error occurred during sign in.";
+
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "errors" in err &&
+        Array.isArray((err as { errors?: unknown[] }).errors) &&
+        (err as { errors?: Array<{ message?: string }> }).errors?.[0]?.message
+      ) {
+        msg = (err as { errors: Array<{ message?: string }> }).errors[0]?.message ?? msg;
+      } else if (err instanceof Error && err.message) {
+        msg = err.message;
+      }
+
+      if (msg.includes("access_denied")) {
+        msg = "Access denied. You must be an invited admin to sign in.";
+      }
+
+      setError(msg);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="mx-auto w-full max-w-sm space-y-6">
@@ -104,11 +80,10 @@ export function CustomSignIn() {
 
         <button
           onClick={handleGoogleSignIn}
-          disabled={isLoading || pendingSignIn}
-          aria-busy={isLoading || isPreparingSignIn}
-          className="relative flex w-full items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 py-3 font-medium text-foreground shadow-sm transition-colors hover:border-[var(--accents-3)] hover:bg-[var(--accents-1)] disabled:cursor-progress disabled:opacity-70"
+          disabled={!isLoaded || isLoading}
+          className="relative flex w-full items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 py-3 font-medium text-foreground shadow-sm transition-colors hover:border-[var(--accents-3)] hover:bg-[var(--accents-1)] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isLoading || isPreparingSignIn ? (
+          {isLoading ? (
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           ) : (
             <>
@@ -132,9 +107,6 @@ export function CustomSignIn() {
               </svg>
               <span>Continue with Google</span>
             </>
-          )}
-          {(isLoading || isPreparingSignIn) && (
-            <span>{isLoading ? "Redirecting to Google..." : "Preparing Google sign-in..."}</span>
           )}
         </button>
 

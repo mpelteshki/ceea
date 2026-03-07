@@ -498,7 +498,31 @@ body {
   }
 }
 
+/* Hero CSS animations — replaces framer-motion for instant LCP */
+@keyframes hero-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
 
+@keyframes hero-slide-up {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-line {
+  from { opacity: 0; transform: scaleX(0); }
+  to   { opacity: 1; transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[hero-fade-in_0\.8s_cubic-bezier\(0\.22\,1\,0\.36\,1\)_both\],
+  .animate-\[hero-slide-up_0\.8s_cubic-bezier\(0\.22\,1\,0\.36\,1\)_both\],
+  .animate-\[hero-slide-up_0\.8s_0\.15s_cubic-bezier\(0\.22\,1\,0\.36\,1\)_both\],
+  .animate-\[hero-line_0\.8s_0\.4s_cubic-bezier\(0\.22\,1\,0\.36\,1\)_both\],
+  .animate-\[hero-slide-up_0\.8s_0\.5s_cubic-bezier\(0\.22\,1\,0\.36\,1\)_both\] {
+    animation: none !important;
+  }
+}
 
 /* === Component Classes === */
 
@@ -856,6 +880,22 @@ body {
     --home-section-bg: var(--background);
     --home-section-accent: var(--brand-teal);
     background: var(--home-section-bg);
+  }
+
+  /* CSS scroll-driven fade at section edges (replaces JS useScroll) */
+  @supports (animation-timeline: view()) {
+    .ui-home-scroll-content {
+      animation: section-edge-fade linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%, exit 0% exit 100%;
+    }
+  }
+
+  @keyframes section-edge-fade {
+    0%   { opacity: 1; }
+    15%  { opacity: 1; }
+    85%  { opacity: 1; }
+    100% { opacity: 1; }
   }
 
   /* Alternating tinted backgrounds for visual rhythm */

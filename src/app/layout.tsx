@@ -9,11 +9,13 @@ import { SITE_EMAIL_HREF, SITE_SOCIAL_URLS } from "@/lib/site-contact";
 const sans = Plus_Jakarta_Sans({
   variable: "--font-body",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const mono = Spline_Sans_Mono({
   variable: "--font-body-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {

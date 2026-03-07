@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Hero } from "@/components/site/hero";
 import { Divisions } from "@/components/site/divisions";
 import { UpcomingEvents } from "@/components/site/upcoming-events";
-import { Suspense } from "react";
 import { LatestDispatch } from "@/components/site/latest-dispatch";
 import { HomeScrollSection } from "@/components/site/home-scroll-effects";
-import { DispatchLoadingState, EventsLoadingState } from "@/components/site/loading-states";
+import { EventsLoadingState, DispatchLoadingState } from "@/components/site/loading-states";
 import { buildPageMetadata, SITE_NAME, toMetaDescription } from "@/lib/seo";
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildPageMetadata({
   pathname: "/",
@@ -21,21 +19,19 @@ export const metadata: Metadata = buildPageMetadata({
 export default function HomePage() {
   return (
     <>
-      <HomeScrollSection tone="blue">
-        <Hero />
-      </HomeScrollSection>
+      <Hero />
 
-      <HomeScrollSection tone="green">
+      <HomeScrollSection tone="warm">
         <Divisions />
       </HomeScrollSection>
 
-      <HomeScrollSection tone="blue">
+      <HomeScrollSection tone="teal">
         <Suspense fallback={<EventsLoadingState />}>
           <UpcomingEvents />
         </Suspense>
       </HomeScrollSection>
 
-      <HomeScrollSection tone="green">
+      <HomeScrollSection tone="warm">
         <Suspense fallback={<DispatchLoadingState />}>
           <LatestDispatch />
         </Suspense>
