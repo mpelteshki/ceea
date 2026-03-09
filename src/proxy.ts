@@ -17,13 +17,19 @@ const isPublicRoute = createRouteMatcher([
   "/newsletter(.*)",
   "/team(.*)",
   "/fintech(.*)",
+  "/partners(.*)",
   "/join-us(.*)",
   "/contacts(.*)",
   "/about(.*)",
   "/divisions(.*)",
 ]);
 
+const skipAuth =
+  process.env.NODE_ENV === "development" &&
+  process.env.SKIP_AUTH === "1";
+
 export default clerkMiddleware(async (auth, req) => {
+  if (skipAuth) return NextResponse.next();
   if (!isPublicRoute(req)) {
     await auth.protect();
   }

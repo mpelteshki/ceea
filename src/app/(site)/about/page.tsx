@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { FadeIn, FadeInStagger, StaggerItem } from "@/components/ui/fade-in";
 import { PageHeader } from "@/components/site/page-header";
 import { AboutAnimatedSections } from "@/components/site/about-animations";
-import { Palette, Scale, TrendingUp, Users, Briefcase, Newspaper } from "lucide-react";
+import { Palette, Scale, TrendingUp, Users, Briefcase, Newspaper, CalendarDays, Megaphone } from "lucide-react";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 
 const divisionCards = [
@@ -35,10 +34,18 @@ const divisionCards = [
   {
     icon: TrendingUp,
     accent: "var(--brand-teal)",
-    name: "Projects",
+    name: "Fintech",
     group: undefined,
     description:
       "Curates events and learning opportunities focused on fintech and innovation in the region, connecting students with industry trends, professionals, and practical insights in finance and tech.",
+  },
+  {
+    icon: CalendarDays,
+    accent: "var(--brand-green)",
+    name: "Assemblies",
+    group: undefined,
+    description:
+      "The flagship umbrella that brings our sub-divisions together into a shared calendar of speaker nights, cultural moments, and high-trust community formats.",
   },
   {
     icon: Briefcase,
@@ -47,6 +54,14 @@ const divisionCards = [
     group: undefined,
     description:
       "Connects members with career opportunities, internships, and professional development across Central & Eastern Europe and beyond.",
+  },
+  {
+    icon: Megaphone,
+    accent: "var(--brand-pink)",
+    name: "PR & Marketing",
+    group: undefined,
+    description:
+      "Owns the voice, packaging, and reach of CEEA across campaigns, event storytelling, social channels, and partner-facing communications.",
   },
   {
     icon: Newspaper,
@@ -108,7 +123,7 @@ export const metadata: Metadata = buildPageMetadata({
   description: toMetaDescription(MISSION),
 });
 
-export default async function AboutPage() {
+export default function AboutPage() {
   return (
     <>
       <PageHeader
@@ -117,15 +132,15 @@ export default async function AboutPage() {
       />
 
       <AboutAnimatedSections
-        divisionCards={divisionCards.map(d => ({
+        divisionCards={divisionCards.map((d) => ({
           iconName: d.icon.displayName || d.icon.name || "Palette",
           accent: d.accent,
           name: d.name,
           group: d.group ?? null,
           description: d.description,
         }))}
-        realityItems={realityItems.map(r => ({ ...r }))}
-        partnerItems={partnerItems.map(p => ({ ...p }))}
+        realityItems={realityItems.map((r) => ({ ...r }))}
+        partnerItems={partnerItems.map((p) => ({ ...p }))}
       />
     </>
   );

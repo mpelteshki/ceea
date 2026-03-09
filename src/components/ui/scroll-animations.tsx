@@ -1,84 +1,22 @@
 "use client";
 
-import {
-  m,
-  useScroll,
-  useTransform,
-  useSpring,
-  useReducedMotion,
-  useInView,
-} from "framer-motion";
-import {
-  useRef,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { m, useReducedMotion, useInView } from "framer-motion";
+import { useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-/* ================================================================== */
-/*  1. ScrollProgress — thin progress bar pinned to the top            */
-/* ================================================================== */
+type TextRevealTag = "p" | "h1" | "h2" | "h3" | "span" | "div";
 
-export function ScrollProgress({
-  className,
-  color = "var(--brand-teal)",
-  height = 3,
-}: {
-  className?: string;
-  color?: string;
-  height?: number;
-}) {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 30,
-    restDelta: 0.001,
-  });
-  const reduceMotion = useReducedMotion();
-
-  if (reduceMotion) return null;
-
-  return (
-    <m.div
-      className={cn("fixed inset-x-0 top-0 z-[100] origin-left", className)}
-      style={{
-        scaleX,
-        height,
-        background: color,
-      }}
-    />
-  );
-}
+const textRevealMotionTags: Record<TextRevealTag, React.ElementType> = {
+  p: m.p,
+  h1: m.h1,
+  h2: m.h2,
+  h3: m.h3,
+  span: m.span,
+  div: m.div,
+};
 
 /* ================================================================== */
-/*  2. ParallaxLayer — element with parallax scroll offset             */
-/* ================================================================== */
-
-export function ParallaxLayer({
-  children,
-  className,
-  speed = 0.3,
-  direction = "up",
-}: {
-  children: ReactNode;
-  className?: string;
-  /** Parallax intensity: 0 = static, 1 = full scroll speed, negative = reverse */
-  speed?: number;
-  direction?: "up" | "down";
-}) {
-  void speed;
-  void direction;
-
-  return (
-    <div className={className}>
-      {children}
-    </div>
-  );
-}
-
-/* ================================================================== */
-/*  3. TextReveal — words/chars appear one at a time on scroll         */
+/*  1. TextReveal — words/chars appear one at a time on scroll         */
 /* ================================================================== */
 
 export function TextReveal({
@@ -91,7 +29,7 @@ export function TextReveal({
 }: {
   children: string;
   className?: string;
-  as?: "p" | "h1" | "h2" | "h3" | "span" | "div";
+  as?: TextRevealTag;
   /** Split text by word or character */
   mode?: "word" | "char";
   /** Delay between each item (seconds) */
@@ -105,8 +43,7 @@ export function TextReveal({
   const items = mode === "word" ? children.split(" ") : children.split("");
   void blur;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const Component = (m as any)[Tag] as typeof m.p;
+  const Component = textRevealMotionTags[Tag];
 
   return (
     <Component ref={ref}>
@@ -140,7 +77,7 @@ export function TextReveal({
 }
 
 /* ================================================================== */
-/*  4. SlideIn — directional entrance with scroll trigger              */
+/*  2. SlideIn — directional entrance with scroll trigger              */
 /* ================================================================== */
 
 export function SlideIn({
@@ -181,11 +118,11 @@ export function SlideIn({
   const initial = reduceMotion
     ? { opacity: 1 }
     : {
-      opacity: 0,
-      ...offsets[from],
-      rotate,
-      scale,
-    };
+        opacity: 0,
+        ...offsets[from],
+        rotate,
+        scale,
+      };
 
   const visible = {
     opacity: 1,
@@ -213,7 +150,7 @@ export function SlideIn({
 }
 
 /* ================================================================== */
-/*  5. ScrollScale — element scales up as it enters the viewport       */
+/*  3. ScrollScale — element scales up as it enters the viewport       */
 /* ================================================================== */
 
 export function ScrollScale({
@@ -236,7 +173,11 @@ export function ScrollScale({
   return (
     <m.div
       className={className}
-      initial={reduceMotion ? { opacity: 1, scale: 1, rotate: rotateTo } : { opacity: 0, scale: from, rotate: rotateFrom }}
+      initial={
+        reduceMotion
+          ? { opacity: 1, scale: 1, rotate: rotateTo }
+          : { opacity: 0, scale: from, rotate: rotateFrom }
+      }
       whileInView={{ opacity: 1, scale: to, rotate: rotateTo }}
       viewport={{ once: true, margin: "0px 0px -50px 0px" }}
       transition={{
@@ -250,123 +191,7 @@ export function ScrollScale({
 }
 
 /* ================================================================== */
-/*  6. HorizontalScroll — scroll-hijack horizontal section             */
-/* ================================================================== */
-
-export function HorizontalScroll({
-  children,
-  className,
-  innerClassName,
-}: {
-  children: ReactNode;
-  className?: string;
-  innerClassName?: string;
-}) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [trackWidth, setTrackWidth] = useState(0);
-  const [windowHeight, setWindowHeight] = useState(0);
-  const reduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (!trackRef.current) return;
-    const measure = () => {
-      if (trackRef.current) {
-        setTrackWidth(trackRef.current.scrollWidth - window.innerWidth);
-        setWindowHeight(window.innerHeight);
-      }
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [children]);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-
-  const x = useTransform(scrollYProgress, [0, 1], [0, -trackWidth]);
-  const smoothX = useSpring(x, { stiffness: 80, damping: 30 });
-
-  if (reduceMotion) {
-    return (
-      <div className={cn("overflow-x-auto", className)}>
-        <div className={cn("flex gap-6", innerClassName)}>{children}</div>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      ref={containerRef}
-      className={cn("relative", className)}
-      style={{ height: `${trackWidth + windowHeight}px` }}
-    >
-      <div className="sticky top-0 h-screen overflow-hidden">
-        <div className="flex h-full items-center">
-          <m.div
-            ref={trackRef}
-            className={cn("flex gap-6", innerClassName)}
-            style={{ x: smoothX }}
-          >
-            {children}
-          </m.div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ================================================================== */
-/*  7. CountUp — animated number counter on scroll                     */
-/* ================================================================== */
-
-export function CountUp({
-  to,
-  duration = 2,
-  className,
-  prefix = "",
-  suffix = "",
-}: {
-  to: number;
-  duration?: number;
-  className?: string;
-  prefix?: string;
-  suffix?: string;
-}) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "0px 0px -50px 0px" });
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!isInView) return;
-    let start = 0;
-    const end = to;
-    const stepTime = (duration * 1000) / end;
-    const timer = setInterval(() => {
-      start += Math.ceil(end / 60);
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(start);
-      }
-    }, stepTime);
-    return () => clearInterval(timer);
-  }, [isInView, to, duration]);
-
-  return (
-    <span ref={ref} className={className}>
-      {prefix}
-      {count}
-      {suffix}
-    </span>
-  );
-}
-
-/* ================================================================== */
-/*  8. DrawLine — decorative SVG line that draws itself on scroll      */
+/*  4. DrawLine — decorative SVG line that draws itself on scroll      */
 /* ================================================================== */
 
 export function DrawLine({
@@ -416,168 +241,7 @@ export function DrawLine({
 }
 
 /* ================================================================== */
-/*  9. ScrollOpacity — fade element based on scroll position           */
-/* ================================================================== */
-
-export function ScrollOpacity({
-  children,
-  className,
-  fadeOut = false,
-}: {
-  children: ReactNode;
-  className?: string;
-  /** If true, fades out as element scrolls up. If false (default), fades in. */
-  fadeOut?: boolean;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: fadeOut ? ["start start", "end start"] : ["start end", "end center"],
-  });
-  const reduceMotion = useReducedMotion();
-
-  const opacityFadeIn = useTransform(scrollYProgress, [0, 0.5, 1], [0, 0.8, 1]);
-  const opacityFadeOut = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.5, 0]);
-  const yFadeIn = useTransform(scrollYProgress, [0, 1], [30, 0]);
-  const yFadeOut = useTransform(scrollYProgress, [0, 1], [0, -30]);
-
-  const opacity = fadeOut ? opacityFadeOut : opacityFadeIn;
-  const y = fadeOut ? yFadeOut : yFadeIn;
-
-  return (
-    <m.div
-      ref={ref}
-      className={className}
-      style={reduceMotion ? {} : { opacity, y }}
-    >
-      {children}
-    </m.div>
-  );
-}
-
-/* ================================================================== */
-/*  10. MagneticHover — element subtly follows cursor on hover         */
-/* ================================================================== */
-
-export function MagneticHover({
-  children,
-  className,
-  strength = 0.3,
-}: {
-  children: ReactNode;
-  className?: string;
-  strength?: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const reduceMotion = useReducedMotion();
-
-  const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current || reduceMotion) return;
-    const rect = ref.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    setPosition({
-      x: (e.clientX - centerX) * strength,
-      y: (e.clientY - centerY) * strength,
-    });
-  };
-
-  const handleLeave = () => setPosition({ x: 0, y: 0 });
-
-  return (
-    <m.div
-      ref={ref}
-      className={className}
-      onMouseMove={handleMouse}
-      onMouseLeave={handleLeave}
-      animate={position}
-      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-    >
-      {children}
-    </m.div>
-  );
-}
-
-/* ================================================================== */
-/*  11. StaggerReveal — container that reveals children with stagger   */
-/*      and alternating directions                                     */
-/* ================================================================== */
-
-export function StaggerReveal({
-  children,
-  className,
-  staggerDelay = 0.1,
-}: {
-  children: ReactNode;
-  className?: string;
-  staggerDelay?: number;
-}) {
-  const reduceMotion = useReducedMotion();
-
-  return (
-    <m.div
-      className={className}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "0px 0px -50px 0px" }}
-      variants={{
-        hidden: {},
-        visible: {
-          transition: {
-            staggerChildren: reduceMotion ? 0 : staggerDelay,
-          },
-        },
-      }}
-    >
-      {children}
-    </m.div>
-  );
-}
-
-export function StaggerRevealItem({
-  children,
-  className,
-  index = 0,
-  alternateDirection = false,
-}: {
-  children: ReactNode;
-  className?: string;
-  index?: number;
-  alternateDirection?: boolean;
-}) {
-  const reduceMotion = useReducedMotion();
-  const fromLeft = alternateDirection ? index % 2 === 0 : true;
-
-  return (
-    <m.div
-      className={className}
-      variants={{
-        hidden: reduceMotion
-          ? { opacity: 1 }
-          : {
-            opacity: 0,
-            x: fromLeft ? -60 : 60,
-            scale: 0.95,
-          },
-        visible: {
-          opacity: 1,
-          x: 0,
-          scale: 1,
-          transition: {
-            duration: 0.65,
-            ease: [0.22, 1, 0.36, 1],
-          },
-        },
-      }}
-    >
-      {children}
-    </m.div>
-  );
-}
-
-/* ================================================================== */
-/*  12. ScrollRevealMask — clip-path reveal on scroll                  */
+/*  5. ScrollRevealMask — clip-path reveal on scroll                  */
 /* ================================================================== */
 
 export function ScrollRevealMask({

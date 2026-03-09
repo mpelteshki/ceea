@@ -1014,14 +1014,13 @@ body {
     font-weight: 500;
     color: var(--muted-foreground);
     text-decoration: none;
-    transition: color 200ms ease, gap 200ms ease;
+    transition: color 200ms ease;
     white-space: nowrap;
   }
 
   .ui-section-cta:hover,
   .ui-section-cta:focus-visible {
     color: var(--foreground);
-    gap: 0.625rem;
   }
 
   /* Page header */

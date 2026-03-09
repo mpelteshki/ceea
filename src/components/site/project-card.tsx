@@ -46,7 +46,7 @@ export function ProjectCard({
             src={project.imageUrl}
             alt={title}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            className="ui-hover-media object-cover"
             sizes={featured ? "(max-width: 640px) 100vw, 80vw" : "(max-width: 640px) 100vw, 50vw"}
           />
         ) : (
@@ -85,7 +85,7 @@ export function ProjectCard({
               href={project.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--brand-teal)] transition-opacity hover:opacity-75"
+              className="ui-hover-cta inline-flex items-center gap-1.5 text-xs font-medium text-[var(--brand-teal)]"
             >
               Learn More
               <ArrowUpRight className="ui-icon-shift h-3 w-3" />

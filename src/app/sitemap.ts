@@ -9,6 +9,8 @@ export const dynamic = "force-dynamic";
 const PAGE_FREQUENCY: Record<string, NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>> = {
   "/": "weekly",
   "/events": "weekly",
+  "/fintech": "monthly",
+  "/partners": "monthly",
   "/newsletter": "weekly",
   "/team": "monthly",
   "/about": "monthly",
@@ -18,6 +20,8 @@ const PAGE_FREQUENCY: Record<string, NonNullable<MetadataRoute.Sitemap[number]["
 const PAGE_PRIORITY: Record<string, number> = {
   "/": 1,
   "/events": 0.9,
+  "/fintech": 0.8,
+  "/partners": 0.75,
   "/newsletter": 0.9,
   "/team": 0.8,
   "/about": 0.8,

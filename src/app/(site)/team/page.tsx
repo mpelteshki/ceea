@@ -64,7 +64,6 @@ export default async function TeamPage() {
               <div className="mb-10 flex items-center gap-4">
                 <h2 className="font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-[var(--muted-foreground)] shrink-0">Alumni</h2>
                 <span className="h-px flex-1 bg-[var(--border)]/60" />
-                <span className="font-mono text-xs text-[var(--muted-foreground)]">{alumni.length}</span>
               </div>
             </FadeIn>
             <div className="grid grid-cols-1 gap-5 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
@@ -113,9 +112,10 @@ function MemberCard({ member }: { member: TeamDoc }) {
           href={member.linkedinUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-[var(--brand-teal)]"
+          aria-label={`Connect with ${member.firstName} ${member.lastName} on LinkedIn`}
+          className="mt-2 inline-flex items-center gap-1.5 rounded-sm text-xs text-muted-foreground transition-colors hover:text-[var(--brand-teal)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal)] focus-visible:ring-offset-2"
         >
-          <Linkedin className="ui-icon-shift h-3 w-3" />
+          <Linkedin className="ui-icon-shift h-3 w-3" aria-hidden="true" />
           Connect
         </a>
       ) : null}

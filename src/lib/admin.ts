@@ -12,6 +12,16 @@ type AdminState =
     };
 
 export async function getAdminState(): Promise<AdminState> {
+  // DEV-ONLY: skip auth entirely when SKIP_AUTH=1.
+  // Convex mutations will still fail without a real identity token.
+  if (
+    process.env.NODE_ENV === "development" &&
+    process.env.SKIP_AUTH === "1"
+  ) {
+    debugLog("[Admin Debug] SKIP_AUTH enabled — bypassing auth");
+    return { ok: true };
+  }
+
   // If Clerk isn't configured, treat as "no admin session" instead of crashing
   // the entire request (common in preview builds).
   if (

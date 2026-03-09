@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import type { Post } from "@/lib/posts";
 import { fmtLongDate } from "@/lib/format-date";
+import { FadeIn } from "@/components/ui/fade-in";
 
 /* ------------------------------------------------------------------ */
 /* Shared                                                              */
@@ -46,7 +47,7 @@ function BackLink() {
       href="/newsletter"
       className="inline-flex items-center gap-2 text-[0.8125rem] font-medium text-muted-foreground transition-colors hover:text-foreground"
     >
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:-translate-x-0.5">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
         <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       All articles
@@ -65,37 +66,29 @@ export function ArticleWithDesignSwitcher({ post }: { post: Post }) {
     <article className="pb-24">
       {/* Wide title area */}
       <div className="mx-auto max-w-5xl px-5 pt-28 sm:px-8 sm:pt-36">
-        <h1 className="max-w-4xl text-balance font-display text-[clamp(2rem,5.5vw,4rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-foreground">
-          {post.title}
-        </h1>
-      </div>
-
-      {/* Meta bar */}
-      <div className="mx-auto mt-8 max-w-5xl px-5 sm:px-8">
-        <div className="flex flex-col gap-5 border-y border-border py-6 sm:flex-row sm:items-center sm:gap-8">
-          <span className="inline-flex shrink-0 items-center gap-2 rounded bg-[var(--brand-teal)]/8 px-3 py-1.5 font-mono text-[0.625rem] font-semibold uppercase tracking-[0.2em] text-[var(--brand-teal)]">
-            <span className="h-1 w-1 rounded-full bg-[var(--brand-teal)]" />
+        <FadeIn delay={0} duration={0.6} direction="up" distance={14}>
+          <time className="mb-3 block font-mono text-[0.6875rem] uppercase tracking-[0.15em] text-muted-foreground">
             {dateStr}
-          </span>
-          {post.excerpt && (
-            <p className="text-[0.9375rem] leading-relaxed text-muted-foreground sm:border-l sm:border-border sm:pl-8">
-              {post.excerpt}
-            </p>
-          )}
-        </div>
+          </time>
+        </FadeIn>
+        <FadeIn delay={0.1} duration={0.7} direction="up" distance={20}>
+          <h1 className="max-w-4xl text-balance font-display text-[clamp(2rem,5.5vw,4rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-foreground">
+            {post.title}
+          </h1>
+        </FadeIn>
       </div>
 
       {/* Body — narrower for reading comfort */}
-      <div className="mx-auto mt-12 max-w-[42rem] px-5 sm:px-6">
+      <FadeIn delay={0.25} duration={0.7} direction="up" distance={24} as="div" className="mx-auto mt-12 max-w-[42rem] px-5 sm:px-6">
         <MarkdownBody body={post.body} className={`${prose} text-left`} />
-      </div>
+      </FadeIn>
 
       {/* Footer */}
-      <div className="mx-auto mt-16 max-w-[42rem] px-5 sm:px-6">
+      <FadeIn delay={0.35} duration={0.5} direction="none" as="div" className="mx-auto mt-16 max-w-[42rem] px-5 sm:px-6">
         <div className="border-t border-border pt-6">
           <BackLink />
         </div>
-      </div>
+      </FadeIn>
     </article>
   );
 }

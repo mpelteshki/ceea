@@ -1,8 +1,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface LogoProps extends React.SVGProps<SVGSVGElement> {
-    variant?: "default" | "monochrome" | "white";
+interface LogoProps extends React.SVGProps<SVGSVGElement> {
+  variant?: "default" | "monochrome" | "white";
 }
 
 export const Logo = React.forwardRef<SVGSVGElement, LogoProps>(

@@ -7,6 +7,27 @@ import { m, useReducedMotion } from "framer-motion";
 /* ------------------------------------------------------------------ */
 
 type Direction = "up" | "down" | "left" | "right" | "none";
+type FadeInTag = "div" | "section" | "article" | "li" | "span" | "p" | "h1" | "h2" | "h3";
+type StaggerTag = "div" | "li" | "article" | "section";
+
+const fadeInMotionTags: Record<FadeInTag, React.ElementType> = {
+  div: m.div,
+  section: m.section,
+  article: m.article,
+  li: m.li,
+  span: m.span,
+  p: m.p,
+  h1: m.h1,
+  h2: m.h2,
+  h3: m.h3,
+};
+
+const staggerMotionTags: Record<StaggerTag, React.ElementType> = {
+  div: m.div,
+  li: m.li,
+  article: m.article,
+  section: m.section,
+};
 
 function directionOffset(direction: Direction, distance: number) {
   switch (direction) {
@@ -55,7 +76,7 @@ export function FadeIn({
   /** Start scaled (e.g. 0.95) and animate to 1 */
   scale?: number;
   /** Rendered HTML element */
-  as?: "div" | "section" | "article" | "li" | "span" | "p" | "h1" | "h2" | "h3";
+  as?: FadeInTag;
 }) {
   const reduceMotion = useReducedMotion();
   void blur;
@@ -78,8 +99,7 @@ export function FadeIn({
     ...(scale != null ? { scale: 1 } : {}),
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const Component = (m as any)[Tag] as typeof m.div;
+  const Component = fadeInMotionTags[Tag];
 
   return (
     <Component
@@ -153,14 +173,13 @@ export function StaggerItem({
   distance?: number;
   blur?: boolean;
   scale?: number;
-  as?: "div" | "li" | "article" | "section";
+  as?: StaggerTag;
 }) {
   const reduceMotion = useReducedMotion();
   void blur;
   const offset = directionOffset(direction, distance);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const Component = (m as any)[Tag] as typeof m.div;
+  const Component = staggerMotionTags[Tag];
 
   return (
     <Component

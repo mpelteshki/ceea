@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { SITE_APPLY_FORM_URL } from "@/lib/site-contact";
 
 export function Hero() {
   return (
@@ -36,10 +37,15 @@ export function Hero() {
               From the heart of Europe to the heart of Bocconi. We are a community dedicated to fostering connections, sharing culture, and building the future together.
             </p>
             <div className="flex flex-col sm:flex-row shrink-0 flex-wrap justify-center gap-4 w-full sm:w-auto">
-              <Link href="/join-us" className="ui-btn group">
+              <a
+                href={SITE_APPLY_FORM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ui-btn group"
+              >
                 Join the Community
                 <ArrowRight className="ui-icon-shift h-4 w-4" />
-              </Link>
+              </a>
               <Link href="/events" className="ui-btn bg-background/50 backdrop-blur-md border-border" data-variant="secondary">
                 Explore Events
               </Link>

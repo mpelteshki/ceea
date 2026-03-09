@@ -4,6 +4,8 @@ import { Logo } from "@/components/ui/logo";
 
 const PRIMARY_LINKS = [
   { href: "/events", label: "Events" },
+  { href: "/fintech", label: "Fintech" },
+  { href: "/partners", label: "Partners" },
   { href: "/newsletter", label: "Newsletter" },
   { href: "/team", label: "Team" },
   { href: "/about", label: "About" },

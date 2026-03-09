@@ -125,7 +125,7 @@ export function MarkdownEditor({
   );
 }
 
-export function AdminMarkdownRenderer({ value }: { value: string }) {
+function AdminMarkdownRenderer({ value }: { value: string }) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}

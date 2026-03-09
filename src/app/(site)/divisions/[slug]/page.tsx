@@ -1,19 +1,21 @@
-import Link from "next/link";
 import { Suspense } from "react";
-import { ArrowRight, Calendar, MapPin } from "lucide-react";
+import Link from "next/link";
+import { Calendar, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { FadeIn, FadeInStagger, StaggerItem } from "@/components/ui/fade-in";
-import { DrawLine } from "@/components/ui/scroll-animations";
 import { SectionHeader } from "@/components/site/section-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ListLoadingState } from "@/components/site/loading-states";
+import { FintechShowcase } from "@/components/site/fintech-showcase";
+import { NewsletterList } from "@/components/site/newsletter-list";
 import { buildPageMetadata, toMetaDescription } from "@/lib/seo";
 import { divisions, assembliesGroup } from "@/lib/divisions-data";
 import { hasConvex } from "@/lib/public-env";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { fmtEventDate } from "@/lib/format-date";
+import { SITE_APPLY_FORM_URL, SITE_CONTACT } from "@/lib/site-contact";
 import { api } from "../../../../../convex/_generated/api";
 import type { Doc } from "../../../../../convex/_generated/dataModel";
 
@@ -86,17 +88,14 @@ export default async function DivisionPage({ params }: PageProps) {
               />
             </FadeIn>
 
-            <DrawLine className="mb-8" color="var(--brand-green)" width={1} />
-
             <FadeInStagger className="ui-card-grid grid grid-cols-1 gap-6 sm:grid-cols-2">
               {assembliesGroup.map((sub) => (
                 <StaggerItem key={sub.slug} scale={0.97}>
-                  <Link
-                    href={`/divisions/${sub.slug}`}
-                    className="group ui-card flex h-full flex-col items-start gap-5 p-8"
+                  <div
+                    className="ui-card flex h-full flex-col items-start gap-5 p-8"
                   >
                     <div
-                      className="flex h-12 w-12 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
+                      className="flex h-12 w-12 items-center justify-center rounded-xl"
                       style={{
                         color: sub.accent,
                         background: `color-mix(in oklch, ${sub.accent} 12%, var(--background))`,
@@ -113,15 +112,7 @@ export default async function DivisionPage({ params }: PageProps) {
                         {sub.description}
                       </p>
                     </div>
-
-                    <div
-                      className="mt-auto flex items-center gap-2 pt-4 text-sm font-medium"
-                      style={{ color: sub.accent }}
-                    >
-                      <span>Explore</span>
-                      <ArrowRight className="ui-icon-shift h-3.5 w-3.5" />
-                    </div>
-                  </Link>
+                  </div>
                 </StaggerItem>
               ))}
             </FadeInStagger>
@@ -135,13 +126,161 @@ export default async function DivisionPage({ params }: PageProps) {
         </>
       )}
 
-      {/* Other divisions: coming soon */}
-      {division.slug !== "assemblies" && (
+      {division.slug === "career-services" && (
         <div className="ui-site-container py-8 sm:py-16">
-          <EmptyState
-            title="No projects yet."
-            description={`Check back later for ${division.name.toLowerCase()} projects and initiatives.`}
+          <SectionHeader
+            title="What this division does"
+            accent="var(--brand-red)"
+            subtitle="Career Services turns community into practical momentum: clearer recruiting access, sharper preparation, and better connections across the region."
+            className="mb-8"
           />
+
+          <FadeInStagger className="grid gap-5 lg:grid-cols-3">
+            {[
+              {
+                title: "Mentorship",
+                body: "Pairing students with alumni and senior members who can translate Bocconi experience into region-specific career advice.",
+              },
+              {
+                title: "Employer access",
+                body: "Targeted formats with firms, institutions, and operators relevant to Central and Eastern Europe, not generic campus noise.",
+              },
+              {
+                title: "Practical preparation",
+                body: "Smaller workshops, CV reviews, and candid conversations designed to make applications stronger before deadlines hit.",
+              },
+            ].map((item, index) => (
+              <StaggerItem key={item.title} scale={0.98}>
+                <article className="h-full rounded-2xl border border-border bg-card p-8">
+                  <span className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                    0{index + 1}
+                  </span>
+                  <h2 className="mt-4 font-display text-2xl text-foreground">
+                    {item.title}
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                    {item.body}
+                  </p>
+                </article>
+              </StaggerItem>
+            ))}
+          </FadeInStagger>
+
+          <FadeIn className="mt-8">
+            <div className="rounded-2xl border border-border bg-[var(--accents-1)]/60 p-8">
+              <h2 className="font-display text-2xl text-foreground">
+                Want in on the next cycle?
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                Join the association if you want to build formats like these, or reach out if you want to support a specific career initiative.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href={SITE_APPLY_FORM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ui-btn"
+                >
+                  Join the community
+                </a>
+                <Link href="/contacts" className="ui-btn" data-variant="secondary">
+                  Contact the team
+                </Link>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      )}
+
+      {division.slug === "pr-marketing" && (
+        <div className="ui-site-container py-8 sm:py-16">
+          <SectionHeader
+            title="How the division works"
+            accent="var(--brand-pink)"
+            subtitle="PR & Marketing gives the association reach and coherence: campaigns, storytelling, social output, and the visual discipline that makes events feel intentional."
+            className="mb-8"
+          />
+
+          <FadeInStagger className="grid gap-5 lg:grid-cols-3">
+            {[
+              {
+                title: "Campaigns",
+                body: "Launching recruitment pushes, flagship event rollouts, and timely narratives that make the right people pay attention.",
+              },
+              {
+                title: "Event storytelling",
+                body: "Turning one-off formats into a recognizable editorial rhythm across posters, captions, recaps, and highlights.",
+              },
+              {
+                title: "Partner communications",
+                body: "Helping sponsorship and collaboration work land cleanly, with clearer messaging and a more credible outward presence.",
+              },
+            ].map((item, index) => (
+              <StaggerItem key={item.title} scale={0.98}>
+                <article className="h-full rounded-2xl border border-border bg-card p-8">
+                  <span className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                    0{index + 1}
+                  </span>
+                  <h2 className="mt-4 font-display text-2xl text-foreground">
+                    {item.title}
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                    {item.body}
+                  </p>
+                </article>
+              </StaggerItem>
+            ))}
+          </FadeInStagger>
+
+          <FadeIn className="mt-8">
+            <div className="rounded-2xl border border-border bg-[var(--accents-1)]/60 p-8">
+              <h2 className="font-display text-2xl text-foreground">
+                Follow the public side
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                The fastest way to see this division at work is through the channels where campaigns and event recaps actually live.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href={SITE_CONTACT.instagram.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ui-btn"
+                >
+                  Instagram
+                </a>
+                <Link href="/contacts" className="ui-btn" data-variant="secondary">
+                  Contact the team
+                </Link>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      )}
+
+      {division.slug === "newsletter" && (
+        <div className="ui-site-container py-8 sm:py-16">
+          <SectionHeader
+            title="Latest dispatches"
+            accent="var(--brand-teal)"
+            subtitle="This division curates the written side of the association: event recaps, interviews, and sharper signals on what matters around the region."
+            cta={{ label: "All newsletter posts", href: "/newsletter" }}
+            className="mb-8"
+          />
+          <NewsletterList />
+        </div>
+      )}
+
+      {division.slug === "fintech" && (
+        <div className="ui-site-container py-8 sm:py-16">
+          <SectionHeader
+            title="Current initiatives"
+            accent="var(--brand-teal)"
+            subtitle="A closer look at the work, experiments, and editorial projects currently associated with the fintech track."
+            cta={{ label: "Open full fintech page", href: "/fintech" }}
+            className="mb-8"
+          />
+          <FintechShowcase />
         </div>
       )}
     </>
@@ -196,8 +335,6 @@ async function AssembliesEvents() {
           className="mb-6 sm:mb-8"
         />
       </FadeIn>
-
-      <DrawLine className="mb-8" color="var(--brand-crimson)" width={1} />
 
       <div className="divide-y divide-border border-t border-border">
         {events.slice(0, 6).map((event, idx) => {

@@ -20,7 +20,16 @@ export const NO_INDEX_ROBOTS: NonNullable<Metadata["robots"]> = {
   },
 };
 
-export const PUBLIC_SITE_PATHS = ["/", "/about", "/events", "/newsletter", "/team", "/contacts"] as const;
+export const PUBLIC_SITE_PATHS = [
+  "/",
+  "/about",
+  "/events",
+  "/fintech",
+  "/partners",
+  "/newsletter",
+  "/team",
+  "/contacts",
+] as const;
 
 function normalizePathname(pathname: string): string {
   if (!pathname || pathname === "/") return "/";

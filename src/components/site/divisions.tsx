@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { SlideIn, ScrollScale } from "@/components/ui/scroll-animations";
 import { FadeIn } from "@/components/ui/fade-in";
 import { SectionHeader } from "@/components/site/section-header";
 import { standaloneDivisions } from "@/lib/divisions-data";
-import { getAccentSurface, getReadableAccentText } from "@/lib/accent-colors";
 
 export function Divisions() {
   return (
@@ -17,57 +15,52 @@ export function Divisions() {
       />
 
       <div className="ui-site-container relative py-12 sm:py-16">
-        <SlideIn from="left" distance={60} blur>
+        <FadeIn>
           <SectionHeader
             title="Our divisions"
             accent="var(--brand-teal)"
             className="mb-6 sm:mb-8"
           />
-        </SlideIn>
+        </FadeIn>
 
-        <FadeIn delay={0.2} direction="up" distance={40} blur>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 ui-card-grid">
-            {standaloneDivisions.map((d) => {
-              const accentText = getReadableAccentText(d.accent);
-
-              return (
-                <ScrollScale key={d.name} from={0.95} to={1} className="h-full">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {standaloneDivisions.map((d, i) => (
+            <FadeIn
+              key={d.name}
+              delay={i * 0.06}
+              direction="up"
+            >
                   <Link
                     href={`/divisions/${d.slug}`}
                     className="group ui-card flex h-full flex-col items-start gap-5 p-8"
                   >
                     <div
-                      className="ui-hover-icon flex h-12 w-12 items-center justify-center rounded-xl"
+                      className="flex h-12 w-12 items-center justify-center rounded-xl"
                       style={{
-                        color: accentText,
-                        background: getAccentSurface(d.accent),
+                        color: d.accent,
+                        background: `color-mix(in oklch, ${d.accent} 12%, var(--background))`,
                       }}
                     >
                       <d.icon className="h-5 w-5" strokeWidth={1.75} />
                     </div>
-
+                    
                     <div className="flex flex-col gap-2">
-                      <h3 className="font-display text-xl font-medium text-foreground">
+                      <h3 className="font-display text-lg font-semibold text-foreground">
                         {d.name}
                       </h3>
                       <p className="text-sm leading-relaxed text-muted-foreground">
                         {d.description}
                       </p>
                     </div>
-
-                    <div
-                      className="ui-hover-cta mt-auto flex items-center gap-2 pt-6 text-sm font-medium"
-                      style={{ color: accentText }}
-                    >
+                    
+                    <div className="mt-auto pt-4 flex items-center gap-2 text-sm font-medium" style={{ color: d.accent }}>
                       <span>Explore</span>
                       <ArrowRight className="ui-icon-shift h-3.5 w-3.5" />
                     </div>
                   </Link>
-                </ScrollScale>
-              );
-            })}
-          </div>
-        </FadeIn>
+            </FadeIn>
+          ))}
+        </div>
       </div>
     </section>
   );

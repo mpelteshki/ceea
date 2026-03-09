@@ -16,7 +16,11 @@ export const listUpcoming = query({
       .order("asc")
       .take(limit);
     // Strip internal metadata from public response
-    return rows.map(({ createdBy: _, ...rest }) => rest);
+    return rows.map((row) => {
+      const { createdBy: createdByIgnored, ...rest } = row;
+      void createdByIgnored;
+      return rest;
+    });
   },
 });
 
@@ -29,7 +33,11 @@ export const listAll = query({
       .order("desc")
       .take(MAX_EVENTS_RETURNED);
     // Strip internal metadata from public response
-    return rows.map(({ createdBy: _, ...rest }) => rest);
+    return rows.map((row) => {
+      const { createdBy: createdByIgnored, ...rest } = row;
+      void createdByIgnored;
+      return rest;
+    });
   },
 });
 

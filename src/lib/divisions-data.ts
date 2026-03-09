@@ -1,7 +1,7 @@
 import { Palette, Scale, TrendingUp, Users, Briefcase, Newspaper, CalendarDays, Megaphone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-export type Division = {
+type Division = {
   icon: LucideIcon;
   name: string;
   slug: string;
