@@ -64,15 +64,15 @@ export function ArticleWithDesignSwitcher({ post }: { post: Post }) {
 
   return (
     <article className="pb-24">
-      {/* Wide title area */}
-      <div className="mx-auto max-w-5xl px-5 pt-28 sm:px-8 sm:pt-36">
+      {/* Title area — same width as body for alignment */}
+      <div className="mx-auto max-w-[42rem] px-5 pt-28 sm:px-6 sm:pt-36">
         <FadeIn delay={0} duration={0.6} direction="up" distance={14}>
           <time className="mb-3 block font-mono text-[0.6875rem] uppercase tracking-[0.15em] text-muted-foreground">
             {dateStr}
           </time>
         </FadeIn>
         <FadeIn delay={0.1} duration={0.7} direction="up" distance={20}>
-          <h1 className="max-w-4xl text-balance font-display text-[clamp(2rem,5.5vw,4rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-foreground">
+          <h1 className="text-balance font-display text-[clamp(2rem,5.5vw,4rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-foreground">
             {post.title}
           </h1>
         </FadeIn>
