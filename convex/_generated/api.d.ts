@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as authors from "../authors.js";
 import type * as events from "../events.js";
 import type * as fintech from "../fintech.js";
 import type * as lib_admin from "../lib/admin.js";
@@ -25,6 +26,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  authors: typeof authors;
   events: typeof events;
   fintech: typeof fintech;
   "lib/admin": typeof lib_admin;

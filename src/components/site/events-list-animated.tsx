@@ -1,14 +1,14 @@
 "use client";
 
 import { ArrowUpRight, Calendar, MapPin } from "lucide-react";
-import { SlideIn, ScrollRevealMask } from "@/components/ui/scroll-animations";
+import { DrawLine } from "@/components/ui/scroll-animations";
+import { FadeIn } from "@/components/ui/fade-in";
 import { InlineMarkdown } from "@/components/ui/inline-markdown";
-import { getReadableAccentText } from "@/lib/accent-colors";
 
 const KIND_META: Record<string, { label: string; color: string }> = {
-  signature: { label: "Signature", color: getReadableAccentText("var(--brand-teal)") },
-  career: { label: "Career", color: getReadableAccentText("var(--brand-pink)") },
-  culture: { label: "Culture", color: getReadableAccentText("var(--brand-red)") },
+  signature: { label: "Signature", color: "var(--brand-teal)" },
+  career:    { label: "Career",    color: "var(--brand-caramel)" },
+  culture:   { label: "Culture",   color: "var(--brand-crimson)" },
   community: { label: "Community", color: "var(--muted-foreground)" },
 };
 
@@ -33,15 +33,12 @@ export function EventsListAnimated({ events }: { events: EventData[] }) {
     <div className="space-y-8">
       <div className="divide-y divide-border border-t border-border">
         {events.map((event, idx) => (
-          <SlideIn
+          <FadeIn
             key={event.id}
-            from={idx % 2 === 0 ? "left" : "right"}
-            distance={70}
-            delay={Math.min(idx * 0.06, 0.24)}
-            blur
+            delay={Math.min(idx * 0.04, 0.2)}
+            direction="up"
           >
-            <ScrollRevealMask direction={idx % 2 === 0 ? "left" : "right"}>
-              <div className="group -mx-4 grid grid-cols-[auto_1fr] items-start gap-x-4 gap-y-4 px-4 py-6 transition-colors duration-200 hover:bg-[var(--accents-1)] sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-8 sm:py-8 sm:text-left">
+              <div className="group -mx-4 grid grid-cols-[auto_1fr_auto] items-center gap-6 px-4 py-6 transition-colors duration-200 hover:bg-[var(--accents-1)] sm:gap-8 sm:py-8 sm:text-left">
                 <div className="flex w-16 flex-col items-center justify-center sm:w-20">
                   <span className="text-[0.6875rem] font-mono font-medium tracking-[0.12em] text-muted-foreground">
                     {event.date.weekday}
@@ -81,13 +78,13 @@ export function EventsListAnimated({ events }: { events: EventData[] }) {
                     ) : null}
                   </div>
                   {event.summary ? (
-                    <div className="mt-2 max-w-2xl line-clamp-3 sm:line-clamp-2">
+                    <div className="mt-2 hidden max-w-2xl line-clamp-2 sm:block">
                       <InlineMarkdown>{event.summary}</InlineMarkdown>
                     </div>
                   ) : null}
                 </div>
 
-                <div className="col-span-2 flex shrink-0 gap-2 sm:col-span-1 sm:justify-end">
+                <div className="flex shrink-0 gap-2">
                   {event.rsvpUrl ? (
                     <a
                       href={event.rsvpUrl}
@@ -98,32 +95,23 @@ export function EventsListAnimated({ events }: { events: EventData[] }) {
                       RSVP
                     </a>
                   ) : event.moreInfoUrl ? (
-                    <>
-                      <a
-                        href={event.moreInfoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ui-btn min-h-0 px-4 py-2 text-xs sm:hidden"
-                      >
-                        Details
-                      </a>
-                      <a
-                        aria-label={`Open details for ${event.title}`}
-                        href={event.moreInfoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hidden h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors duration-200 hover:border-[var(--ring)] hover:text-[var(--foreground)] sm:flex"
-                      >
-                        <ArrowUpRight className="ui-icon-shift h-4 w-4" aria-hidden="true" />
-                      </a>
-                    </>
+                    <a
+                      aria-label="Open event details"
+                      href={event.moreInfoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors duration-200 hover:border-[var(--ring)] hover:text-[var(--foreground)]"
+                    >
+                      <ArrowUpRight className="ui-icon-shift h-4 w-4" aria-hidden="true" />
+                    </a>
                   ) : null}
                 </div>
               </div>
-            </ScrollRevealMask>
-          </SlideIn>
+          </FadeIn>
         ))}
       </div>
+
+      <DrawLine color="var(--brand-crimson)" width={1} />
     </div>
   );
 }

@@ -1,8 +1,18 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, type QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/admin";
+import type { Id } from "./_generated/dataModel";
 
 const MAX_POSTS_RETURNED = 200;
+
+type AuthorProfile = {
+  _id: string;
+  name: string;
+  bio?: string;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  photoId?: string;
+};
 
 function stripPostMetadata<T extends { createdBy?: string; body?: string }>(
   row: T,
@@ -14,6 +24,26 @@ function stripPostMetadata<T extends { createdBy?: string; body?: string }>(
     delete cleanRow.body;
   }
   return cleanRow;
+}
+
+async function resolveAuthor(
+  ctx: QueryCtx,
+  row: { authorId?: Id<"authors"> },
+): Promise<AuthorProfile | undefined> {
+  if (row.authorId) {
+    const author = await ctx.db.get(row.authorId);
+    if (author) {
+      return {
+        _id: author._id,
+        name: author.name,
+        bio: author.bio,
+        linkedinUrl: author.linkedinUrl,
+        websiteUrl: author.websiteUrl,
+        photoId: author.photoId,
+      };
+    }
+  }
+  return undefined;
 }
 
 /* ------------------------------------------------------------------ */
@@ -30,10 +60,16 @@ export const listPublished = query({
       .order("desc")
       .take(MAX_POSTS_RETURNED);
 
-    // Only return posts that have a publishedAt value (i.e. not drafts)
-    return rows
-      .filter((r) => r.publishedAt != null)
-      .map((row) => stripPostMetadata(row, { removeBody: true }));
+    const published = rows.filter((r) => r.publishedAt != null);
+    return Promise.all(
+      published.map(async (row) => {
+        const authorProfile = await resolveAuthor(ctx, row);
+        return {
+          ...stripPostMetadata(row, { removeBody: true }),
+          authorProfile,
+        };
+      }),
+    );
   },
 });
 
@@ -46,7 +82,8 @@ export const getBySlug = query({
       .withIndex("by_slug", (q) => q.eq("slug", slug))
       .unique();
     if (!row || row.publishedAt == null) return null;
-    return stripPostMetadata(row);
+    const authorProfile = await resolveAuthor(ctx, row);
+    return { ...stripPostMetadata(row), authorProfile };
   },
 });
 
@@ -61,10 +98,16 @@ export const listRecent = query({
       .order("desc")
       .take(n * 2); // over-fetch to account for drafts
 
-    return rows
-      .filter((r) => r.publishedAt != null)
-      .slice(0, n)
-      .map((row) => stripPostMetadata(row, { removeBody: true }));
+    const published = rows.filter((r) => r.publishedAt != null).slice(0, n);
+    return Promise.all(
+      published.map(async (row) => {
+        const authorProfile = await resolveAuthor(ctx, row);
+        return {
+          ...stripPostMetadata(row, { removeBody: true }),
+          authorProfile,
+        };
+      }),
+    );
   },
 });
 
@@ -97,6 +140,7 @@ export const create = mutation({
     title: v.string(),
     excerpt: v.string(),
     body: v.string(),
+    authorId: v.optional(v.id("authors")),
     publishedAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
@@ -117,6 +161,7 @@ export const create = mutation({
       title: args.title.trim(),
       excerpt: args.excerpt.trim(),
       body: args.body,
+      authorId: args.authorId ?? undefined,
       publishedAt: args.publishedAt ?? undefined,
       createdAt: now,
       updatedAt: now,
@@ -132,6 +177,8 @@ export const update = mutation({
     title: v.optional(v.string()),
     excerpt: v.optional(v.string()),
     body: v.optional(v.string()),
+    author: v.optional(v.union(v.string(), v.null())),
+    authorId: v.optional(v.union(v.id("authors"), v.null())),
     publishedAt: v.optional(v.union(v.number(), v.null())),
   },
   handler: async (ctx, args) => {
@@ -155,6 +202,12 @@ export const update = mutation({
     if (args.title !== undefined) patch.title = args.title.trim();
     if (args.excerpt !== undefined) patch.excerpt = args.excerpt.trim();
     if (args.body !== undefined) patch.body = args.body;
+    if (args.authorId !== undefined) {
+      patch.authorId = args.authorId ?? undefined;
+    }
+    if (args.author !== undefined) {
+      patch.author = args.author?.trim() || undefined;
+    }
     if (args.publishedAt !== undefined) {
       patch.publishedAt = args.publishedAt ?? undefined;
     }

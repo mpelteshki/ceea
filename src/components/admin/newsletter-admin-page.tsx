@@ -17,6 +17,7 @@ import {
 } from "@/lib/admin-utils";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { MarkdownEditor } from "@/components/admin/markdown-editor";
+import Link from "next/link";
 
 /* ------------------------------------------------------------------ */
 /*  Types & constants                                                  */
@@ -30,6 +31,7 @@ type PostDoc = {
   title: string;
   excerpt: string;
   body: string;
+  authorId?: Id<"authors">;
   publishedAt?: number;
   createdAt: number;
   updatedAt: number;
@@ -47,6 +49,7 @@ type PostForm = {
   title: string;
   excerpt: string;
   body: string;
+  authorId: string; // "" or Id<"authors">
   isDraft: boolean;
   publishedAt: string; // datetime-local string
 };
@@ -56,6 +59,7 @@ const EMPTY_FORM: PostForm = {
   title: "",
   excerpt: "",
   body: "",
+  authorId: "",
   isDraft: false,
   publishedAt: new Date().toISOString().slice(0, 16),
 };
@@ -137,6 +141,14 @@ function NewsletterAdminPageInner() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const postsRaw = useQuery(api.posts.listAll, isAuthenticated ? {} : "skip");
   const posts = postsRaw as PostDoc[] | undefined;
+  const authorsRaw = useQuery(api.authors.list, isAuthenticated ? {} : "skip");
+  const authors = authorsRaw as Array<{
+    _id: Id<"authors">;
+    name: string;
+    bio?: string;
+    linkedinUrl?: string;
+    websiteUrl?: string;
+  }> | undefined;
   const createPost = useMutation(api.posts.create);
   const updatePost = useMutation(api.posts.update);
   const deletePost = useMutation(api.posts.remove);
@@ -194,6 +206,8 @@ function NewsletterAdminPageInner() {
     setSlugTouched(false);
   };
 
+  const selectedAuthorId = form.authorId || undefined;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSaving) return;
@@ -212,6 +226,7 @@ function NewsletterAdminPageInner() {
           title: form.title.trim(),
           excerpt: form.excerpt.trim(),
           body: form.body,
+          authorId: (selectedAuthorId as Id<"authors">) ?? null,
           publishedAt: form.isDraft ? null : (publishedAtMs ?? null),
         });
       } else {
@@ -220,6 +235,7 @@ function NewsletterAdminPageInner() {
           title: form.title.trim(),
           excerpt: form.excerpt.trim(),
           body: form.body,
+          authorId: (selectedAuthorId as Id<"authors">) ?? undefined,
           publishedAt: publishedAtMs,
         });
       }
@@ -387,6 +403,32 @@ function NewsletterAdminPageInner() {
                   rows={2}
                   required
                 />
+              </Field>
+
+              <Field label="Author">
+                <select
+                  name="post_author_id"
+                  value={form.authorId}
+                  onChange={(e) => {
+                    setForm((prev) => ({
+                      ...prev,
+                      authorId: e.target.value,
+                    }));
+                  }}
+                  className="ui-input"
+                >
+                  <option value="">No author</option>
+                  {authors?.map((a) => (
+                    <option key={a._id} value={a._id}>
+                      {a.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-1 text-[10px] text-[var(--muted-foreground)]">
+                  <Link href="/admin/authors" className="underline hover:text-foreground">
+                    Manage author profiles
+                  </Link>
+                </div>
               </Field>
 
               <Field label="Body">
@@ -631,6 +673,7 @@ function NewsletterAdminPageInner() {
                               title: post.title,
                               excerpt: post.excerpt,
                               body: post.body,
+                              authorId: post.authorId ?? "",
                               isDraft: post.publishedAt == null,
                               publishedAt: post.publishedAt
                                 ? new Date(post.publishedAt)

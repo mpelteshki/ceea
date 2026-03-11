@@ -5,7 +5,6 @@ import { Calendar, MapPin, ArrowUpRight } from "lucide-react";
 import { SectionHeader } from "@/components/site/section-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FadeIn } from "@/components/ui/fade-in";
-import { getReadableAccentText } from "@/lib/accent-colors";
 
 type EventData = {
   id: string;
@@ -20,8 +19,6 @@ type EventData = {
 };
 
 export function EventRowAnimations({ events }: { events: EventData[] }) {
-  const monthColor = getReadableAccentText("var(--brand-red)");
-
   return (
     <>
       <FadeIn>
@@ -53,8 +50,7 @@ export function EventRowAnimations({ events }: { events: EventData[] }) {
                   {/* Date block */}
                   <div className="flex flex-col items-center justify-center w-16 sm:w-20">
                     <span
-                      className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em]"
-                      style={{ color: monthColor }}
+                      className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em] text-[var(--brand-red-text)]"
                     >
                       {event.date.month}
                     </span>

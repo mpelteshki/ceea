@@ -21,6 +21,7 @@ async function resolvePost(slug: string): Promise<Post | null> {
     title: row.title,
     excerpt: row.excerpt,
     body: row.body,
+    authorProfile: row.authorProfile ?? undefined,
     publishedAt: row.publishedAt,
   };
 }
@@ -44,10 +45,18 @@ export async function NewsletterArticle({ slug }: { slug: string }) {
     url: articleUrl,
     mainEntityOfPage: articleUrl,
     inLanguage: "en",
-    author: {
-      "@type": "Organization",
-      name: SITE_NAME,
-    },
+    author: post.authorProfile
+      ? {
+          "@type": "Person",
+          name: post.authorProfile.name,
+          ...(post.authorProfile.linkedinUrl
+            ? { url: post.authorProfile.linkedinUrl }
+            : {}),
+        }
+      : {
+          "@type": "Organization",
+          name: SITE_NAME,
+        },
     publisher: {
       "@type": "Organization",
       name: SITE_NAME,

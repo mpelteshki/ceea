@@ -70,11 +70,22 @@ export default defineSchema({
     createdAt: v.number(),
   }).index("by_createdAt", ["createdAt"]),
 
+  authors: defineTable({
+    name: v.string(),
+    bio: v.optional(v.string()),
+    linkedinUrl: v.optional(v.string()),
+    websiteUrl: v.optional(v.string()),
+    photoId: v.optional(v.string()), // _storage id for avatar
+    createdAt: v.number(),
+  }).index("by_name", ["name"]),
+
   posts: defineTable({
     slug: v.string(),
     title: v.string(),
     excerpt: v.string(),
     body: v.string(), // markdown
+    author: v.optional(v.string()), // deprecated — kept for existing data
+    authorId: v.optional(v.id("authors")),
     publishedAt: v.optional(v.number()), // epoch ms — absent = draft
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),

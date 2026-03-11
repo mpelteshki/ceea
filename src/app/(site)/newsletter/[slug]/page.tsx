@@ -21,6 +21,7 @@ async function resolvePostMeta(slug: string): Promise<Post | null> {
     title: row.title,
     excerpt: row.excerpt,
     body: "",
+    authorProfile: row.authorProfile ?? undefined,
     publishedAt: row.publishedAt,
   };
 }
@@ -55,7 +56,7 @@ export async function generateMetadata({
       ...metadata.openGraph,
       type: "article",
       publishedTime: new Date(post.publishedAt).toISOString(),
-      authors: [SITE_NAME],
+      authors: [post.authorProfile?.name || SITE_NAME],
     },
   };
 }

@@ -7,6 +7,7 @@ import rehypeSanitize from "rehype-sanitize";
 import type { Post } from "@/lib/posts";
 import { fmtLongDate } from "@/lib/format-date";
 import { FadeIn } from "@/components/ui/fade-in";
+import { AuthorChip } from "@/components/site/author-profile";
 
 /* ------------------------------------------------------------------ */
 /* Shared                                                              */
@@ -67,9 +68,15 @@ export function ArticleWithDesignSwitcher({ post }: { post: Post }) {
       {/* Title area — same width as body for alignment */}
       <div className="mx-auto max-w-[42rem] px-5 pt-28 sm:px-6 sm:pt-36">
         <FadeIn delay={0} duration={0.6} direction="up" distance={14}>
-          <time className="mb-3 block font-mono text-[0.6875rem] uppercase tracking-[0.15em] text-muted-foreground">
-            {dateStr}
-          </time>
+          <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[0.6875rem] uppercase tracking-[0.15em] text-muted-foreground">
+            <time>{dateStr}</time>
+            {post.authorProfile && (
+              <>
+                <span aria-hidden="true" className="text-border">·</span>
+                <AuthorChip profile={post.authorProfile} />
+              </>
+            )}
+          </div>
         </FadeIn>
         <FadeIn delay={0.1} duration={0.7} direction="up" distance={20}>
           <h1 className="text-balance font-display text-[clamp(2rem,5.5vw,4rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-foreground">
